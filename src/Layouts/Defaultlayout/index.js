@@ -7,8 +7,6 @@ import { useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { setActiveSideBar } from '../../redux/slice/sibarSlice';
-import { getAllRequestTypeService } from '../../services/requestTypeService';
-import { setRequestTypeId } from '../../redux/slice/sibarSlice';
 
 function DefaultLayout({ children }) {
     const dispatch = useDispatch();
@@ -22,15 +20,6 @@ function DefaultLayout({ children }) {
                 dispatch(setActiveSideBar('/'));
             } else {
                 dispatch(setActiveSideBar(`/${target}`));
-            }
-            try {
-                const requestTypes = await getAllRequestTypeService();
-                const id = requestTypes.find((requestType) => requestType.path === `/${target}`)?.id;
-                if (id) {
-                    dispatch(setRequestTypeId(id));
-                }
-            } catch (error) {
-                console.error('Error fetching request types:', error);
             }
         };
 

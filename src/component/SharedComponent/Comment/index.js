@@ -22,42 +22,6 @@ const mockComments = [
         content: 'Cần bổ sung thêm thông tin chi tiết về thời gian nghỉ',
         createAt: '2025-06-09T09:30:00Z',
     },
-    {
-        id: 3,
-        user: {
-            name: 'Trần Thị B',
-            avatar: 'https://example.com/avatar3.jpg',
-        },
-        content: 'Đã cập nhật thông tin theo yêu cầu',
-        createAt: '2025-06-09T10:15:00Z',
-    },
-    {
-        id: 4,
-        user: {
-            name: 'Lê Văn C',
-            avatar: 'https://example.com/avatar4.jpg',
-        },
-        content: 'Tôi đồng ý với đề xuất này',
-        createAt: '2025-06-09T11:20:00Z',
-    },
-    {
-        id: 5,
-        user: {
-            name: 'Hoàng Thị D',
-            avatar: 'https://example.com/avatar5.jpg',
-        },
-        content: 'Đã chuyển thông tin đến bộ phận liên quan',
-        createAt: '2025-06-09T13:45:00Z',
-    },
-    {
-        id: 6,
-        user: {
-            name: 'Đỗ Văn E',
-            avatar: 'https://example.com/avatar6.jpg',
-        },
-        content: 'Cần xem xét lại thời gian bắt đầu',
-        createAt: '2025-06-09T14:30:00Z',
-    },
 ];
 
 const CommentItem = ({ comment }) => (

@@ -1,25 +1,13 @@
 import { Box, Typography, Avatar, AvatarGroup, IconButton, Stack } from '@mui/material';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import AddIcon from '@mui/icons-material/Add';
-import { useSelector, useDispatch } from 'react-redux';
-import { useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { fetchRequestDetail } from '../../../redux/slice/requestDetailSlice';
+import { useSelector } from 'react-redux';
 import LoadingPage from '../LoadingPage';
 
 function Follower() {
-    const dispatch = useDispatch();
-    const [searchParams] = useSearchParams();
-    const requestDetail = useSelector((state) => state.requestDetail.requestDetail);
+    const requestDetail = useSelector((state) => state.requestDetail.requestDetailvalue);
     const loading = useSelector((state) => state.requestDetail.loading);
     const error = useSelector((state) => state.requestDetail.error);
-    const requestId = searchParams.get('requestid');
-
-    useEffect(() => {
-        if (requestId) {
-            dispatch(fetchRequestDetail(requestId));
-        }
-    }, [dispatch, requestId]);
 
     if (loading) {
         return <LoadingPage />;
@@ -50,8 +38,8 @@ function Follower() {
                     }}
                 >
                     {requestDetail?.followers?.map((follower) => (
-                        <Avatar key={follower.id} alt={follower.name} src={follower.avatar}>
-                            {follower.name?.charAt(0)}
+                        <Avatar key={follower.follower.id} alt={follower.follower.name} src={follower.follower.avatar}>
+                            {follower.follower.name?.charAt(0)}
                         </Avatar>
                     ))}
                 </AvatarGroup>

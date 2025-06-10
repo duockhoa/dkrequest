@@ -9,7 +9,7 @@ import { createRequestService } from '../../../services/requestService';
 import { fetchRequests } from '../../../redux/slice/requestSlice';
 
 function AddRequestForm({ onClose }) {
-    const requestTypeId = useSelector((state) => state.sidebar.requestTypeId);
+    const requestTypeId = useSelector((state) => state.requestId.requestTypeId);
     const requestFormData = useSelector((state) => state.requestFormData.value);
     const user = useSelector((state) => state.user.userInfo);
     const dispatch = useDispatch();

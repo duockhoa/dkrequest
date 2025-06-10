@@ -8,6 +8,7 @@ import requestFormDataReducer from './slice/requestFormDataSlice';
 import usersReducer from './slice/usersSlice';
 import requestApproverReducer from './slice/requestApproverSlice';
 import requestDetailReducer from './slice/requestDetailSlice';
+import requestIdReducer from './slice/requestId';
 export default configureStore({
     reducer: {
         user: userReducer,
@@ -19,5 +20,6 @@ export default configureStore({
         users: usersReducer,
         requestApprover: requestApproverReducer,
         requestDetail: requestDetailReducer,
+        requestId: requestIdReducer,
     },
 });

@@ -1,9 +1,7 @@
-import { Box, Typography, Stack, Divider, Avatar } from '@mui/material';
-import { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { useSearchParams } from 'react-router-dom';
-import { fetchRequestDetail } from '../../../redux/slice/requestDetailSlice';
+import { Box, Typography, Stack, Divider } from '@mui/material';
+import { useSelector } from 'react-redux';
 import { format } from 'date-fns';
+
 import LoadingPage from '../LoadingPage';
 const DetailItem = ({ label, value }) => (
     <Stack direction="row" spacing={2} sx={{ py: 1 }}>
@@ -20,31 +18,10 @@ const DetailItem = ({ label, value }) => (
     </Stack>
 );
 
-const ApproverItem = ({ approver }) => (
-    <Stack direction="row" spacing={2} alignItems="center" sx={{ py: 1 }}>
-        <Avatar src={approver.approver.avatar} alt={approver.approver.name} sx={{ width: 40, height: 40 }} />
-        <Box>
-            <Typography sx={{ fontSize: '1.4rem' }}>{approver.approver.name}</Typography>
-            <Typography sx={{ fontSize: '1.2rem', color: 'text.secondary' }}>
-                Bước {approver.step} - {approver.status === 'pending' ? 'Đang chờ' : 'Đã duyệt'}
-            </Typography>
-        </Box>
-    </Stack>
-);
-
-function RequestDetailsd() {
-    const dispatch = useDispatch();
-    const [searchParams] = useSearchParams();
-    const requestDetail = useSelector((state) => state.requestDetail.requestDetail);
+function RequestDetail() {
+    const requestDetail = useSelector((state) => state.requestDetail.requestDetailvalue);
     const loading = useSelector((state) => state.requestDetail.loading);
     const error = useSelector((state) => state.requestDetail.error);
-    const requestId = searchParams.get('requestid');
-
-    useEffect(() => {
-        if (requestId) {
-            dispatch(fetchRequestDetail(requestId));
-        }
-    }, [dispatch, requestId]);
 
     // Loading state
     if (loading) {
@@ -102,4 +79,4 @@ function RequestDetailsd() {
     );
 }
 
-export default RequestDetailsd;
+export default RequestDetail;

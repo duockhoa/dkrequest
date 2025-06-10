@@ -3,7 +3,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { getRequestByIdService } from '../../services/requestService';
 
 const fetchRequestDetail = createAsyncThunk('requestDetail/fetchRequestDetail', async (id) => {
-    const response = await getRequestByIdService();
+    const response = await getRequestByIdService(id);
     if (response) {
         return response;
     } else {

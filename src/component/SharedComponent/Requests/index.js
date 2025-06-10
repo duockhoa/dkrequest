@@ -1,5 +1,5 @@
 import { Paper, Tabs, Tab, Box, Typography, Stack, Avatar, Chip, Checkbox, AvatarGroup, Dialog } from '@mui/material';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, use } from 'react';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import AddIcon from '@mui/icons-material/Add';
 import Button from '@mui/material/Button';
@@ -9,7 +9,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import { fetchRequests } from '../../../redux/slice/requestSlice';
 import { useNavigate } from 'react-router-dom';
 import { useElementWidth } from '../../../hooks/useElementWidth';
-import CircularProgress from '@mui/material/CircularProgress';
 import LoadingPage from '../LoadingPage';
 
 const tabList = ['Tất cả', 'Đến lượt duyệt', 'Quá hạn', 'Đang chờ duyệt', 'Đã chấp nhận', 'Đã từ chối'];
@@ -20,14 +19,14 @@ export default function Requests() {
     const [tab, setTab] = useState(0);
     const [openForm, setOpenForm] = useState(false); // thêm state này
     const dispatch = useDispatch();
-    const requestTypeId = useSelector((state) => state.sidebar.requestTypeId);
     const requests = useSelector((state) => state.request.requestData);
     const loading = useSelector((state) => state.request.loading); // Add this line
-
+    const requestTypeId = useSelector((state) => state.requestId.requestTypeId);
     useEffect(() => {
         dispatch(fetchRequests(requestTypeId));
-    }, [requestTypeId, dispatch]);
+    }, [dispatch, requestTypeId]);
 
+    // Hàm để mở/đóng form
     const handleToggleForm = () => {
         setOpenForm(!openForm);
     };

@@ -7,7 +7,7 @@ import { useEffect } from 'react';
 function RequestApprovers() {
     const dispatch = useDispatch();
     const requestFormData = useSelector((state) => state.requestFormData.value);
-    const requestTypeId = useSelector((state) => state.sidebar.requestTypeId);
+    const requestTypeId = useSelector((state) => state.requestId.requestTypeId);
     const user = useSelector((state) => state.user.userInfo);
     const requestApprovers = useSelector((state) => state.requestApprover.approverData);
 

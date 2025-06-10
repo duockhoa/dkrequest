@@ -4,27 +4,14 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
-import { useSelector, useDispatch } from 'react-redux';
-import { useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom'; // Add this import
-import { fetchRequestDetail } from '../../../redux/slice/requestDetailSlice';
+import { useSelector } from 'react-redux';
 import LoadingPage from '../LoadingPage';
 
 function Approver() {
-    const dispatch = useDispatch();
-    const [searchParams] = useSearchParams();
-    const requestDetail = useSelector((state) => state.requestDetail.requestDetail);
+    const requestDetail = useSelector((state) => state.requestDetail.requestDetailvalue);
     const loading = useSelector((state) => state.requestDetail.loading);
     const error = useSelector((state) => state.requestDetail.error);
-    const requestId = searchParams.get('requestid'); // Get requestId from URL params
 
-    useEffect(() => {
-        if (requestId) {
-            dispatch(fetchRequestDetail(requestId));
-        }
-    }, [dispatch, requestId]);
-
-    // Handle loading and error states
     if (loading) {
         return <LoadingPage />;
     }
