@@ -1,0 +1,59 @@
+import axios from './customize-axios';
+async function getAllRequestService(requestTypeId) {
+    try {
+        const response = await axios.get('/request/getall?requesttypeid=' + requestTypeId);
+        if (response.status === 200) {
+            return response.data.result;
+        } else {
+            throw new Error('Không thể lấy danh sách yêu cầu');
+        }
+    } catch (error) {
+        if (error.response) {
+            throw new Error(error.response.data.message || 'Lỗi từ server');
+        } else if (error.request) {
+            throw new Error('Không thể kết nối đến server');
+        } else {
+            throw new Error(error.message || 'Đã xảy ra lỗi khi lấy danh sách yêu cầu');
+        }
+    }
+}
+
+async function getRequestByIdService(id) {
+    try {
+        const response = await axios.get(`/request/getbyid/${id}`);
+        if (response.status === 200) {
+            return response.data.result;
+        } else {
+            throw new Error('Không thể lấy yêu cầu theo ID');
+        }
+    } catch (error) {
+        if (error.response) {
+            throw new Error(error.response.data.message || 'Lỗi từ server');
+        } else if (error.request) {
+            throw new Error('Không thể kết nối đến server');
+        } else {
+            throw new Error(error.message || 'Đã xảy ra lỗi khi lấy yêu cầu theo ID');
+        }
+    }
+}
+
+async function createRequestService(payload) {
+    try {
+        const response = await axios.post('/request/create', payload);
+        if (response.status === 201) {
+            return response.data.result;
+        } else {
+            throw new Error('Không thể tạo yêu cầu');
+        }
+    } catch (error) {
+        if (error.response) {
+            throw new Error(error.response.data.message || 'Lỗi từ server');
+        } else if (error.request) {
+            throw new Error('Không thể kết nối đến server');
+        } else {
+            throw new Error(error.message || 'Đã xảy ra lỗi khi tạo yêu cầu');
+        }
+    }
+}
+
+export { getAllRequestService, getRequestByIdService, createRequestService };

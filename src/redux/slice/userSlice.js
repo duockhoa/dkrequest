@@ -1,21 +1,10 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { checkTokenService } from '../../services/checkTokenService';
-import { getAvatarService } from '../../services/getAvatarService';
 import { createSlice } from '@reduxjs/toolkit';
 
 const fetchUser = createAsyncThunk('user/fetchUser', async () => {
     const response = await checkTokenService();
-    if (response.status === 200) {
-        const avatarUrl = await getAvatarService(response.data.userInfo.id);
-        return {
-            ...response.data,
-            userInfo: {
-                ...response.data.userInfo,
-                avatar: avatarUrl,
-            },
-        };
-    }
-    return response.data;
+    return response;
 });
 
 export const userSlice = createSlice({

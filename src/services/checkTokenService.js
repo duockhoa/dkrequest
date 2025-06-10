@@ -1,21 +1,43 @@
 import axios from './customize-axios';
-import Cookies from 'js-cookie'; // Import thư viện js-cookie
+import Cookies from 'js-cookie';
+import { domain } from './domain';
 
-async function checkTokenService() {
-    const token = Cookies.get('token'); // Lấy token từ cookie
+async function checkTokenService(retryCount = 0) {
+    const token = Cookies.get('token');
+    if (!token) {
+        return null;
+    }
 
     try {
-        const response = await axios.get(`/login/token?token=${token}`);
-        return response;
+        const response = await axios.get(`/auth/checktoken?token=${token}`);
+        if (response.status !== 200) {
+            throw new Error('Token validation failed');
+        }
+
+        // Refresh token expiration (7 days)
+        Cookies.set('token', token, {
+            expires: 7,
+            domain: domain,
+            path: '/',
+        });
+
+        return response.data;
     } catch (error) {
-        // Kiểm tra nếu lỗi là 401 (Unauthorized)
-        if (error.response && error.response.status === 401) {
-            // Xóa token khỏi cookie
-            Cookies.remove('token');
+        if (error.response?.status === 401) {
+            // Clear token cookie
+            Cookies.remove('token', {
+                domain: domain,
+                path: '/',
+            });
             return null;
         }
 
-        // Ném lỗi để xử lý ở nơi gọi hàm
+        // Retry logic for network errors
+        if (retryCount < 3 && (!error.response || error.response.status >= 500)) {
+            await new Promise((resolve) => setTimeout(resolve, 1000 * (retryCount + 1)));
+            return checkTokenService(retryCount + 1);
+        }
+
         throw error;
     }
 }

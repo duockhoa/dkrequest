@@ -1,65 +1,72 @@
-import { useEffect } from 'react';
 import Stack from '@mui/material/Stack';
-import Grid from '@mui/material/Grid';
-import Header from '../../component/Header'; // Đường dẫn đến Header
-import Sidebar from '../../component/Sidebar'; // Đường dẫn đến Sidebar
-import { useNavigate } from 'react-router-dom'; // Import useNavigate để chuyển hướng
-import { useDispatch, useSelector } from 'react-redux'; // Import useSelector và useDispatch từ react-redux
-import { fetchUser } from '../../redux/slice/userSlice'; // Import action fetchUser từ userSlice
-import { checkTokenService } from '../../services/checkTokenService'; // Import service kiểm tra token
-import LoadingPage from '../../component/LoadingPage';
-import { Divider } from '@mui/material';
+import Box from '@mui/material/Box';
+import Header from '../../component/SharedComponent/Header';
+import Sidebar from '../../component/SharedComponent/Sidebar';
+import LoadingPage from '../../component/SharedComponent/LoadingPage';
+import { useSelector } from 'react-redux';
+import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { setActiveSideBar } from '../../redux/slice/sibarSlice';
+import { getAllRequestTypeService } from '../../services/requestTypeService';
+import { setRequestTypeId } from '../../redux/slice/sibarSlice';
 
 function DefaultLayout({ children }) {
-    const navigate = useNavigate();
     const dispatch = useDispatch();
-    const userInfo = useSelector((state) => state.user.userInfo);
+    const path = window.location.pathname;
+    const segments = path.split('/');
+    const target = segments[1];
 
     useEffect(() => {
-        dispatch(fetchUser());
-        const checkToken = async () => {
+        const fetchData = async () => {
+            if (!target) {
+                dispatch(setActiveSideBar('/'));
+            } else {
+                dispatch(setActiveSideBar(`/${target}`));
+            }
             try {
-                const response = await checkTokenService();
-                if (!response) {
-                    navigate('/login');
+                const requestTypes = await getAllRequestTypeService();
+                const id = requestTypes.find((requestType) => requestType.path === `/${target}`)?.id;
+                if (id) {
+                    dispatch(setRequestTypeId(id));
                 }
             } catch (error) {
-                console.error('Error checking token:', error);
+                console.error('Error fetching request types:', error);
             }
         };
-        checkToken();
-    }, [dispatch, navigate]);
 
+        fetchData();
+    }, [target, dispatch]);
+
+    const userInfo = useSelector((state) => state.user.userInfo);
     if (userInfo.name === '') {
-        return <LoadingPage></LoadingPage>;
+        return <LoadingPage />;
     }
 
     return (
         <Stack sx={{ height: '100vh' }}>
             <Header />
-            <Grid container sx={{ flex: 1 }}>
-                <Grid
-                    item
-                    width="245px"
+            <Box sx={{ display: 'flex', flex: 1, height: '100%', overflow: 'hidden' }}>
+                <Box
                     sx={{
-                        backgroundColor: '#f0f0f0', // Màu nền sáng
-                        height: '100%',
+                        width: '255px',
+                        backgroundColor: '#f0f0f0',
+                        //height: '100%',
                     }}
                 >
                     <Sidebar />
-                </Grid>
-                <Grid
-                    item
-                    flexGrow={1}
+                </Box>
+                <Box
                     sx={{
-                        backgroundColor: '#e0e0f0', // Màu nền tối hơn
-                        padding: '16px',
-                        height: '100%', // Chiều cao đầy đủ
+                        flexGrow: 1,
+                        backgroundColor: '#e0e0f0',
+                        padding: '8px',
+                        display: 'flex',
+                        height: '100%',
                     }}
                 >
                     {children}
-                </Grid>
-            </Grid>
+                </Box>
+            </Box>
         </Stack>
     );
 }

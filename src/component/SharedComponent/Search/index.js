@@ -1,0 +1,44 @@
+import { TextField } from '@mui/material';
+import { useDispatch, useSelector } from 'react-redux';
+import { changeValue } from '../../../redux/slice/searchSlice';
+import { filterRequests } from '../../../redux/slice/requestSlice';
+import SearchIcon from '@mui/icons-material/Search';
+
+function Search() {
+    const dispatch = useDispatch();
+    const value = useSelector((state) => state.search.value);
+    const handleChange = (event) => {
+        const newValue = event.target.value;
+        dispatch(changeValue(newValue));
+        dispatch(filterRequests(newValue));
+    };
+    return (
+        <TextField
+            variant="outlined"
+            size="small"
+            placeholder="Tìm kiếm..."
+            sx={{
+                width: '350px',
+                maxWidth: '45vw',
+                marginRight: '16px',
+                backgroundColor: '#f9f9f9',
+                borderRadius: '900px',
+                '& .MuiOutlinedInput-root': {
+                    borderRadius: '900px',
+                    borderColor: '#ddd',
+                },
+            }}
+            value={value}
+            onChange={handleChange}
+            InputProps={{
+                startAdornment: <SearchIcon sx={{ color: '#888', mr: 1, fontSize: 22 }} />, // Tăng kích thước icon
+                sx: {
+                    fontSize: '1.4rem',
+                    fontWeight: '400',
+                },
+            }}
+        />
+    );
+}
+
+export default Search;
