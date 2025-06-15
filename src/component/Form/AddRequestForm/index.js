@@ -1,4 +1,4 @@
-import { Box, TextField, Typography, Stack, FormControl, Button } from '@mui/material';
+import { Box, TextField, Typography, Stack, Button } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
 import { setRequestFormData } from '../../../redux/slice/requestFormDataSlice';
 import RequestFollowers from '../RequestFollowers';
@@ -6,24 +6,38 @@ import LeaveRequestForm from '../LeaveRequestForm';
 import { useEffect } from 'react';
 import RequestApprovers from '../RequestApprovers';
 import { createRequestService } from '../../../services/requestService';
-import { fetchRequests } from '../../../redux/slice/requestSlice';
+import { setRequestData } from '../../../redux/slice/requestSlice';
+import { setFieldError, clearErrors } from '../../../redux/slice/requestFormDataSlice';
+import { flattenObject } from '../../../hooks/flattenObject';
+import OverTimeRequestForm from '../OverTimeRequestForm';
+import TaskConfirm from '../TaskConfirmForm';
 
 function AddRequestForm({ onClose }) {
     const requestTypeId = useSelector((state) => state.requestId.requestTypeId);
     const requestFormData = useSelector((state) => state.requestFormData.value);
     const user = useSelector((state) => state.user.userInfo);
+    const requestData = useSelector((state) => state.request.requestData);
+    const errors = useSelector((state) => state.requestFormData.errors);
     const dispatch = useDispatch();
 
     // Handle change for input fields
     const handleChange = (e) => {
+        // Lưu giá trị mới (kể cả khi rỗng)
         dispatch(
             setRequestFormData({
                 ...requestFormData,
                 requestor_id: user.id,
                 requestType_id: requestTypeId,
-                [e.target.name]: e.target.value,
+                [e.target.name]: e.target.value, // Gán giá trị mới (có thể là chuỗi rỗng)
             }),
         );
+        dispatch(clearErrors()); // Xóa lỗi trước khi kiểm tra mới
+        // Kiểm tra validation sau khi đã cập nhật giá trị
+        if (!e.target.value.trim() && e.target.required) {
+            dispatch(setFieldError({ field: e.target.name, message: 'Trường này không được để trống' }));
+        } else {
+            dispatch(setFieldError({ field: e.target.name, message: '' }));
+        }
     };
 
     // Reset form data when opened
@@ -31,11 +45,13 @@ function AddRequestForm({ onClose }) {
         const requestName = () => {
             switch (requestTypeId) {
                 case 3:
-                    return `${user.name} Xin nghỉ`;
-                case 2:
-                    return 'Đề xuất mua sắm';
+                    return `${user.name} đề nghị xin nghỉ`;
+                case 7:
+                    return `${user.name} đề nghị làm thêm giờ`;
                 case 1:
-                    return 'Đề nghị thanh toán';
+                    return `đề nghị thanh toán tiền `;
+                case 8:
+                    return `${user.name}  xin xác nhận công việc`;
                 default:
                     return '';
             }
@@ -52,20 +68,58 @@ function AddRequestForm({ onClose }) {
         );
     }, [requestTypeId, user.id, user.name, dispatch]);
 
+    const validateForm = () => {
+        const requiredFields = ['requestName', 'requestor_id', 'requestType_id'];
+        if (requestTypeId === 3) {
+            requiredFields.push('reason', 'start_time', 'end_time', 'hours', 'hoursText');
+        }
+
+        if (requestTypeId === 7) {
+            requiredFields.push('start_time', 'end_time', 'hours', 'reason', 'hoursText');
+        }
+        if (requestTypeId === 8) {
+            requiredFields.push('start_time', 'end_time', 'hours', 'reason', 'hoursText');
+        }
+        const flattenedData = flattenObject(requestFormData);
+        let isValid = true;
+        let errors = {};
+        // Validate only basic required fields
+        requiredFields.forEach((field) => {
+            if (!flattenedData[field] || (typeof flattenedData[field] === 'string' && !flattenedData[field].trim())) {
+                errors[field] = 'Trường này không được bỏ trống';
+                isValid = false;
+            }
+        });
+
+        // Dispatch all errors at once
+        Object.keys(errors).forEach((field) => {
+            dispatch(setFieldError({ field, message: errors[field] }));
+        });
+        console.error('Validation errors:', errors);
+        return isValid;
+    };
+
+    // Update handleSubmit to use validateForm
     const handleSubmit = async (event) => {
         event.preventDefault();
+
+        if (!validateForm()) {
+            return;
+        }
+
         try {
             const response = await createRequestService(requestFormData);
-            console.log('Request created successfully:', response);
-            dispatch(fetchRequests(requestTypeId));
+            dispatch(setRequestData([response, ...requestData])); // Add new request to the top of the list
+            console.log('Request created successfully:', requestData);
             onClose();
         } catch (error) {
             console.error('Error creating request:', error);
         }
+        // Reset form data after submission
     };
 
     return (
-        <FormControl
+        <Box
             component="form"
             onSubmit={handleSubmit}
             noValidate
@@ -87,7 +141,7 @@ function AddRequestForm({ onClose }) {
             </Typography>
 
             <Stack direction="row" alignItems="center" spacing={2}>
-                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Tên đề xuất</Typography>
+                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Tên đề xuất (*)</Typography>
                 <TextField
                     fullWidth
                     name="requestName"
@@ -96,10 +150,29 @@ function AddRequestForm({ onClose }) {
                     size="medium"
                     required
                     inputProps={{ style: { fontSize: '1.4rem' } }}
+                    error={!!errors.requestName}
+                    helperText={errors.requestName || ''}
                 />
             </Stack>
 
             {requestTypeId === 3 ? <LeaveRequestForm /> : ''}
+            {requestTypeId === 7 ? <OverTimeRequestForm /> : ''}
+            {requestTypeId === 8 ? <TaskConfirm /> : ''}
+            <Stack direction="row" alignItems="flex-start" spacing={2}>
+                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Mô tả ( nếu có):</Typography>
+                <TextField
+                    fullWidth
+                    name="description"
+                    value={requestFormData.description}
+                    onChange={handleChange}
+                    size="medium"
+                    multiline
+                    rows={2}
+                    inputProps={{ style: { fontSize: '1.4rem' } }}
+                    error={!!errors.description}
+                    helperText={errors.description || ''}
+                />
+            </Stack>
 
             <RequestFollowers />
             <RequestApprovers />
@@ -146,7 +219,7 @@ function AddRequestForm({ onClose }) {
                     Thêm mới
                 </Button>
             </Stack>
-        </FormControl>
+        </Box>
     );
 }
 

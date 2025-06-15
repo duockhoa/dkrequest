@@ -1,8 +1,12 @@
-import { Box, Typography, Stack, Divider } from '@mui/material';
+import { Box, Typography, Stack, Divider, Chip } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { format } from 'date-fns';
-
+import Action from '../Action';
 import LoadingPage from '../LoadingPage';
+import LeaveDetail from '../DetailComponents/LeaveDetail';
+import OverTimeRequestDetail from '../DetailComponents/OverTimeDetail';
+import TaskConfirmDetail from '../DetailComponents/TaskConfirmDetail';
+
 const DetailItem = ({ label, value }) => (
     <Stack direction="row" spacing={2} sx={{ py: 1 }}>
         <Typography
@@ -53,27 +57,89 @@ function RequestDetail() {
     // Safe access to nested properties
     const requestorName = requestDetail?.requestor?.name || '-';
     const requestorDept = requestDetail?.requestor?.department || '-';
-    const leaveStart = requestDetail?.leaveRegistration?.start_time;
-    const leaveEnd = requestDetail?.leaveRegistration?.end_time;
-    const leaveHours = requestDetail?.leaveRegistration?.hours || 0;
-    const leaveReason = requestDetail?.leaveRegistration?.reason || '-';
-    const leaveDesc = requestDetail?.leaveRegistration?.description || '-';
+    const description = requestDetail?.description || '-';
+    const requestTypeId = requestDetail?.requestType_id || 0;
 
     return (
         <Box sx={{ bgcolor: 'background.paper', p: 3, borderRadius: 1 }}>
+            {/* Title Section */}
+            <Box sx={{ mb: 3 }}>
+                <Typography
+                    sx={{
+                        fontSize: '1.8rem',
+                        fontWeight: 'bold',
+                        color: 'primary.main',
+                        mb: 1,
+                    }}
+                >
+                    {requestDetail?.requestName || '-'}
+                </Typography>
+
+                <Stack direction="row" spacing={3} alignItems="center" sx={{ mb: 1 }}>
+                    <Typography
+                        sx={{
+                            fontSize: '1.4rem',
+                            color: 'text.secondary',
+                        }}
+                    >
+                        {`Người đề nghị: ${requestorName} (${requestorDept})`}
+                    </Typography>
+
+                    <Stack direction="row" spacing={1} alignItems="center">
+                        <Typography
+                            sx={{
+                                fontSize: '1.4rem',
+                                color: 'text.secondary',
+                            }}
+                        >
+                            Trạng thái:
+                        </Typography>
+                        <Chip
+                            label={
+                                requestDetail.status === 'approved'
+                                    ? 'Đã duyệt'
+                                    : requestDetail.status === 'rejected'
+                                    ? 'Từ chối'
+                                    : 'Đang chờ duyệt'
+                            }
+                            color={
+                                requestDetail.status === 'approved'
+                                    ? 'success'
+                                    : requestDetail.status === 'rejected'
+                                    ? 'error'
+                                    : 'warning'
+                            }
+                            size="small"
+                            sx={{
+                                fontSize: '1.2rem',
+                                '& .MuiChip-icon': { fontSize: '1.6rem' },
+                            }}
+                        />
+                    </Stack>
+                </Stack>
+            </Box>
+
+            {/* Divider */}
+            <Divider sx={{ my: 2 }} />
+
+            {/* Action Buttons */}
+            <Box sx={{ mb: 3 }}>
+                <Action />
+            </Box>
+
+            {/* Details Section */}
             <Typography variant="h6" sx={{ mb: 2, fontSize: '1.6rem', fontWeight: 'bold' }}>
                 THÔNG TIN CHI TIẾT
             </Typography>
-            <Divider sx={{ mb: 2 }} />
             <Stack divider={<Divider />}>
                 <DetailItem label="Tên đề nghị" value={requestDetail?.requestName || '-'} />
                 <DetailItem label="Ngày đề nghị" value={formatDate(requestDetail?.createAt)} />
                 <DetailItem label="Người đề nghị" value={`${requestorName} - ${requestorDept}`} />
-                <DetailItem label="Từ" value={formatDate(leaveStart)} />
-                <DetailItem label="Đến" value={formatDate(leaveEnd)} />
-                <DetailItem label="Số giờ nghỉ" value={`${leaveHours} giờ`} />
-                <DetailItem label="Lý do" value={leaveReason} />
-                <DetailItem label="Mô tả" value={leaveDesc} />
+                {requestTypeId == 3 ? <LeaveDetail /> : ''}
+                {requestTypeId == 7 ? <OverTimeRequestDetail /> : ''}
+                {requestTypeId == 8 ? <TaskConfirmDetail /> : ''}
+
+                <DetailItem label="Mô tả" value={description} />
             </Stack>
         </Box>
     );

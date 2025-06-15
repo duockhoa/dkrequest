@@ -30,7 +30,7 @@ function RequestFollowers() {
 
     return (
         <Stack direction="row" alignItems="center" spacing={2}>
-            <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Người theo dõi</Typography>
+            <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Người theo dõi (Nếu có):</Typography>
             <Autocomplete
                 multiple
                 fullWidth

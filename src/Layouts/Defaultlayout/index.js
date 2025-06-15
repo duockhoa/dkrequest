@@ -13,6 +13,7 @@ function DefaultLayout({ children }) {
     const path = window.location.pathname;
     const segments = path.split('/');
     const target = segments[1];
+    const isOpen = useSelector((state) => state.sidebar.isOpen);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -37,7 +38,7 @@ function DefaultLayout({ children }) {
             <Box sx={{ display: 'flex', flex: 1, height: '100%', overflow: 'hidden' }}>
                 <Box
                     sx={{
-                        width: '255px',
+                        width: isOpen ? '255px' : '100px',
                         backgroundColor: '#f0f0f0',
                         //height: '100%',
                     }}

@@ -18,6 +18,11 @@ const requestSlice = createSlice({
         loading: false,
         error: null,
     },
+    reducers: {
+        setRequestDetail: (state, action) => {
+            state.requestDetailvalue = action.payload;
+        },
+    },
     extraReducers: (builder) => {
         builder
             .addCase(fetchRequestDetail.pending, (state) => {
@@ -36,4 +41,5 @@ const requestSlice = createSlice({
 });
 
 export { fetchRequestDetail };
+export const { setRequestDetail } = requestSlice.actions;
 export default requestSlice.reducer;

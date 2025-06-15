@@ -1,23 +1,47 @@
 import { Stack, Typography, TextField, Select, MenuItem } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
 import { setRequestFormData } from '../../../redux/slice/requestFormDataSlice';
-import { differenceInHours, differenceInDays } from 'date-fns';
-import { useEffect } from 'react';
-
+import { clearErrors } from '../../../redux/slice/requestFormDataSlice';
+import { getLeaveHours } from '../../../services/leavehoursSevice';
+import { useEffect, useState, useMemo } from 'react'; // Add useMemo
+import { convertTimeTextToHours, generateHourOptions } from '../../../utils/timeCalculator';
 function LeaveRequestForm() {
     const dispatch = useDispatch();
     const requestFormData = useSelector((state) => state.requestFormData.value);
+    const errors = useSelector((state) => state.requestFormData.errors);
+    const userInfo = useSelector((state) => state.user.userInfo);
+    const [leaveDay, setLeaveDay] = useState({
+        hasAnnualLeaveDay: 0,
+        usedLeaveDay: 0,
+    });
 
     const handleChange = (event) => {
+        dispatch(clearErrors());
+        const { name, value } = event.target;
+        if (name === 'hoursText') {
+            const totalHours = convertTimeTextToHours(value);
+            dispatch(
+                setRequestFormData({
+                    ...requestFormData,
+                    leave_registration: {
+                        ...requestFormData.leave_registration,
+                        [name]: value, // Update the specific field in leave_registration
+                        hours: totalHours, // Update total hours based on selected time text
+                    },
+                }),
+            );
+            return;
+        }
         dispatch(
             setRequestFormData({
                 ...requestFormData,
                 leave_registration: {
                     ...requestFormData.leave_registration,
-                    [event.target.name]: event.target.value,
+                    [name]: value, // Update the specific field in leave_registration
                 },
             }),
         );
+        // Clear error if validation passes
     };
 
     const leaveReasons = [
@@ -34,139 +58,83 @@ function LeaveRequestForm() {
         'Nghỉ khám thai',
     ];
 
-    const hourOptions = [
-        '0.5 giờ',
-        '1.0 giờ',
-        '1.5 giờ',
-        '2.0 giờ',
-        '2.5 giờ',
-        '3.0 giờ',
-        '3.5 giờ',
-        '4.0 giờ',
-        '4.5 giờ',
-        '5.0 giờ',
-        '5.5 giờ',
-        '6.0 giờ',
-        '6.5 giờ',
-        '7.0 giờ',
-        '7.5 giờ',
-        '8.0 giờ',
-        '1.0 ngày',
-        '1.5 ngày',
-        '2.0 ngày',
-        '2.5 ngày',
-        '3.0 ngày',
-        '3.5 ngày',
-        '4.0 ngày',
-        '4.5 ngày',
-        '5.0 ngày',
-        '5.5 ngày',
-        '6.0 ngày',
-        '6.5 ngày',
-        '7.0 ngày',
-        'trên 7.0 ngày',
-    ];
+    // Generate hour options based on selected start and end times
+    const hourOptions = useMemo(() => {
+        const start = requestFormData?.leave_registration?.start_time;
+        const end = requestFormData?.leave_registration?.end_time;
 
-    const calculateDuration = (start, end) => {
-        if (!start || !end) return '';
+        if (!start || !end) return [];
 
-        const startDate = new Date(start);
-        const endDate = new Date(end);
+        return generateHourOptions(new Date(start), new Date(end));
+    }, [requestFormData?.leave_registration?.start_time, requestFormData?.leave_registration?.end_time]);
 
-        if (endDate <= startDate) return '';
-
-        const hoursDiff = differenceInHours(endDate, startDate);
-        const daysDiff = differenceInDays(endDate, startDate);
-
-        // Giới hạn các options dựa trên khoảng thời gian
-        if (daysDiff >= 7) return 'trên 7.0 ngày';
-        if (daysDiff > 0) return `${daysDiff}.0 ngày`;
-        if (hoursDiff > 8) return '1.0 ngày';
-        return `${hoursDiff}.0 giờ`;
-    };
-
-    const getAvailableOptions = (start, end) => {
-        if (!start || !end) return hourOptions;
-
-        const startDate = new Date(start);
-        const endDate = new Date(end);
-        const hoursDiff = differenceInHours(endDate, startDate);
-        const daysDiff = differenceInDays(endDate, startDate);
-
-        return hourOptions.filter((option) => {
-            const value = parseFloat(option.split(' ')[0]);
-            const unit = option.split(' ')[1];
-
-            if (unit === 'ngày') {
-                return value <= daysDiff + 1;
-            } else {
-                return value <= hoursDiff;
-            }
-        });
-    };
-
-    // Thêm useEffect để tự động cập nhật giờ nghỉ
     useEffect(() => {
-        const { start_time, end_time } = requestFormData.leave_registration;
-        if (start_time && end_time) {
-            const calculatedDuration = calculateDuration(start_time, end_time);
-            if (calculatedDuration) {
-                dispatch(
-                    setRequestFormData({
-                        ...requestFormData,
-                        leave_registration: {
-                            ...requestFormData.leave_registration,
-                            hours: calculatedDuration,
-                        },
-                    }),
-                );
+        const fetchLeaveHours = async () => {
+            try {
+                const fetchLeaveHours = await getLeaveHours(userInfo?.id);
+                const hasAnnualLeaveDay =
+                    ((fetchLeaveHours?.totalAnnualLeaveHours - fetchLeaveHours?.usedLeaveHours || 0) / 8).toFixed(1) ||
+                    0;
+                const usedLeaveDay = (fetchLeaveHours?.usedLeaveHours / 8).toFixed(1) || 0;
+                if (fetchLeaveHours) {
+                    setLeaveDay({
+                        hasAnnualLeaveDay,
+                        usedLeaveDay,
+                    });
+                }
+            } catch (error) {
+                console.error('Error fetching leave hoursText:', error);
             }
-        }
-    }, [requestFormData.leave_registration.start_time, requestFormData.leave_registration.end_time]);
+        };
+        fetchLeaveHours();
+    }, []);
 
     return (
         <>
             <Stack direction="row" alignItems="center" spacing={2}>
-                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Thời gian bắt đầu:</Typography>
+                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Thời gian bắt đầu: (*)</Typography>
                 <TextField
                     fullWidth
                     name="start_time"
-                    value={requestFormData.leave_registration.start_time}
+                    value={requestFormData?.leave_registration?.start_time || ''}
                     onChange={handleChange}
-                    required
                     size="medium"
                     type="datetime-local"
                     inputProps={{ style: { fontSize: '1.4rem' } }}
+                    error={!!errors?.start_time}
+                    helperText={errors?.start_time || ''}
                 />
             </Stack>
             <Stack direction="row" alignItems="center" spacing={2}>
-                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Thời gian kết thúc:</Typography>
+                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Thời gian kết thúc: (*)</Typography>
                 <TextField
                     fullWidth
                     name="end_time"
-                    value={requestFormData.leave_registration.end_time}
+                    value={requestFormData?.leave_registration?.end_time || ''}
                     onChange={handleChange}
-                    required
                     size="medium"
                     type="datetime-local"
                     inputProps={{ style: { fontSize: '1.4rem' } }}
+                    error={!!errors?.end_time}
+                    helperText={errors?.end_time || ''}
                 />
             </Stack>
             <Stack direction="row" alignItems="center" spacing={2}>
-                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Thời gian nghỉ:</Typography>
+                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Thời gian nghỉ: (*)</Typography>
                 <Select
                     fullWidth
-                    name="hours"
-                    value={requestFormData.leave_registration.hours || ''}
+                    name="hoursText"
+                    value={requestFormData?.leave_registration?.hoursText || ''}
                     onChange={handleChange}
-                    required
                     size="medium"
                     sx={{ fontSize: '1.4rem' }}
+                    error={!!errors?.hoursText}
+                    disabled={
+                        !requestFormData?.leave_registration?.start_time ||
+                        !requestFormData?.leave_registration?.end_time
+                    }
                 >
-                    {getAvailableOptions(
-                        requestFormData.leave_registration.start_time,
-                        requestFormData.leave_registration.end_time,
-                    ).map((option) => (
+                    {hourOptions.map((option) => (
                         <MenuItem key={option} value={option} sx={{ fontSize: '1.4rem' }}>
                             {option}
                         </MenuItem>
@@ -174,17 +142,15 @@ function LeaveRequestForm() {
                 </Select>
             </Stack>
             <Stack direction="row" alignItems="center" spacing={2}>
-                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Lý do xin nghỉ:</Typography>
+                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Lý do xin nghỉ:(*)</Typography>
                 <Select
                     fullWidth
                     name="reason"
-                    value={requestFormData.leave_registration.reason || ''}
+                    value={requestFormData?.leave_registration?.reason || ''}
                     onChange={handleChange}
-                    required
                     size="medium"
-                    sx={{
-                        fontSize: '1.4rem',
-                    }}
+                    sx={{ fontSize: '1.4rem' }}
+                    error={!!errors?.reason}
                 >
                     {leaveReasons.map((reason) => (
                         <MenuItem key={reason} value={reason} sx={{ fontSize: '1.4rem' }}>
@@ -193,22 +159,26 @@ function LeaveRequestForm() {
                     ))}
                 </Select>
             </Stack>
-            <Stack direction="row" alignItems="flex-start" spacing={2}>
-                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Mô tả ( nếu có):</Typography>
+            <Stack direction="row" alignItems="center" spacing={2}>
+                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Số ngày phép đã dùng</Typography>
                 <TextField
                     fullWidth
-                    name="description"
-                    value={requestFormData.leave_registration.description}
-                    onChange={handleChange}
-                    required
+                    name="usedLeaveHours"
+                    value={leaveDay?.usedLeaveDay || 0}
                     size="medium"
-                    multiline
-                    rows={2}
-                    inputProps={{
-                        style: {
-                            fontSize: '1.4rem',
-                        },
-                    }}
+                    disabled
+                    inputProps={{ style: { fontSize: '1.4rem' } }}
+                />
+            </Stack>
+            <Stack direction="row" alignItems="center" spacing={2}>
+                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Số ngày phép còn lại</Typography>
+                <TextField
+                    fullWidth
+                    name="hasLeaveHours"
+                    value={leaveDay?.hasAnnualLeaveDay || 0}
+                    disabled
+                    size="medium"
+                    inputProps={{ style: { fontSize: '1.4rem' } }}
                 />
             </Stack>
         </>

@@ -10,11 +10,72 @@ import ExpandMore from '@mui/icons-material/ExpandMore';
 import { Box } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
 import { setActiveCollapse } from '../../../redux/slice/sibarSlice';
-import { fetchRequests } from '../../../redux/slice/requestSlice';
 import { fetchDepartments } from '../../../redux/slice/departmentSlice';
 import HomeIcon from '@mui/icons-material/Home';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import PaymentIcon from '@mui/icons-material/Payment';
+import TimeToLeaveIcon from '@mui/icons-material/TimeToLeave';
+import WorkIcon from '@mui/icons-material/Work';
+import AssignmentIcon from '@mui/icons-material/Assignment';
+import LocalMallIcon from '@mui/icons-material/LocalMall';
+import SchoolIcon from '@mui/icons-material/School';
+import GroupAddIcon from '@mui/icons-material/GroupAdd';
+import AssessmentIcon from '@mui/icons-material/Assessment';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import Tooltip from '@mui/material/Tooltip';
+
+// Hàm ánh xạ tên đề nghị sang icon
+const getRequestIcon = (name, description) => {
+    let icon;
+    switch (name) {
+        case 'Đề nghị thanh toán':
+            icon = <PaymentIcon fontSize="large" />;
+            break;
+        case 'Đề nghị tạm ứng':
+            icon = <AddCircleOutlineIcon fontSize="large" />;
+            break;
+        case 'Đề nghị xin nghỉ':
+            icon = <TimeToLeaveIcon fontSize="large" />;
+            break;
+        case 'Đề nghị đăng ký làm thêm':
+            icon = <WorkIcon fontSize="large" />;
+            break;
+        case 'Đề nghị xác nhận công việc':
+            icon = <AssignmentIcon fontSize="large" />;
+            break;
+        case 'Đề nghị cung ứng VPP':
+            icon = <LocalMallIcon fontSize="large" />;
+            break;
+        case 'Đề nghị cung ứng BHLĐ':
+            icon = <LocalMallIcon fontSize="large" />;
+            break;
+        case 'Đề nghị đào tạo':
+            icon = <SchoolIcon fontSize="large" />;
+            break;
+        case 'Đề nghị tuyển dụng':
+            icon = <GroupAddIcon fontSize="large" />;
+            break;
+        case 'Đề nghị đánh giá NL':
+            icon = <AssessmentIcon fontSize="large" />;
+            break;
+        default:
+            icon = <AssignmentIcon fontSize="large" />;
+    }
+    return (
+        <Tooltip
+            title={description || name}
+            arrow
+            slotProps={{
+                tooltip: {
+                    sx: { fontSize: '1.2rem', padding: '10px 16px' },
+                },
+            }}
+        >
+            {icon}
+        </Tooltip>
+    );
+};
 
 export default function Sidebar() {
     const dispatch = useDispatch();
@@ -22,6 +83,7 @@ export default function Sidebar() {
     const activeSidebar = useSelector((state) => state.sidebar.activeSidebar);
     const activeCollapse = useSelector((state) => state.sidebar.activeCollapse);
     const departments = useSelector((state) => state.department.departments);
+    const isOpen = useSelector((state) => state.sidebar.isOpen);
     const switchActiveSidebar = (path) => {
         if (activeSidebar === path) return;
         navigator(path);
@@ -54,6 +116,7 @@ export default function Sidebar() {
                 width: '100%',
                 height: '100%',
                 backgroundColor: '#fff',
+                overflowY: 'auto',
             }}
         >
             <List>
@@ -73,7 +136,7 @@ export default function Sidebar() {
                     <ListItemIcon sx={{ minWidth: '40px' }}>
                         <HomeIcon sx={commonIconStyle} />
                     </ListItemIcon>
-                    <ListItemText primary="Tổng quan" primaryTypographyProps={{ sx: commonTextStyle }} />
+                    <ListItemText primary={!isOpen || 'Tổng quan'} primaryTypographyProps={{ sx: commonTextStyle }} />
                 </ListItemButton>
                 <Divider />
 
@@ -95,7 +158,7 @@ export default function Sidebar() {
                                 <InboxIcon sx={commonIconStyle} />
                             </ListItemIcon>
                             <ListItemText
-                                primary={dept.departmentName}
+                                primary={!isOpen || dept.departmentName}
                                 primaryTypographyProps={{ sx: commonTextStyle }}
                             />
                             {activeCollapse?.includes(dept.departmentName) ? (
@@ -124,10 +187,10 @@ export default function Sidebar() {
                                         }}
                                     >
                                         <ListItemIcon sx={{ minWidth: '40px' }}>
-                                            <StarBorder sx={commonIconStyle} />
+                                            {getRequestIcon(requestType.requestTypeName, requestType.description)}
                                         </ListItemIcon>
                                         <ListItemText
-                                            primary={requestType.requestTypeName}
+                                            primary={!isOpen || requestType.requestTypeName}
                                             primaryTypographyProps={{ sx: commonTextStyle }}
                                         />
                                     </ListItemButton>

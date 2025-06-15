@@ -41,7 +41,9 @@ function RequestApprovers() {
         <Stack direction="column" spacing={2}>
             {requestApprovers.map((approver) => (
                 <Stack key={approver.level} direction="row" alignItems="center" spacing={2}>
-                    <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Phê duyệt cấp {approver.level}:</Typography>
+                    <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>
+                        Phê duyệt cấp {approver.level}: (Cố định)
+                    </Typography>
                     <TextField
                         fullWidth
                         value={approver.manager?.name || ''}

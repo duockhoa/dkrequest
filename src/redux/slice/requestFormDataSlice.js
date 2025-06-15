@@ -1,14 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-const initialLeaveRegistration = {
-    start_time: '',
-    end_time: '',
-    hours: '',
-    reason: '',
-    description: '',
-    handover: '',
-};
-
 const initialState = {
     value: {
         requestName: '',
@@ -16,7 +7,13 @@ const initialState = {
         requestType_id: '',
         approvers: [],
         followers: [],
-        leave_registration: initialLeaveRegistration,
+    },
+    errors: {
+        requestName: '',
+        requestor_id: '',
+        requestType_id: '',
+        approvers: '',
+        followers: '',
     },
 };
 
@@ -28,15 +25,11 @@ const requestFormData = createSlice({
             state.value = {
                 ...state.value,
                 ...action.payload,
-                leave_registration: {
-                    ...initialLeaveRegistration,
-                    ...state.value.leave_registration,
-                    ...action.payload.leave_registration,
-                },
             };
         },
         clearRequestFormData: (state) => {
             state.value = initialState.value;
+            state.errors = initialState.errors;
         },
         updateLeaveRegistration: (state, action) => {
             state.value.leave_registration = {
@@ -44,8 +37,34 @@ const requestFormData = createSlice({
                 ...action.payload,
             };
         },
+        setFieldError: (state, action) => {
+            const { field, message } = action.payload;
+            if (field.includes('leave_registration.')) {
+                const leaveField = field.split('.')[1];
+                state.errors.leave_registration[leaveField] = message;
+            } else {
+                state.errors[field] = message;
+            }
+        },
+        clearErrors: (state) => {
+            state.errors = initialState.errors;
+        },
+        setFormErrors: (state, action) => {
+            state.errors = {
+                ...initialState.errors,
+                ...action.payload,
+            };
+        },
     },
 });
 
-export const { setRequestFormData, clearRequestFormData, updateLeaveRegistration } = requestFormData.actions;
+export const {
+    setRequestFormData,
+    clearRequestFormData,
+    updateLeaveRegistration,
+    setFieldError,
+    clearErrors,
+    setFormErrors,
+} = requestFormData.actions;
+
 export default requestFormData.reducer;

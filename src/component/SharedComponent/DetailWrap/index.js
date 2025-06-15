@@ -29,6 +29,7 @@ export default function DetailWrap() {
                     minWidth: { md: '300px' },
                     height: '100%',
                     bgcolor: '#ffffff',
+                    borderRadius: 4,
                 }}
             >
                 <Paper
@@ -53,6 +54,8 @@ export default function DetailWrap() {
                     minWidth: { md: '300px' },
                     height: '100%',
                     bgcolor: '#ffffff',
+                    maxWidth: '400px',
+                    borderRadius: 4,
                 }}
             >
                 <Paper
@@ -68,7 +71,9 @@ export default function DetailWrap() {
                 >
                     <Approver />
                     <Follower />
-                    <Progress />
+                    <Box>
+                        <Progress />
+                    </Box>
                 </Paper>
             </Box>
         </Stack>

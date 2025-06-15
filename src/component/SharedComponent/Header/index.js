@@ -6,9 +6,19 @@ import { logo } from '../../../assets/images';
 import { Link } from 'react-router-dom';
 import Search from '../Search';
 import { useSelector, useDispatch } from 'react-redux';
+import { setIsOpen, clearActiveCollapse } from '../../../redux/slice/sibarSlice';
+import MenuIcon from '@mui/icons-material/Menu';
+import IconButton from '@mui/material/IconButton';
+
 function Header() {
-    const isSidebarOpen = useSelector((state) => state.sidebar.isSidebarOpen);
+    const isSidebarOpen = useSelector((state) => state.sidebar.isOpen);
     const dispatch = useDispatch();
+
+    function handleMenuClick() {
+        dispatch(setIsOpen(!isSidebarOpen));
+        dispatch(clearActiveCollapse()); // Reset active collapse when menu is clicked
+    }
+
     return (
         <AppBar
             position="static"
@@ -18,6 +28,9 @@ function Header() {
             }}
         >
             <Toolbar variant="dense">
+                <IconButton onClick={handleMenuClick} size="small" style={{ padding: 6 }}>
+                    <MenuIcon style={{ fontSize: 22 }} />
+                </IconButton>
                 <Link to="/" style={{ height: '100%', display: 'flex', paddingLeft: 16 }}>
                     <img
                         src={logo}

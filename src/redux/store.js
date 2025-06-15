@@ -9,6 +9,7 @@ import usersReducer from './slice/usersSlice';
 import requestApproverReducer from './slice/requestApproverSlice';
 import requestDetailReducer from './slice/requestDetailSlice';
 import requestIdReducer from './slice/requestId';
+import commentReducer from './slice/commentSlice';
 export default configureStore({
     reducer: {
         user: userReducer,
@@ -21,5 +22,6 @@ export default configureStore({
         requestApprover: requestApproverReducer,
         requestDetail: requestDetailReducer,
         requestId: requestIdReducer,
+        comment: commentReducer,
     },
 });

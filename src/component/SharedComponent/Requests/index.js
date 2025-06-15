@@ -9,6 +9,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { fetchRequests } from '../../../redux/slice/requestSlice';
 import { useNavigate } from 'react-router-dom';
 import { useElementWidth } from '../../../hooks/useElementWidth';
+import { clearRequestFormData, clearErrors } from '../../../redux/slice/requestFormDataSlice';
 import LoadingPage from '../LoadingPage';
 
 const tabList = ['Tất cả', 'Đến lượt duyệt', 'Quá hạn', 'Đang chờ duyệt', 'Đã chấp nhận', 'Đã từ chối'];
@@ -22,6 +23,7 @@ export default function Requests() {
     const requests = useSelector((state) => state.request.requestData);
     const loading = useSelector((state) => state.request.loading); // Add this line
     const requestTypeId = useSelector((state) => state.requestId.requestTypeId);
+    const requestId = useSelector((state) => state.requestId.requestId);
     useEffect(() => {
         dispatch(fetchRequests(requestTypeId));
     }, [dispatch, requestTypeId]);
@@ -29,6 +31,11 @@ export default function Requests() {
     // Hàm để mở/đóng form
     const handleToggleForm = () => {
         setOpenForm(!openForm);
+        if (!openForm) {
+            // Reset form data when opening the form
+            dispatch(clearRequestFormData());
+            dispatch(clearErrors());
+        }
     };
 
     // Thêm hàm getStatusConfig để xử lý style và label theo requestStatus
@@ -168,10 +175,9 @@ export default function Requests() {
                                     borderBottom: '1px solid #eee',
                                     '&:hover': { bgcolor: '#f5faff' },
                                     cursor: 'pointer',
+                                    backgroundColor: requestId === request.id ? '#e3f2fd' : '#fff',
                                 }}
                             >
-                                <Checkbox icon={<CheckBoxOutlineBlankIcon />} sx={{ mr: 1 }} />
-
                                 {/* Tên đề xuất và ngày */}
                                 <Box sx={{ flex: 2, minWidth: 0 }}>
                                     <Typography
@@ -205,13 +211,13 @@ export default function Requests() {
 
                                 {/* Trạng thái - Luôn hiển thị */}
                                 <Chip
-                                    label={getStatusConfig(request.requestStatus).label}
+                                    label={getStatusConfig(request.status).label}
                                     size="small"
                                     sx={{
                                         minWidth: 90,
                                         fontSize: 12,
-                                        bgcolor: getStatusConfig(request.requestStatus).bgcolor,
-                                        color: getStatusConfig(request.requestStatus).color,
+                                        bgcolor: getStatusConfig(request.status).bgcolor,
+                                        color: getStatusConfig(request.status).color,
                                         fontWeight: 600,
                                         mx: 2,
                                     }}
@@ -230,8 +236,8 @@ export default function Requests() {
                                                 <Avatar
                                                     key={approver.id}
                                                     // Thêm kiểm tra null/undefined
-                                                    src={approver?.requestor?.avatar}
-                                                    alt={approver?.requestor?.name || ''}
+                                                    src={approver?.approver.avatar}
+                                                    alt={approver?.approver.name || ''}
                                                     sx={{
                                                         bgcolor:
                                                             approver.status === 'pending'
@@ -242,7 +248,7 @@ export default function Requests() {
                                                     }}
                                                 >
                                                     {/* Thêm kiểm tra trước khi truy cập */}
-                                                    {approver?.requestor?.name ? approver.requestor.name.charAt(0) : ''}
+                                                    {approver?.name ? approver.name.charAt(0) : ''}
                                                 </Avatar>
                                             ))}
                                         </AvatarGroup>

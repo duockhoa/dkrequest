@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { setRequestTypeId, setRequestId } from '../../redux/slice/requestId';
-import { useLayoutEffect, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { getAllRequestTypeService } from '../../services/requestTypeService';
 import DetailWrap from '../../component/SharedComponent/DetailWrap';
@@ -25,7 +25,8 @@ export default function Request() {
         fetchRequestTypes();
     }, []);
 
-    useLayoutEffect(() => {
+    // Update requestTypeId based on path
+    useEffect(() => {
         if (requestTypes.length > 0) {
             const currentPath = location.pathname;
             const matchedType = requestTypes.find((type) => currentPath.includes(type.path));
@@ -36,12 +37,12 @@ export default function Request() {
     }, [location.pathname, requestTypes, dispatch]);
 
     // Handle requestId changes from searchParams
-    useLayoutEffect(() => {
+    useEffect(() => {
         const requestId = searchParams.get('requestid');
         if (requestId) {
             dispatch(setRequestId(parseInt(requestId)));
         }
-    }, [searchParams, dispatch]);
+    }, [searchParams, location, dispatch]);
 
     const view = searchParams.get('view');
     return (
@@ -57,9 +58,11 @@ export default function Request() {
             <Box
                 sx={{
                     height: { xs: view === 'detail' ? '40%' : '100%', md: '100%' },
-                    width: { xs: '100%', md: view === 'detail' ? '30%' : '100%' },
+                    width: { xs: '100%', md: view === 'detail' ? '40%' : '100%' },
                     minWidth: { md: '300px' },
                     bgcolor: '#ffffff',
+                    borderRadius: 2,
+                    overflow: 'hidden',
                 }}
             >
                 <Requests />

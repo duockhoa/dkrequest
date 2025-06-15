@@ -5,7 +5,7 @@ const sidebarSlice = createSlice({
     initialState: {
         activeSidebar: '/',
         activeCollapse: ['Tổ chức', 'Kế Toán'],
-        isSidebarOpen: true,
+        isOpen: true,
     },
     reducers: {
         setActiveCollapse: (state, action) => {
@@ -16,11 +16,18 @@ const sidebarSlice = createSlice({
                 state.activeCollapse.push(item);
             }
         },
+        clearActiveCollapse: (state) => {
+            state.activeCollapse = [];
+        },
+        setIsOpen: (state, action) => {
+            state.isOpen = action.payload;
+        },
         setActiveSideBar: (state, action) => {
             state.activeSidebar = action.payload;
         },
     },
 });
 
-export const { setActiveCollapse, setActiveSideBar, setRequestTypeActive } = sidebarSlice.actions;
+export const { setActiveCollapse, setActiveSideBar, setRequestTypeActive, setIsOpen, clearActiveCollapse } =
+    sidebarSlice.actions;
 export default sidebarSlice.reducer;

@@ -3,6 +3,7 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CancelIcon from '@mui/icons-material/Cancel';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import { useSelector } from 'react-redux';
 import LoadingPage from '../LoadingPage';
@@ -74,6 +75,8 @@ function Approver() {
                         </Typography>
                         {approver.status === 'approved' ? (
                             <CheckCircleIcon sx={{ color: 'success.main' }} />
+                        ) : approver.status === 'rejected' ? (
+                            <CancelIcon sx={{ color: 'error.main', fontSize: 24 }} />
                         ) : (
                             <FiberManualRecordIcon
                                 sx={{
@@ -96,6 +99,20 @@ function Approver() {
                     </Stack>
                 ))}
             </Stack>
+
+            {/* Step Indicator Example */}
+            {/* <Box
+                sx={{
+                    width: 18,
+                    height: 18,
+                    borderRadius: '50%',
+                    bgcolor: status === 'rejected' ? 'error.main' : 'primary.main',
+                    display: 'inline-block',
+                    mr: 2,
+                    border: '2px solid white',
+                    boxShadow: 1,
+                }}
+            /> */}
         </Box>
     );
 }
