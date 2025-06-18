@@ -1,6 +1,5 @@
-import { Paper, Tabs, Tab, Box, Typography, Stack, Avatar, Chip, Checkbox, AvatarGroup, Dialog } from '@mui/material';
-import { useState, useEffect, useRef, use } from 'react';
-import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import { Paper, Tabs, Tab, Box, Typography, Stack, Avatar, Chip, AvatarGroup, Dialog, Divider } from '@mui/material';
+import { useState, useEffect, useRef } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import Button from '@mui/material/Button';
 import { format } from 'date-fns';
@@ -11,11 +10,14 @@ import { useNavigate } from 'react-router-dom';
 import { useElementWidth } from '../../../hooks/useElementWidth';
 import { clearRequestFormData, clearErrors } from '../../../redux/slice/requestFormDataSlice';
 import LoadingPage from '../LoadingPage';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 const tabList = ['Tất cả', 'Đến lượt duyệt', 'Quá hạn', 'Đang chờ duyệt', 'Đã chấp nhận', 'Đã từ chối'];
 const miniTabList = ['Tất cả', 'Đã chấp nhận', 'Đã từ chối'];
 
 export default function Requests() {
+    const isMobile = useMediaQuery((theme) => theme.breakpoints.down('sm'));
+
     const navigate = useNavigate();
     const [tab, setTab] = useState(0);
     const [openForm, setOpenForm] = useState(false); // thêm state này
@@ -124,21 +126,12 @@ export default function Requests() {
                     color="primary"
                     startIcon={<AddIcon />}
                     onClick={handleToggleForm}
-                    sx={{
-                        ml: 2,
-                        borderRadius: '8px',
-                        fontWeight: 600,
-                        textTransform: 'none',
-                        bgcolor: '#e3f2fd',
-                        color: '#1976d2',
-                        boxShadow: 'none',
-                        '&:hover': { bgcolor: '#bbdefb' },
-                        fontSize: 12,
-                    }}
+                    sx={{ fontSize: 12 }}
                 >
-                    Thêm đề xuất
+                    Thêm mới
                 </Button>
             </Box>
+            <Divider sx={{ borderColor: 'black', mb: 1 }} />
 
             <Dialog
                 open={openForm}
@@ -147,8 +140,18 @@ export default function Requests() {
                 sx={{
                     '& .MuiDialog-paper': {
                         borderRadius: 2,
-                        maxHeight: '90vh',
-                        maxWidth: '600px',
+
+                        maxWidth: '650px',
+                        width: '100%',
+                    },
+                }}
+                PaperProps={{
+                    sx: {
+                        width: isMobile ? '100%' : 'auto',
+                        height: isMobile ? '100%' : 'auto',
+                        margin: isMobile ? 0 : 'auto',
+                        maxHeight: isMobile ? '100%' : '90vh',
+                        maxWidth: isMobile ? '100%' : '600px',
                     },
                 }}
             >
@@ -187,13 +190,14 @@ export default function Requests() {
                                             whiteSpace: 'nowrap',
                                             overflow: 'hidden',
                                             textOverflow: 'ellipsis',
+                                            maxWidth: '300px',
                                         }}
                                     >
                                         {request.requestName}
                                     </Typography>
                                     <Typography
                                         sx={{
-                                            fontSize: 13,
+                                            fontSize: 12,
                                             color: '#1976d2',
                                         }}
                                     >

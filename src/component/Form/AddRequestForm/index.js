@@ -11,6 +11,7 @@ import { setFieldError, clearErrors } from '../../../redux/slice/requestFormData
 import { flattenObject } from '../../../hooks/flattenObject';
 import OverTimeRequestForm from '../OverTimeRequestForm';
 import TaskConfirm from '../TaskConfirmForm';
+import PaymentRequestForm from '../PaymentRequestForm';
 
 function AddRequestForm({ onClose }) {
     const requestTypeId = useSelector((state) => state.requestId.requestTypeId);
@@ -127,17 +128,17 @@ function AddRequestForm({ onClose }) {
             sx={{
                 display: 'flex',
                 flexDirection: 'column',
-                gap: 2.5,
+                gap: 1.5,
                 width: '100%',
                 margin: '0 auto',
                 backgroundColor: 'background.paper',
-                padding: 3,
+                padding: 2,
                 borderRadius: 2,
-                boxShadow: 2,
+                boxShadow: 1,
             }}
         >
-            <Typography variant="h4" textAlign={'center'} sx={{ fontSize: '2.5rem' }}>
-                Thêm đề xuất mới
+            <Typography variant="h4" textAlign={'center'} sx={{ fontSize: '2.5rem' }} color="primary.main">
+                THÊM ĐỀ XUẤT MỚI
             </Typography>
 
             <Stack direction="row" alignItems="center" spacing={2}>
@@ -149,6 +150,7 @@ function AddRequestForm({ onClose }) {
                     onChange={handleChange}
                     size="medium"
                     required
+                    multiline
                     inputProps={{ style: { fontSize: '1.4rem' } }}
                     error={!!errors.requestName}
                     helperText={errors.requestName || ''}
@@ -158,6 +160,7 @@ function AddRequestForm({ onClose }) {
             {requestTypeId === 3 ? <LeaveRequestForm /> : ''}
             {requestTypeId === 7 ? <OverTimeRequestForm /> : ''}
             {requestTypeId === 8 ? <TaskConfirm /> : ''}
+            {requestTypeId === 1 ? <PaymentRequestForm /> : ''}
             <Stack direction="row" alignItems="flex-start" spacing={2}>
                 <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Mô tả ( nếu có):</Typography>
                 <TextField

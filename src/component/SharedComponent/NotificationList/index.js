@@ -37,6 +37,30 @@ function NotificationList() {
                     avatar: 'https://example.com/avatar.jpg',
                 },
             },
+            {
+                id: 2,
+                type: 'comment',
+                message: 'đã bình luận về đề nghị của bạn',
+                requestId: 124,
+                createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000),
+                read: true,
+                actor: {
+                    name: 'Trần Thị B',
+                    avatar: 'https://example.com/avatar.jpg',
+                },
+            },
+            {
+                id: 2,
+                type: 'comment',
+                message: 'đã bình luận về đề nghị của bạn',
+                requestId: 124,
+                createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000),
+                read: true,
+                actor: {
+                    name: 'Trần Thị B',
+                    avatar: 'https://example.com/avatar.jpg',
+                },
+            },
         ];
         setNotifications(mockNotifications);
         setUnreadCount(mockNotifications.filter((n) => !n.read).length);
@@ -78,7 +102,7 @@ function NotificationList() {
             </Box>
 
             {/* Notifications List */}
-            <List sx={{ maxHeight: 400, overflow: 'auto', p: 0 }}>
+            <List sx={{ maxHeight: 600, overflow: 'auto', p: 0 }}>
                 {notifications.map((notification) => (
                     <ListItem
                         key={notification.id}

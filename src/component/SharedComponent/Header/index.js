@@ -16,7 +16,6 @@ function Header() {
 
     function handleMenuClick() {
         dispatch(setIsOpen(!isSidebarOpen));
-        dispatch(clearActiveCollapse()); // Reset active collapse when menu is clicked
     }
 
     return (
@@ -50,6 +49,7 @@ function Header() {
                     sx={{
                         paddingLeft: 4,
                         display: { xs: 'none', sm: 'none', md: 'block' },
+                        lineHeight: '56px',
                     }}
                 >
                     DK REQUEST

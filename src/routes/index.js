@@ -51,6 +51,14 @@ const publicRoutes = [
         component: Request,
     },
     {
+        path: '/market-approval-request',
+        component: Request,
+    },
+    {
+        path: '/goods-export-request',
+        component: Request,
+    },
+    {
         path: '*',
         component: Error,
         layout: ErrorLayout,

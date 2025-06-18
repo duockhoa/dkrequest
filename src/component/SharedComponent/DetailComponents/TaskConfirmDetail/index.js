@@ -1,6 +1,7 @@
 import { Stack, Typography } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { format } from 'date-fns';
+import { formatWorkingTime } from '../../../../utils/timeCalculator';
 
 const DetailItem = ({ label, value }) => (
     <Stack direction="row" spacing={2} sx={{ py: 1 }}>
@@ -34,7 +35,7 @@ export default function TaskConfirmDetail() {
         <>
             <DetailItem label="Thời gian bắt đầu" value={formatDate(leaveStart)} />
             <DetailItem label="Thời gian kết thúc" value={formatDate(leaveEnd)} />
-            <DetailItem label="Số giờ vắng mặt" value={`${leaveHours} giờ`} />
+            <DetailItem label="Số giờ vắng mặt" value={formatWorkingTime(leaveHours)} />
             <DetailItem label="Lý do vắng mặt" value={leaveReason} />
         </>
     );

@@ -10,7 +10,7 @@ function OvertimeRequestForm() {
     const requestFormData = useSelector((state) => state.requestFormData.value);
     const errors = useSelector((state) => state.requestFormData.errors);
     const user = useSelector((state) => state.user.userInfo);
-    const [totalOverTimeHours, setTotalOverTimeHours] = useState(0);
+    const [totalOverTimeHours, setTotalOverTimeHours] = useState({});
 
     const handleChange = (event) => {
         dispatch(clearErrors());
@@ -55,7 +55,7 @@ function OvertimeRequestForm() {
         const fetchOverTimeHours = async () => {
             try {
                 const response = await getOverTimeHours(user.id);
-                setTotalOverTimeHours(response?.totalOverTimeHours || 0);
+                setTotalOverTimeHours(response);
             } catch (error) {
                 console.error('Error fetching overtime hours:', error);
             }
@@ -132,11 +132,24 @@ function OvertimeRequestForm() {
                 />
             </Stack>
             <Stack direction="row" alignItems="center" spacing={2}>
-                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Số giờ đã làm thêm:</Typography>
+                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Đã làm thêm/tháng:</Typography>
+                <TextField
+                    fullWidth
+                    name="monthlyOverTime"
+                    value={(totalOverTimeHours?.monthlyOverTime || 0) + ' giờ'}
+                    disabled
+                    size="medium"
+                    multiline
+                    rows={1}
+                    inputProps={{ style: { fontSize: '1.4rem' } }}
+                />
+            </Stack>
+            <Stack direction="row" alignItems="center" spacing={2}>
+                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Đã làm thêm/năm:</Typography>
                 <TextField
                     fullWidth
                     name="totalOverTimeHours"
-                    value={(totalOverTimeHours || 0) + ' giờ'}
+                    value={(totalOverTimeHours?.totalOverTimeHours || 0) + ' giờ'}
                     disabled
                     size="medium"
                     multiline

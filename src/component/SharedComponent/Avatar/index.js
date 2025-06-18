@@ -42,7 +42,11 @@ function MyAvatar() {
                             style={{ cursor: 'pointer' }}
                             sx={{ display: { xs: 'none', sm: 'flex' } }}
                         >
-                            <Stack alignItems="flex-start" sx={{ paddingLeft: 2, paddingRight: 1 }}>
+                            <Stack
+                                alignItems="flex-start"
+                                sx={{ paddingLeft: 2, paddingRight: 1 }}
+                                display={{ xs: 'none', sm: 'none', md: 'flex' }}
+                            >
                                 <Typography color="text.primary" fontSize="1.5rem" fontWeight="500">
                                     {user.name || 'loading...'}
                                 </Typography>

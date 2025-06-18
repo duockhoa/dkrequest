@@ -5,6 +5,7 @@ import { clearErrors } from '../../../redux/slice/requestFormDataSlice';
 import { getLeaveHours } from '../../../services/leavehoursSevice';
 import { useEffect, useState, useMemo } from 'react'; // Add useMemo
 import { convertTimeTextToHours, generateHourOptions } from '../../../utils/timeCalculator';
+
 function LeaveRequestForm() {
     const dispatch = useDispatch();
     const requestFormData = useSelector((state) => state.requestFormData.value);
@@ -149,6 +150,7 @@ function LeaveRequestForm() {
                     value={requestFormData?.leave_registration?.reason || ''}
                     onChange={handleChange}
                     size="medium"
+                    multiline
                     sx={{ fontSize: '1.4rem' }}
                     error={!!errors?.reason}
                 >

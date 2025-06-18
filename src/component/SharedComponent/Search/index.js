@@ -19,7 +19,7 @@ function Search() {
             placeholder="Tìm kiếm..."
             sx={{
                 width: '350px',
-                maxWidth: '45vw',
+                maxWidth: '40vw',
                 marginRight: '16px',
                 backgroundColor: '#f9f9f9',
                 borderRadius: '900px',

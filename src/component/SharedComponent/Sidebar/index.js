@@ -24,6 +24,8 @@ import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import Tooltip from '@mui/material/Tooltip';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { setIsOpen } from '../../../redux/slice/sibarSlice';
 
 // Hàm ánh xạ tên đề nghị sang icon
 const getRequestIcon = (name, description) => {
@@ -71,6 +73,7 @@ const getRequestIcon = (name, description) => {
                     sx: { fontSize: '1.2rem', padding: '10px 16px' },
                 },
             }}
+            disableInteractive={true}
         >
             {icon}
         </Tooltip>
@@ -78,6 +81,7 @@ const getRequestIcon = (name, description) => {
 };
 
 export default function Sidebar() {
+    const isMobile = useMediaQuery('(max-width:600px)');
     const dispatch = useDispatch();
     const navigator = useNavigate();
     const activeSidebar = useSelector((state) => state.sidebar.activeSidebar);
@@ -85,8 +89,10 @@ export default function Sidebar() {
     const departments = useSelector((state) => state.department.departments);
     const isOpen = useSelector((state) => state.sidebar.isOpen);
     const switchActiveSidebar = (path) => {
-        if (activeSidebar === path) return;
         navigator(path);
+        if (isMobile) {
+            dispatch(setIsOpen(false));
+        }
     };
 
     useEffect(() => {

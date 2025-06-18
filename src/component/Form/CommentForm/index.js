@@ -6,6 +6,7 @@ import TextSnippetIcon from '@mui/icons-material/TextSnippet';
 import { useSelector, useDispatch } from 'react-redux';
 import { useState, useRef } from 'react';
 import { createComment } from '../../../redux/slice/commentSlice';
+import { fetchUsers } from '../../../redux/slice/usersSlice';
 
 function CommentForm() {
     const dispatch = useDispatch();
@@ -13,6 +14,8 @@ function CommentForm() {
     const user = useSelector((state) => state.user.userInfo);
     const [value, setValue] = useState('');
     const [attachments, setAttachments] = useState([]);
+    const [atMention, setAtMention] = useState(false);
+    const [cursorPosition, setCursorPosition] = useState(0);
     const fileInputRef = useRef(null);
 
     const handleFileSelect = (event) => {
@@ -39,6 +42,26 @@ function CommentForm() {
         await dispatch(createComment(formData));
         setValue('');
         setAttachments([]);
+    };
+
+    // sự kiện người dùng gõ @
+    const handleChange = (event) => {
+        const newValue = event.target.value;
+        const curPos = event.target.selectionStart;
+        setValue(newValue);
+        setCursorPosition(curPos);
+
+        // Check if @ was just typed
+        if (newValue[curPos - 1] === '@') {
+            setAtMention(true);
+            console.log('User typed @');
+            // Here you can show user list or handle @ mention logic
+        }
+
+        // Check if space was typed after @
+        if (atMention && newValue[curPos - 1] === ' ') {
+            setAtMention(false);
+        }
     };
 
     return (
@@ -116,7 +139,7 @@ function CommentForm() {
                     multiline
                     minRows={1}
                     value={value}
-                    onChange={(e) => setValue(e.target.value)}
+                    onChange={handleChange}
                     placeholder="Nhập nội dung..."
                     variant="standard"
                     InputProps={{
