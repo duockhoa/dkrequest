@@ -1,14 +1,11 @@
 import { Stack, Typography, TextField, Autocomplete, InputAdornment } from '@mui/material';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
 import { useSelector, useDispatch } from 'react-redux';
 import { setRequestFormData, clearErrors } from '../../../redux/slice/requestFormDataSlice';
-import FileUpload from '../FileUpload';
 import { numberToVietnameseWords, formatNumberWithCommas, parseFormattedNumber } from '../../../utils/numberToWords';
 import { removeAccentsAndUppercase, formatBankAccountNumber, parseBankAccountNumber } from '../../../utils/bankAccount';
 import { banklist } from '../../../services/bankService';
 
-function PaymentRequestForm() {
+function AdvanceMoneyRequestForm() {
     const dispatch = useDispatch();
     const requestFormData = useSelector((state) => state.requestFormData.value);
     const errors = useSelector((state) => state.requestFormData.errors);
@@ -32,8 +29,8 @@ function PaymentRequestForm() {
             dispatch(
                 setRequestFormData({
                     ...requestFormData,
-                    payment_request: {
-                        ...requestFormData.payment_request,
+                    advance_request: {
+                        ...requestFormData.advance_request,
                         amountText: formattedValue,
                         amount: numericValue,
                     },
@@ -51,8 +48,8 @@ function PaymentRequestForm() {
             dispatch(
                 setRequestFormData({
                     ...requestFormData,
-                    payment_request: {
-                        ...requestFormData.payment_request,
+                    advance_request: {
+                        ...requestFormData.advance_request,
                         bank_account_number: formattedValue,
                         bank_account_clean: cleanValue,
                     },
@@ -64,8 +61,8 @@ function PaymentRequestForm() {
         dispatch(
             setRequestFormData({
                 ...requestFormData,
-                payment_request: {
-                    ...requestFormData.payment_request,
+                advance_request: {
+                    ...requestFormData.advance_request,
                     [name]: processedValue,
                 },
             }),
@@ -74,7 +71,7 @@ function PaymentRequestForm() {
 
     // Get amount in words for helper text
     const amountInWords = () => {
-        const amount = requestFormData?.payment_request?.amount;
+        const amount = requestFormData?.advance_request?.amount;
         if (!amount || amount === 0) return '';
         return numberToVietnameseWords(amount);
     };
@@ -89,59 +86,39 @@ function PaymentRequestForm() {
     return (
         <Stack spacing={3}>
             <Stack direction="row" alignItems="center" spacing={2}>
-                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Loại thanh toán (*):</Typography>
-                <Select
-                    fullWidth
-                    name="payment_type"
-                    value={requestFormData?.payment_request?.payment_type || ''}
-                    onChange={handleChange}
-                    size="medium"
-                    sx={{ fontSize: '1.4rem' }}
-                    error={!!errors?.payment_type}
-                >
-                    <MenuItem value="invoice" sx={{ fontSize: 14 }}>
-                        Có hóa đơn
-                    </MenuItem>
-                    <MenuItem value="no_invoice" sx={{ fontSize: 14 }}>
-                        Không hóa đơn
-                    </MenuItem>
-                </Select>
-            </Stack>
-
-            <Stack direction="row" alignItems="center" spacing={2}>
-                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Nội dung thanh toán: (*)</Typography>
+                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Lý do tạm ứng: (*)</Typography>
                 <TextField
                     fullWidth
-                    name="payment_content"
-                    value={requestFormData?.payment_request?.payment_content || ''}
+                    name="reason"
+                    value={requestFormData?.advance_request?.reason || ''}
                     onChange={handleChange}
                     size="medium"
                     inputProps={{ style: { fontSize: '1.4rem' } }}
-                    error={!!errors?.payment_content}
-                    helperText={errors?.payment_content || ''}
+                    error={!!errors?.reason}
+                    helperText={errors?.reason || ''}
                 />
             </Stack>
 
             <Stack direction="row" alignItems="center" spacing={2}>
-                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Cho đối tượng (*)</Typography>
+                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Bộ phận/Địa chỉ (*)</Typography>
                 <TextField
                     fullWidth
-                    name="pay_to"
-                    value={requestFormData?.payment_request?.pay_to || ''}
+                    name="address"
+                    value={requestFormData?.advance_request?.address || ''}
                     onChange={handleChange}
                     size="medium"
                     inputProps={{ style: { fontSize: '1.4rem' } }}
-                    error={!!errors?.pay_to}
-                    helperText={errors?.pay_to || ''}
+                    error={!!errors?.address}
+                    helperText={errors?.address || ''}
                 />
             </Stack>
 
             <Stack direction="row" alignItems="center" spacing={2}>
-                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Số tiền (*)</Typography>
+                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Đề nghị tạm ứng số tiền (*)</Typography>
                 <TextField
                     fullWidth
                     name="amountText"
-                    value={requestFormData?.payment_request?.amountText || ''}
+                    value={requestFormData?.advance_request?.amountText || ''}
                     onChange={handleChange}
                     size="medium"
                     inputProps={{
@@ -164,7 +141,7 @@ function PaymentRequestForm() {
                 <TextField
                     fullWidth
                     name="due_date"
-                    value={requestFormData?.payment_request?.due_date || ''}
+                    value={requestFormData?.advance_request?.due_date || ''}
                     onChange={handleChange}
                     size="medium"
                     type="date"
@@ -191,16 +168,15 @@ function PaymentRequestForm() {
                             return name.includes(normalizedInput) || shortName.includes(normalizedInput);
                         });
                     }}
-                    // FIX: Sửa logic value - so sánh đúng field
-                    value={bankOptions.find((b) => b.label === requestFormData?.payment_request?.bank_name) || null}
+                    value={bankOptions.find((b) => b.label === requestFormData?.advance_request?.bank_name) || null}
                     onChange={(_, newValue) => {
-                        dispatch(clearErrors()); // FIX: Thêm clearErrors
+                        dispatch(clearErrors());
                         dispatch(
                             setRequestFormData({
                                 ...requestFormData,
-                                payment_request: {
-                                    ...requestFormData.payment_request,
-                                    bank_name: newValue ? newValue.label : '', // FIX: Sử dụng label thay vì template string
+                                advance_request: {
+                                    ...requestFormData.advance_request,
+                                    bank_name: newValue ? newValue.label : '',
                                 },
                             }),
                         );
@@ -231,12 +207,12 @@ function PaymentRequestForm() {
                 <TextField
                     fullWidth
                     name="bank_account_number"
-                    value={requestFormData?.payment_request?.bank_account_number || ''}
+                    value={requestFormData?.advance_request?.bank_account_number || ''}
                     onChange={handleChange}
                     size="medium"
                     inputProps={{
                         style: { fontSize: '1.4rem' },
-                        maxLength: 20, // FIX: Thêm giới hạn ký tự
+                        maxLength: 20,
                     }}
                     error={!!errors?.bank_account_number}
                     helperText={errors?.bank_account_number || ''}
@@ -248,26 +224,19 @@ function PaymentRequestForm() {
                 <TextField
                     fullWidth
                     name="beneficiary_name"
-                    value={requestFormData?.payment_request?.beneficiary_name || ''}
+                    value={requestFormData?.advance_request?.beneficiary_name || ''}
                     onChange={handleChange}
                     size="medium"
                     inputProps={{
                         style: { fontSize: '1.4rem' },
+                        maxLength: 100,
                     }}
                     error={!!errors?.beneficiary_name}
                     helperText={errors?.beneficiary_name || ''}
                 />
             </Stack>
-
-            {/* File Upload Components */}
-            {requestFormData?.payment_request?.payment_type === 'invoice' && (
-                <FileUpload fieldName="invoices" label="Hóa đơn" multiple={true} maxSize={100} />
-            )}
-            {requestFormData?.payment_request?.payment_type === 'no_invoice' && (
-                <FileUpload fieldName="receipts" label="Bảng kê vật tư" multiple={true} maxSize={100} />
-            )}
         </Stack>
     );
 }
 
-export default PaymentRequestForm;
+export default AdvanceMoneyRequestForm;

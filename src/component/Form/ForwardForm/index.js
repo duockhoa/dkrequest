@@ -22,7 +22,7 @@ function ForwardForm({ onCancel, onSubmit }) {
 
     const handleSubmit = () => {
         if (!selectedUser) return;
-        onSubmit(selectedUser.id);
+        onSubmit({ new_user_id: selectedUser.id });
     };
 
     return (

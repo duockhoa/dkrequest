@@ -1,94 +1,104 @@
-import { useState, useEffect } from 'react';
 import { Box, List, ListItem, ListItemAvatar, ListItemText, Avatar, Typography, Button } from '@mui/material';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import CheckIcon from '@mui/icons-material/Check';
+import CircleIcon from '@mui/icons-material/Circle';
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
+import { useSelector, useDispatch } from 'react-redux';
+import { markAllAsRead, markAsRead, fetchNotifications } from '../../../redux/slice/notificationSlice';
+import { useNavigate } from 'react-router-dom';
 
-function NotificationList() {
-    const [notifications, setNotifications] = useState([]);
-    const [unreadCount, setUnreadCount] = useState(0);
+function NotificationList({ onClose }) {
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
-    // Fetch notifications
-    useEffect(() => {
-        // TODO: Implement fetch notifications from API
-        const mockNotifications = [
-            {
-                id: 1,
-                type: 'request_approved',
-                message: 'Đề nghị của bạn đã được phê duyệt',
-                requestId: 123,
-                createdAt: new Date(),
-                read: false,
-                actor: {
-                    name: 'Nguyễn Văn A',
-                    avatar: null,
-                },
-            },
-            {
-                id: 2,
-                type: 'comment',
-                message: 'đã bình luận về đề nghị của bạn',
-                requestId: 124,
-                createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000),
-                read: true,
-                actor: {
-                    name: 'Trần Thị B',
-                    avatar: 'https://example.com/avatar.jpg',
-                },
-            },
-            {
-                id: 2,
-                type: 'comment',
-                message: 'đã bình luận về đề nghị của bạn',
-                requestId: 124,
-                createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000),
-                read: true,
-                actor: {
-                    name: 'Trần Thị B',
-                    avatar: 'https://example.com/avatar.jpg',
-                },
-            },
-            {
-                id: 2,
-                type: 'comment',
-                message: 'đã bình luận về đề nghị của bạn',
-                requestId: 124,
-                createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000),
-                read: true,
-                actor: {
-                    name: 'Trần Thị B',
-                    avatar: 'https://example.com/avatar.jpg',
-                },
-            },
-        ];
-        setNotifications(mockNotifications);
-        setUnreadCount(mockNotifications.filter((n) => !n.read).length);
-    }, []);
+    // Fetch notifications from Redux store
+    const { notifications, loading } = useSelector((state) => state.notification);
+    console.log('Notifications:', notifications);
+
+    // Get user ID at top level of component - not inside function
+    const userId = useSelector((state) => state.user.userInfo.id);
 
     const formatNotificationTime = (date) => {
-        return format(new Date(date), 'HH:mm - dd/MM/yyyy', { locale: vi });
+        try {
+            return format(new Date(date), 'HH:mm - dd/MM/yyyy', { locale: vi });
+        } catch (error) {
+            return 'Thời gian không hợp lệ';
+        }
     };
 
-    const getNotificationIcon = (type) => {
-        // TODO: Implement different icons for different notification types
-        return <NotificationsIcon />;
+    const getNotificationIcon = (notification) => {
+        const isRead = notification.is_read;
+        const senderAvatar = notification.sender?.avatar;
+        const senderName = notification.sender?.name || 'N/A';
+
+        return (
+            <Avatar
+                src={senderAvatar}
+                alt={senderName}
+                sx={{
+                    width: 40,
+                    height: 40,
+                    border: isRead ? '2px solid transparent' : '2px solid',
+                    borderColor: isRead ? 'transparent' : 'primary.main',
+                    opacity: isRead ? 0.7 : 1,
+                }}
+            >
+                {/* Fallback to NotificationsIcon if no avatar */}
+                {!senderAvatar && <NotificationsIcon sx={{ color: isRead ? 'grey.600' : 'primary.main' }} />}
+                {/* Fallback to first letter of name if avatar fails to load */}
+                {senderAvatar && !senderAvatar.includes('http') && senderName.charAt(0).toUpperCase()}
+            </Avatar>
+        );
     };
 
     const handleNotificationClick = (notification) => {
-        // TODO: Implement navigation and mark as read
-        console.log('Clicked notification:', notification);
+        // Mark as read if not already read
+        if (!notification.is_read) {
+            dispatch(markAsRead(notification.id));
+            dispatch(fetchNotifications(userId));
+        }
+
+        // Close the notification popup
+        if (onClose) {
+            onClose();
+        }
+
+        // Navigate to the notification endpoint
+        if (notification.endpoint) {
+            navigate(notification.endpoint);
+        } else {
+            console.warn('No endpoint defined for notification:', notification);
+        }
     };
 
     const handleMarkAllAsRead = () => {
-        // TODO: Implement mark all as read functionality
-        console.log('Mark all notifications as read');
+        // Use userId that was already selected at top level
+        dispatch(markAllAsRead(userId));
+        dispatch(fetchNotifications(userId));
     };
+
+    if (loading) {
+        return (
+            <Box sx={{ width: '100%', bgcolor: 'background.paper', p: 2 }}>
+                <Typography>Đang tải thông báo...</Typography>
+            </Box>
+        );
+    }
 
     return (
         <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>
             {/* Header */}
-            <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
+            <Box
+                sx={{
+                    p: 2,
+                    borderBottom: 1,
+                    borderColor: 'divider',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                }}
+            >
                 <Typography
                     variant="h6"
                     sx={{
@@ -103,50 +113,82 @@ function NotificationList() {
 
             {/* Notifications List */}
             <List sx={{ maxHeight: 600, overflow: 'auto', p: 0 }}>
-                {notifications.map((notification) => (
-                    <ListItem
-                        key={notification.id}
-                        alignItems="flex-start"
-                        sx={{
-                            bgcolor: notification.read ? 'inherit' : 'action.hover',
-                            '&:hover': { bgcolor: 'action.hover' },
-                            cursor: 'pointer',
-                            flexDirection: 'column', // Thêm dòng này để xếp dọc các phần tử con
-                            alignItems: 'flex-start', // Căn trái các phần tử con
-                            gap: 0.5,
-                        }}
-                        onClick={() => handleNotificationClick(notification)}
-                    >
-                        <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-                            <ListItemAvatar>
-                                <Avatar src={notification.actor.avatar}>{notification.actor.name.charAt(0)}</Avatar>
-                            </ListItemAvatar>
+                {notifications.length === 0 ? (
+                    <ListItem>
+                        <ListItemText
+                            primary={
+                                <Typography
+                                    sx={{
+                                        fontSize: '1.4rem',
+                                        color: 'text.secondary',
+                                        textAlign: 'center',
+                                        py: 4,
+                                    }}
+                                >
+                                    Không có thông báo nào
+                                </Typography>
+                            }
+                        />
+                    </ListItem>
+                ) : (
+                    notifications.map((notification) => (
+                        <ListItem
+                            key={notification.id}
+                            alignItems="flex-start"
+                            sx={{
+                                bgcolor: notification.is_read ? 'inherit' : 'action.hover',
+                                '&:hover': { bgcolor: 'action.selected' },
+                                cursor: 'pointer',
+                                borderLeft: notification.is_read ? 'none' : '4px solid',
+                                borderLeftColor: 'primary.main',
+                                position: 'relative',
+                            }}
+                            onClick={() => handleNotificationClick(notification)}
+                        >
+                            <ListItemAvatar>{getNotificationIcon(notification)}</ListItemAvatar>
+
                             <ListItemText
                                 primary={
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                        <Typography
+                                            component="span"
+                                            sx={{
+                                                fontSize: '1.4rem',
+                                                fontWeight: notification.is_read ? 400 : 600,
+                                                color: notification.is_read ? 'text.secondary' : 'text.primary',
+                                                flex: 1,
+                                            }}
+                                        >
+                                            {notification.message}
+                                        </Typography>
+                                        {!notification.is_read && (
+                                            <CircleIcon
+                                                sx={{
+                                                    fontSize: '8px',
+                                                    color: 'primary.main',
+                                                }}
+                                            />
+                                        )}
+                                    </Box>
+                                }
+                                secondary={
                                     <Typography
                                         component="span"
                                         sx={{
-                                            fontSize: '1.4rem',
-                                            fontWeight: notification.read ? 400 : 600,
+                                            fontSize: '1.2rem',
+                                            color: 'text.secondary',
+                                            mt: 0.5,
+                                            display: 'block',
                                         }}
                                     >
-                                        {notification.actor.name} {notification.message}
+                                        <strong>{notification.sender?.name || 'Hệ thống'}</strong> •{' '}
+                                        {formatNotificationTime(notification.created_at)}
                                     </Typography>
                                 }
                             />
-                        </Box>
-                        <Typography
-                            component="span"
-                            sx={{
-                                fontSize: '1.2rem',
-                                color: 'text.secondary',
-                                pl: 7, // căn lề cho khớp với nội dung bên trên
-                            }}
-                        >
-                            {formatNotificationTime(notification.createdAt)}
-                        </Typography>
-                    </ListItem>
-                ))}
+                        </ListItem>
+                    ))
+                )}
             </List>
 
             {/* Mark All as Read Button */}

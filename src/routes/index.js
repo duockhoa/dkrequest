@@ -4,6 +4,7 @@ import Profile from '../pages/Profile';
 import HeaderOnlyLayout from '../Layouts/HeaderOnlyLayout';
 import Error from '../pages/Error';
 import Request from '../pages/Request';
+import items from '../pages/Items';
 const publicRoutes = [
     {
         path: '/',
@@ -57,6 +58,10 @@ const publicRoutes = [
     {
         path: '/goods-export-request',
         component: Request,
+    },
+    {
+        path: '/items',
+        component: items,
     },
     {
         path: '*',

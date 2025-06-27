@@ -1,8 +1,13 @@
-import { Paper, Tabs, Tab, Box, Typography, Stack, Avatar, Chip, AvatarGroup, Dialog, Divider } from '@mui/material';
+import { Tabs, Tab, Box, Typography, Stack, Avatar, Chip, AvatarGroup, Dialog, Divider, Badge } from '@mui/material';
 import { useState, useEffect, useRef } from 'react';
 import AddIcon from '@mui/icons-material/Add';
+import AssessmentIcon from '@mui/icons-material/Assessment';
+import TaskAltIcon from '@mui/icons-material/TaskAlt';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CancelIcon from '@mui/icons-material/Cancel';
+import InventoryIcon from '@mui/icons-material/Inventory';
 import Button from '@mui/material/Button';
-import { format } from 'date-fns';
+import { format, isSameDay } from 'date-fns';
 import AddRequestForm from '../../Form/AddRequestForm';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchRequests } from '../../../redux/slice/requestSlice';
@@ -13,31 +18,38 @@ import LoadingPage from '../LoadingPage';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
 const tabList = ['Tất cả', 'Đến lượt duyệt', 'Quá hạn', 'Đang chờ duyệt', 'Đã chấp nhận', 'Đã từ chối'];
-const miniTabList = ['Tất cả', 'Đã chấp nhận', 'Đã từ chối'];
 
 export default function Requests() {
     const isMobile = useMediaQuery((theme) => theme.breakpoints.down('sm'));
 
     const navigate = useNavigate();
     const [tab, setTab] = useState(0);
-    const [openForm, setOpenForm] = useState(false); // thêm state này
+    const [openForm, setOpenForm] = useState(false);
     const dispatch = useDispatch();
     const requests = useSelector((state) => state.request.requestData);
-    const loading = useSelector((state) => state.request.loading); // Add this line
+    const loading = useSelector((state) => state.request.loading);
     const requestTypeId = useSelector((state) => state.requestId.requestTypeId);
     const requestId = useSelector((state) => state.requestId.requestId);
+    const user_id = useSelector((state) => state.user.userInfo.id);
+
     useEffect(() => {
-        dispatch(fetchRequests(requestTypeId));
+        if (requestTypeId) {
+            dispatch(fetchRequests({ requestTypeId, user_id }));
+        }
     }, [dispatch, requestTypeId]);
 
     // Hàm để mở/đóng form
     const handleToggleForm = () => {
         setOpenForm(!openForm);
         if (!openForm) {
-            // Reset form data when opening the form
             dispatch(clearRequestFormData());
             dispatch(clearErrors());
         }
+    };
+
+    // Hàm xuất báo cáo
+    const handleExportReport = () => {
+        alert('Tính năng xuất báo cáo đang được phát triển');
     };
 
     // Thêm hàm getStatusConfig để xử lý style và label theo requestStatus
@@ -45,25 +57,120 @@ export default function Requests() {
         switch (status) {
             case 'approved':
                 return {
-                    label: 'Chấp thuận',
-                    bgcolor: '#e8f5e9',
-                    color: '#2e7d32',
+                    label: 'Chấp nhận',
+                    bgcolor: '#4caf50', // success main color
+                    color: '#ffffff', // white text
                 };
             case 'rejected':
                 return {
                     label: 'Từ chối',
-                    bgcolor: '#ffebee',
-                    color: '#d32f2f',
+                    bgcolor: '#f44336', // error main color
+                    color: '#ffffff', // white text
                 };
             case 'pending':
             default:
                 return {
                     label: 'Chờ duyệt',
-                    bgcolor: '#fff3e0',
-                    color: '#ed6c02',
+                    bgcolor: '#ff9800', // warning main color
+                    color: '#ffffff', // white text
                 };
         }
     };
+
+    // Hàm tạo badge icon cho trạng thái approver
+    const getApproverBadgeIcon = (status) => {
+        switch (status) {
+            case 'approved':
+                return (
+                    <CheckCircleIcon
+                        sx={{
+                            fontSize: 14,
+                            color: '#4caf50',
+                            bgcolor: 'white',
+                            borderRadius: '50%',
+                        }}
+                    />
+                );
+            case 'rejected':
+                return (
+                    <CancelIcon
+                        sx={{
+                            fontSize: 14,
+                            color: '#f44336',
+                            bgcolor: 'white',
+                            borderRadius: '50%',
+                        }}
+                    />
+                );
+            default:
+                return null;
+        }
+    };
+    const handleGotoItems = () => {
+        navigate('/items');
+    };
+
+    // Hàm nhóm requests theo ngày
+    const groupRequestsByDate = (requests) => {
+        const groups = [];
+        let currentDate = null;
+        let currentGroup = [];
+
+        requests.forEach((request) => {
+            const requestDate = new Date(request.createAt);
+
+            if (!currentDate || !isSameDay(currentDate, requestDate)) {
+                // Nếu có group trước đó, push vào groups
+                if (currentGroup.length > 0) {
+                    groups.push({
+                        date: currentDate,
+                        requests: currentGroup,
+                    });
+                }
+                // Tạo group mới
+                currentDate = requestDate;
+                currentGroup = [request];
+            } else {
+                // Cùng ngày, thêm vào group hiện tại
+                currentGroup.push(request);
+            }
+        });
+
+        // Đừng quên group cuối cùng
+        if (currentGroup.length > 0) {
+            groups.push({
+                date: currentDate,
+                requests: currentGroup,
+            });
+        }
+
+        return groups;
+    };
+
+    // Component Date Separator
+    const DateSeparator = ({ date }) => (
+        <Box
+            sx={{
+                bgcolor: '#f5f5f5',
+                borderTop: '1px solid #e0e0e0',
+                borderBottom: '1px solid #e0e0e0',
+                py: 1,
+                px: 2,
+                top: 0,
+                zIndex: 1,
+            }}
+        >
+            <Typography
+                sx={{
+                    fontSize: 13,
+                    fontWeight: 600,
+                    color: 'primary.main',
+                }}
+            >
+                {format(date, 'dd/MM/yyyy')}
+            </Typography>
+        </Box>
+    );
 
     const containerRef = useRef(null);
     const containerWidth = useElementWidth(containerRef);
@@ -72,66 +179,104 @@ export default function Requests() {
     const showCreator = containerWidth > 700;
     const showApprovers = containerWidth > 900;
     const showId = containerWidth > 1100;
-    // Update thresholds
-    const showTabs = containerWidth > 600; // Thêm ngưỡng cho tabs
-
-    // Adjust the tab display logic
-    const renderTabs = () => {
-        if (!showTabs) {
-            return (
-                <Tabs
-                    value={tab}
-                    onChange={(e, newValue) => setTab(newValue)}
-                    variant="scrollable"
-                    scrollButtons="auto"
-                    allowScrollButtonsMobile
-                >
-                    {miniTabList.map((label, index) => (
-                        <Tab
-                            key={index}
-                            sx={{
-                                fontWeight: 600,
-                                fontSize: 11,
-                                minWidth: 'auto',
-                                px: 2,
-                            }}
-                            label={label}
-                        />
-                    ))}
-                </Tabs>
-            );
-        }
-
-        return (
-            <Tabs
-                value={tab}
-                onChange={(e, newValue) => setTab(newValue)}
-                variant="scrollable"
-                scrollButtons="auto"
-                allowScrollButtonsMobile
-            >
-                {tabList.map((label, index) => (
-                    <Tab key={index} sx={{ fontWeight: 600, fontSize: 11 }} label={label} />
-                ))}
-            </Tabs>
-        );
-    };
+    const showExportButton = containerWidth > 600; // Ngưỡng cho nút xuất báo cáo
 
     return (
-        <Stack ref={containerRef} sx={{ height: '100%', border: '1px solid #ccc', padding: '16px' }} spacing={2}>
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                {renderTabs()}
-                <Button
-                    variant="contained"
-                    color="primary"
-                    startIcon={<AddIcon />}
-                    onClick={handleToggleForm}
-                    sx={{ fontSize: 12 }}
+        <Stack
+            ref={containerRef}
+            sx={{
+                height: '100%',
+                border: '1px solid #ccc',
+                padding: 1,
+            }}
+            spacing={0}
+        >
+            <Box
+                sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    flexWrap: 'nowrap',
+                    gap: 1,
+                }}
+            >
+                <Box
+                    sx={{
+                        flex: 1,
+                        minWidth: 0,
+                        overflow: 'hidden',
+                    }}
                 >
-                    Thêm mới
-                </Button>
+                    <Tabs
+                        value={tab}
+                        onChange={(e, newValue) => setTab(newValue)}
+                        variant="scrollable"
+                        scrollButtons="auto"
+                        allowScrollButtonsMobile
+                    >
+                        {tabList.map((label, index) => (
+                            <Tab key={index} sx={{ fontWeight: 600, fontSize: 11 }} label={label} />
+                        ))}
+                    </Tabs>
+                </Box>
+
+                <Stack
+                    direction="row"
+                    spacing={1}
+                    sx={{
+                        flexShrink: 0,
+                        minWidth: 'fit-content',
+                    }}
+                >
+                    {showExportButton && requestTypeId === 4 && (
+                        <Button
+                            variant="outlined"
+                            color="primary"
+                            startIcon={<InventoryIcon />}
+                            onClick={handleGotoItems}
+                            sx={{
+                                fontSize: 12,
+                                textTransform: 'none',
+                                whiteSpace: 'nowrap',
+                                minWidth: 'auto',
+                            }}
+                        >
+                            Danh mục hàng hoá
+                        </Button>
+                    )}
+                    {showExportButton && (
+                        <Button
+                            variant="outlined"
+                            color="primary"
+                            startIcon={<AssessmentIcon />}
+                            onClick={handleExportReport}
+                            sx={{
+                                fontSize: 12,
+                                textTransform: 'none',
+                                whiteSpace: 'nowrap',
+                                minWidth: 'auto',
+                            }}
+                        >
+                            {isMobile ? 'Báo cáo' : 'Xuất báo cáo'}
+                        </Button>
+                    )}
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        startIcon={<AddIcon />}
+                        onClick={handleToggleForm}
+                        sx={{
+                            fontSize: 12,
+                            whiteSpace: 'nowrap',
+                            minWidth: 'auto',
+                        }}
+                    >
+                        {isMobile ? 'Thêm' : 'Thêm mới'}
+                    </Button>
+                </Stack>
             </Box>
-            <Divider sx={{ borderColor: 'black', mb: 1 }} />
+
+            <Divider sx={{ borderColor: 'black' }} />
 
             <Dialog
                 open={openForm}
@@ -140,7 +285,6 @@ export default function Requests() {
                 sx={{
                     '& .MuiDialog-paper': {
                         borderRadius: 2,
-
                         maxWidth: '650px',
                         width: '100%',
                     },
@@ -158,138 +302,208 @@ export default function Requests() {
                 <AddRequestForm onClose={handleToggleForm} />
             </Dialog>
 
-            {/* Replace the loading implementation with LoadingPage */}
             {loading ? (
                 <LoadingPage />
             ) : (
                 <Box overflow="auto">
-                    <Stack spacing={1}>
-                        {requests.map((request) => (
-                            <Paper
-                                elevation={2}
-                                key={request.id}
-                                onClick={() => {
-                                    navigate(`?view=detail&requestid=${request.id}`); // Thêm requestTypeId vào URL
-                                }}
-                                sx={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    p: 1.5,
-                                    borderBottom: '1px solid #eee',
-                                    '&:hover': { bgcolor: '#f5faff' },
-                                    cursor: 'pointer',
-                                    backgroundColor: requestId === request.id ? '#e3f2fd' : '#fff',
-                                }}
-                            >
-                                {/* Tên đề xuất và ngày */}
-                                <Box sx={{ flex: 2, minWidth: 0 }}>
-                                    <Typography
-                                        sx={{
-                                            fontWeight: 500,
-                                            fontSize: 14,
-                                            whiteSpace: 'nowrap',
-                                            overflow: 'hidden',
-                                            textOverflow: 'ellipsis',
-                                            maxWidth: '300px',
-                                        }}
-                                    >
-                                        {request.requestName}
-                                    </Typography>
-                                    <Typography
-                                        sx={{
-                                            fontSize: 12,
-                                            color: '#1976d2',
-                                        }}
-                                    >
-                                        {format(new Date(request.createAt), 'dd-MM-yyyy')}
-                                    </Typography>
-                                </Box>
+                    {/* Render requests grouped by date */}
+                    {groupRequestsByDate(requests).map((group, groupIndex) => (
+                        <Box key={group.date.toISOString()}>
+                            {/* Date Separator */}
+                            <DateSeparator date={group.date} />
 
-                                {/* Người tạo - Ẩn khi màn hình nhỏ */}
-                                {showCreator && (
-                                    <Stack direction="row" spacing={0.5} sx={{ minWidth: 150, alignItems: 'center' }}>
-                                        <Avatar src={request.requestor.avatar} sx={{ width: 24, height: 24 }} />
-                                        <Typography sx={{ fontSize: 13 }}>{request.requestor.name}</Typography>
-                                    </Stack>
-                                )}
-
-                                {/* Trạng thái - Luôn hiển thị */}
-                                <Chip
-                                    label={getStatusConfig(request.status).label}
-                                    size="small"
-                                    sx={{
-                                        minWidth: 90,
-                                        fontSize: 12,
-                                        bgcolor: getStatusConfig(request.status).bgcolor,
-                                        color: getStatusConfig(request.status).color,
-                                        fontWeight: 600,
-                                        mx: 2,
+                            {/* Requests in this date group */}
+                            {group.requests.map((request, index) => (
+                                <Box
+                                    key={request.id}
+                                    onClick={() => {
+                                        navigate(`?view=detail&requestid=${request.id}`);
                                     }}
-                                />
-
-                                {/* Người phê duyệt - Ẩn khi màn hình nhỏ */}
-                                {showApprovers && (
-                                    <Stack direction="row" spacing={0.5} sx={{ minWidth: 100, alignItems: 'center' }}>
-                                        <AvatarGroup
-                                            max={3}
-                                            sx={{
-                                                '& .MuiAvatar-root': { width: 24, height: 24, fontSize: 12 },
-                                            }}
-                                        >
-                                            {request.approvers.map((approver) => (
-                                                <Avatar
-                                                    key={approver.id}
-                                                    // Thêm kiểm tra null/undefined
-                                                    src={approver?.approver.avatar}
-                                                    alt={approver?.approver.name || ''}
-                                                    sx={{
-                                                        bgcolor:
-                                                            approver.status === 'pending'
-                                                                ? '#e0e0e0'
-                                                                : approver.status === 'approved'
-                                                                ? '#e8f5e9'
-                                                                : '#ffebee',
-                                                    }}
-                                                >
-                                                    {/* Thêm kiểm tra trước khi truy cập */}
-                                                    {approver?.name ? approver.name.charAt(0) : ''}
-                                                </Avatar>
-                                            ))}
-                                        </AvatarGroup>
-                                    </Stack>
-                                )}
-
-                                {/* ID - Ẩn khi màn hình nhỏ */}
-                                {showId && (
+                                    sx={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        pt: 1.5,
+                                        pb: 1.5,
+                                        pl: 2,
+                                        pr: 1,
+                                        borderBottom: '1px solid #e0e0e0',
+                                        '&:hover': {
+                                            bgcolor: '#f0f7ff',
+                                            transition: 'background-color 0.2s ease',
+                                        },
+                                        cursor: 'pointer',
+                                        backgroundColor: requestId === request.id ? '#e3f2fd' : '#fff',
+                                        minHeight: 64,
+                                    }}
+                                >
+                                    {/* Tên đề xuất */}
                                     <Box
                                         sx={{
-                                            ml: 2,
-                                            minWidth: 80,
+                                            flex: 2,
+                                            minWidth: 0,
                                             display: 'flex',
-                                            justifyContent: 'flex-end',
+                                            flexDirection: 'column',
+                                            justifyContent: 'center',
                                         }}
                                     >
-                                        <Typography
+                                        <Stack direction="row" alignItems="center" spacing={1}>
+                                            <Typography
+                                                sx={{
+                                                    fontWeight: 500,
+                                                    fontSize: 14,
+                                                    whiteSpace: 'nowrap',
+                                                    overflow: 'hidden',
+                                                    textOverflow: 'ellipsis',
+                                                    maxWidth: '250px',
+                                                    lineHeight: 1.2,
+                                                }}
+                                            >
+                                                {request.requestName}
+                                            </Typography>
+                                            {/* Completion Status Icon */}
+                                            {request.isCompleted && (
+                                                <TaskAltIcon
+                                                    sx={{
+                                                        fontSize: 16,
+                                                        color: 'info.main',
+                                                        flexShrink: 0,
+                                                    }}
+                                                    titleAccess="Đã hoàn thành"
+                                                />
+                                            )}
+                                        </Stack>
+                                    </Box>
+
+                                    {/* Người tạo - Ẩn khi màn hình nhỏ */}
+                                    {showCreator && (
+                                        <Box
                                             sx={{
-                                                fontSize: 12,
-                                                color: 'text.secondary',
-                                                bgcolor: '#f5f5f5',
-                                                px: 1,
-                                                py: 0.5,
-                                                borderRadius: 1,
+                                                minWidth: 150,
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
                                             }}
                                         >
-                                            #{request.id}
-                                        </Typography>
+                                            <Stack direction="row" spacing={0.5} alignItems="center">
+                                                <Avatar src={request.requestor.avatar} sx={{ width: 24, height: 24 }} />
+                                                <Typography sx={{ fontSize: 13, lineHeight: 1.2 }}>
+                                                    {request.requestor.name}
+                                                </Typography>
+                                            </Stack>
+                                        </Box>
+                                    )}
+
+                                    {/* Trạng thái - Luôn hiển thị */}
+                                    <Box
+                                        sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mx: 2 }}
+                                    >
+                                        <Chip
+                                            label={getStatusConfig(request.status).label}
+                                            size="small"
+                                            sx={{
+                                                minWidth: 90,
+                                                fontSize: 12,
+                                                bgcolor: getStatusConfig(request.status).bgcolor,
+                                                color: getStatusConfig(request.status).color,
+                                                fontWeight: 600,
+                                                height: 24,
+                                            }}
+                                        />
                                     </Box>
-                                )}
-                            </Paper>
-                        ))}
-                    </Stack>
+
+                                    {/* Người phê duyệt với badge trạng thái - Ẩn khi màn hình nhỏ */}
+                                    {showApprovers && (
+                                        <Box
+                                            sx={{
+                                                minWidth: 100,
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                            }}
+                                        >
+                                            <AvatarGroup
+                                                max={3}
+                                                sx={{
+                                                    '& .MuiAvatar-root': { width: 24, height: 24, fontSize: 12 },
+                                                }}
+                                            >
+                                                {request.approvers.map((approver) => (
+                                                    <Badge
+                                                        key={approver.id}
+                                                        overlap="circular"
+                                                        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                                                        badgeContent={getApproverBadgeIcon(approver.status)}
+                                                    >
+                                                        <Avatar
+                                                            src={approver?.approver.avatar}
+                                                            alt={approver?.approver.name || ''}
+                                                            sx={{
+                                                                bgcolor:
+                                                                    approver.status === 'pending'
+                                                                        ? '#e0e0e0'
+                                                                        : approver.status === 'approved'
+                                                                        ? '#e8f5e9'
+                                                                        : '#ffebee',
+                                                            }}
+                                                        >
+                                                            {approver?.approver?.name
+                                                                ? approver.approver.name.charAt(0)
+                                                                : ''}
+                                                        </Avatar>
+                                                    </Badge>
+                                                ))}
+                                            </AvatarGroup>
+                                        </Box>
+                                    )}
+
+                                    {/* ID and Completion Status - Ẩn khi màn hình nhỏ */}
+                                    {showId && (
+                                        <Box
+                                            sx={{
+                                                ml: 2,
+                                                minWidth: 140,
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'flex-end',
+                                            }}
+                                        >
+                                            <Stack direction="row" spacing={1} alignItems="center">
+                                                <Chip
+                                                    label={request.isCompleted ? 'Hoàn thành' : 'Chưa hoàn thành'}
+                                                    size="small"
+                                                    variant="outlined"
+                                                    sx={{
+                                                        fontSize: 10,
+                                                        color: request.isCompleted ? 'info.main' : 'grey.600',
+                                                        borderColor: request.isCompleted ? 'info.main' : 'grey.400',
+                                                        height: 24,
+                                                    }}
+                                                />
+                                                <Typography
+                                                    sx={{
+                                                        fontSize: 12,
+                                                        color: 'text.secondary',
+                                                        bgcolor: '#f5f5f5',
+                                                        px: 1,
+                                                        py: 0.5,
+                                                        borderRadius: 1,
+                                                        lineHeight: 1.2,
+                                                        minHeight: 24,
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                    }}
+                                                >
+                                                    #{request.id}
+                                                </Typography>
+                                            </Stack>
+                                        </Box>
+                                    )}
+                                </Box>
+                            ))}
+                        </Box>
+                    ))}
                 </Box>
             )}
-
-            {/* ...existing Dialog code... */}
         </Stack>
     );
 }

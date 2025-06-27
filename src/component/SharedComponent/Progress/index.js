@@ -2,8 +2,10 @@ import { Box, Typography, Stack, CircularProgress } from '@mui/material';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import PendingIcon from '@mui/icons-material/PendingOutlined';
+import TaskAltIcon from '@mui/icons-material/TaskAlt';
+import CancelIcon from '@mui/icons-material/Cancel';
 import { useSelector } from 'react-redux';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 
 function Progress() {
     const requestDetail = useSelector((state) => state.requestDetail.requestDetailvalue);
@@ -26,6 +28,10 @@ function Progress() {
                 return <AddCircleOutlineIcon sx={{ color: 'primary.main', fontSize: '2rem' }} />;
             case 'approved':
                 return <CheckCircleIcon sx={{ color: 'success.main', fontSize: '2rem' }} />;
+            case 'rejected':
+                return <CancelIcon sx={{ color: 'error.main', fontSize: '2rem' }} />;
+            case 'completed':
+                return <TaskAltIcon sx={{ color: 'info.main', fontSize: '2rem' }} />;
             case 'pending':
                 return <PendingIcon sx={{ color: 'warning.main', fontSize: '2rem' }} />;
             default:
@@ -48,24 +54,58 @@ function Progress() {
                 })`,
                 action: 'đã tạo yêu cầu vào lúc',
                 timestamp: formatDateTime(requestDetail.createAt),
+                sortDate: new Date(requestDetail.createAt),
             });
 
-            // Add approver activities
+            // Add approver activities - chỉ hiển thị khi có trạng thái approved/rejected
             requestDetail.approvers?.forEach((approver) => {
                 if (!approver) return;
 
-                activities.push({
-                    id: approver.id || `approver-${activities.length + 1}`,
-                    status: approver.status || 'pending',
-                    title: `${approver.approver?.name || 'Unknown'} (Bước ${approver.step || '?'})`,
-                    action:
-                        approver.status === 'pending'
-                            ? 'đang chờ phê duyệt từ'
-                            : `${approver.status === 'approved' ? 'đã chấp nhận' : 'đã từ chối'} yêu cầu vào lúc`,
-                    timestamp: approver.approved_at ? formatDateTime(approver.approved_at) : '',
-                    note: approver.note || '',
-                });
+                // Chỉ thêm activity nếu approver đã có action (approved hoặc rejected)
+                if (approver.status === 'approved' || approver.status === 'rejected') {
+                    activities.push({
+                        id: approver.id || `approver-${activities.length + 1}`,
+                        status: approver.status,
+                        title: `${approver.approver?.name || 'Unknown'} (Bước ${approver.step || '?'})`,
+                        action: `${approver.status === 'approved' ? 'đã chấp nhận' : 'đã từ chối'} yêu cầu vào lúc`,
+                        timestamp: formatDateTime(approver.approved_at),
+                        sortDate: new Date(approver.approved_at),
+                        note: approver.note || '',
+                    });
+                }
             });
+
+            // Add completer activity if request is completed
+            if (requestDetail.isCompleted) {
+                const completionDate = requestDetail.completed_at || requestDetail.updateAt;
+
+                if (requestDetail.completer) {
+                    // Case 1: Completer exists
+                    activities.push({
+                        id: 'completion',
+                        status: 'completed',
+                        title: `${requestDetail.completer.name || 'Unknown'} (${
+                            requestDetail.completer.department || 'Unknown'
+                        })`,
+                        action: 'đã đánh dấu hoàn thành yêu cầu vào lúc',
+                        timestamp: formatDateTime(completionDate),
+                        sortDate: new Date(completionDate),
+                    });
+                } else {
+                    // Case 2: Completer is null but request is completed
+                    activities.push({
+                        id: 'completion',
+                        status: 'completed',
+                        title: 'Hệ thống',
+                        action: 'đã tự động đánh dấu hoàn thành yêu cầu vào lúc',
+                        timestamp: formatDateTime(completionDate),
+                        sortDate: new Date(completionDate),
+                    });
+                }
+            }
+
+            // Sắp xếp activities theo thời gian (từ cũ đến mới)
+            activities.sort((a, b) => a.sortDate - b.sortDate);
         } catch (error) {
             console.error('Error building activities:', error);
         }
@@ -129,7 +169,7 @@ function Progress() {
                             >
                                 {activity.title}
                             </Typography>
-                            <Stack direction="row" spacing={1} flexWrap="wrap">
+                            <Stack direction="row" spacing={1} flexWrap="wrap" alignItems="center">
                                 <Typography sx={{ fontSize: '1.3rem' }}>{activity.action}</Typography>
                                 {activity.timestamp && (
                                     <Typography

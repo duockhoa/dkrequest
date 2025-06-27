@@ -12,6 +12,10 @@ import { flattenObject } from '../../../hooks/flattenObject';
 import OverTimeRequestForm from '../OverTimeRequestForm';
 import TaskConfirm from '../TaskConfirmForm';
 import PaymentRequestForm from '../PaymentRequestForm';
+import objectToFormData from '../../../utils/makeFromDataFromObject';
+import { fetchCreateRequest } from '../../../redux/slice/requestFormDataSlice';
+import { fetchNotifications } from '../../../redux/slice/notificationSlice';
+import AdvanceMoneyRequestForm from '../AdvanceMoneyRequestForm';
 
 function AddRequestForm({ onClose }) {
     const requestTypeId = useSelector((state) => state.requestId.requestTypeId);
@@ -45,14 +49,24 @@ function AddRequestForm({ onClose }) {
     useEffect(() => {
         const requestName = () => {
             switch (requestTypeId) {
+                case 1:
+                    return `${user.name} đề nghị thanh toán tiền `;
+                case 2:
+                    return `${user.name} đề nghị ứng tiền `;
                 case 3:
                     return `${user.name} đề nghị xin nghỉ`;
+                case 4:
+                    return `${user.department} đề nghị cung ứng văn phòng phẩm tháng ${
+                        new Date().getMonth() + 1
+                    } năm ${new Date().getFullYear()}`;
+
                 case 7:
                     return `${user.name} đề nghị làm thêm giờ`;
-                case 1:
-                    return `đề nghị thanh toán tiền `;
+
                 case 8:
                     return `${user.name}  xin xác nhận công việc`;
+                case 9:
+                    return `${user.name} Đề nghị tuyển dụng nhân sự cho phòng ${user.department}`;
                 default:
                     return '';
             }
@@ -71,6 +85,14 @@ function AddRequestForm({ onClose }) {
 
     const validateForm = () => {
         const requiredFields = ['requestName', 'requestor_id', 'requestType_id'];
+
+        if (requestTypeId === 1) {
+            requiredFields.push('payment_type', 'payment_content', 'pay_to', 'amount', 'due_date');
+        }
+        if (requestTypeId === 2) {
+            requiredFields.push('reason', 'address', 'amount', 'due_date');
+        }
+
         if (requestTypeId === 3) {
             requiredFields.push('reason', 'start_time', 'end_time', 'hours', 'hoursText');
         }
@@ -81,6 +103,7 @@ function AddRequestForm({ onClose }) {
         if (requestTypeId === 8) {
             requiredFields.push('start_time', 'end_time', 'hours', 'reason', 'hoursText');
         }
+
         const flattenedData = flattenObject(requestFormData);
         let isValid = true;
         let errors = {};
@@ -108,10 +131,14 @@ function AddRequestForm({ onClose }) {
             return;
         }
 
+        // Convert requestFormData to FormData
+        const formData = objectToFormData(requestFormData);
+
         try {
-            const response = await createRequestService(requestFormData);
-            dispatch(setRequestData([response, ...requestData])); // Add new request to the top of the list
-            console.log('Request created successfully:', requestData);
+            const reponse = await dispatch(fetchCreateRequest(formData));
+            dispatch(setRequestData([reponse.payload, ...requestData])); // Update request data in the store
+            dispatch(setRequestFormData({})); // Clear form data in the store
+            dispatch(fetchNotifications(user.id)); // Fetch notifications after creating request
             onClose();
         } catch (error) {
             console.error('Error creating request:', error);
@@ -161,6 +188,7 @@ function AddRequestForm({ onClose }) {
             {requestTypeId === 7 ? <OverTimeRequestForm /> : ''}
             {requestTypeId === 8 ? <TaskConfirm /> : ''}
             {requestTypeId === 1 ? <PaymentRequestForm /> : ''}
+            {requestTypeId === 2 ? <AdvanceMoneyRequestForm /> : ''}
             <Stack direction="row" alignItems="flex-start" spacing={2}>
                 <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Mô tả ( nếu có):</Typography>
                 <TextField

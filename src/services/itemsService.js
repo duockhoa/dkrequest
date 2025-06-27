@@ -1,11 +1,13 @@
 import axios from './customize-axios';
-async function getAllRequestService(requestTypeId, user_id) {
+
+async function getItems() {
     try {
-        const response = await axios.get('/request/getall?requesttypeid=' + requestTypeId + '&userid=' + user_id);
+        const response = await axios.get('/items/getall');
         if (response.status === 200) {
+            console.log('Danh sách mặt hàng:', response.data.result);
             return response.data.result;
         } else {
-            throw new Error('Không thể lấy danh sách yêu cầu');
+            throw new Error('Không thể lấy danh sách mặt hàng');
         }
     } catch (error) {
         if (error.response) {
@@ -13,41 +15,18 @@ async function getAllRequestService(requestTypeId, user_id) {
         } else if (error.request) {
             throw new Error('Không thể kết nối đến server');
         } else {
-            throw new Error(error.message || 'Đã xảy ra lỗi khi lấy danh sách yêu cầu');
+            throw new Error(error.message || 'Đã xảy ra lỗi khi lấy danh sách mặt hàng');
         }
     }
 }
 
-async function getRequestByIdService(id) {
+async function createNewItem(item) {
     try {
-        const response = await axios.get(`/request/getbyid/${id}`);
-        if (response.status === 200) {
-            return response.data.result;
-        } else {
-            throw new Error('Không thể lấy yêu cầu theo ID');
-        }
-    } catch (error) {
-        if (error.response) {
-            throw new Error(error.response.data.message || 'Lỗi từ server');
-        } else if (error.request) {
-            throw new Error('Không thể kết nối đến server');
-        } else {
-            throw new Error(error.message || 'Đã xảy ra lỗi khi lấy yêu cầu theo ID');
-        }
-    }
-}
-
-async function createRequestService(payload) {
-    try {
-        const response = await axios.post('/request/create', payload, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
-        });
+        const response = await axios.post('/items/create', item);
         if (response.status === 201) {
             return response.data.result;
         } else {
-            throw new Error('Không thể tạo yêu cầu');
+            throw new Error('Không thể thêm mặt hàng mới');
         }
     } catch (error) {
         if (error.response) {
@@ -55,18 +34,18 @@ async function createRequestService(payload) {
         } else if (error.request) {
             throw new Error('Không thể kết nối đến server');
         } else {
-            throw new Error(error.message || 'Đã xảy ra lỗi khi tạo yêu cầu');
+            throw new Error(error.message || 'Đã xảy ra lỗi khi thêm mặt hàng mới');
         }
     }
 }
 
-async function markCompleted(payload) {
+async function updateItem(item) {
     try {
-        const response = await axios.put(`/request/markcompleted/`, payload);
+        const response = await axios.put(`/items/update/${item.product_code}`, item);
         if (response.status === 200) {
             return response.data.result;
         } else {
-            throw new Error('Không thể đánh dấu yêu cầu là đã hoàn thành');
+            throw new Error('Không thể cập nhật mặt hàng');
         }
     } catch (error) {
         if (error.response) {
@@ -74,9 +53,28 @@ async function markCompleted(payload) {
         } else if (error.request) {
             throw new Error('Không thể kết nối đến server');
         } else {
-            throw new Error(error.message || 'Đã xảy ra lỗi khi đánh dấu yêu cầu là đã hoàn thành');
+            throw new Error(error.message || 'Đã xảy ra lỗi khi cập nhật mặt hàng');
         }
     }
 }
 
-export { getAllRequestService, getRequestByIdService, createRequestService, markCompleted };
+async function deleteItem(itemId) {
+    try {
+        const response = await axios.delete(`/items/delete/${itemId}`);
+        if (response.status === 200) {
+            return response.data.result;
+        } else {
+            throw new Error('Không thể xóa mặt hàng');
+        }
+    } catch (error) {
+        if (error.response) {
+            throw new Error(error.response.data.message || 'Lỗi từ server');
+        } else if (error.request) {
+            throw new Error('Không thể kết nối đến server');
+        } else {
+            throw new Error(error.message || 'Đã xảy ra lỗi khi xóa mặt hàng');
+        }
+    }
+}
+
+export { getItems, createNewItem, updateItem, deleteItem };

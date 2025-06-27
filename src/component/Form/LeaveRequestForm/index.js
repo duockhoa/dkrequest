@@ -1,9 +1,9 @@
+import { useState, useEffect, useMemo } from 'react';
 import { Stack, Typography, TextField, Select, MenuItem } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
-import { setRequestFormData } from '../../../redux/slice/requestFormDataSlice';
-import { clearErrors } from '../../../redux/slice/requestFormDataSlice';
+import dayjs from 'dayjs';
+import { setRequestFormData, clearErrors, setFormErrors } from '../../../redux/slice/requestFormDataSlice';
 import { getLeaveHours } from '../../../services/leavehoursSevice';
-import { useEffect, useState, useMemo } from 'react'; // Add useMemo
 import { convertTimeTextToHours, generateHourOptions } from '../../../utils/timeCalculator';
 
 function LeaveRequestForm() {
@@ -43,6 +43,35 @@ function LeaveRequestForm() {
             }),
         );
         // Clear error if validation passes
+    };
+
+    const handleTimeChange = (event) => {
+        const { name, value } = event.target;
+        dispatch(clearErrors());
+
+        const today = dayjs().startOf('day');
+        const selectedDate = dayjs(value);
+
+        // Validate both start and end time against today
+        if (!selectedDate.isValid() || selectedDate.isBefore(today)) {
+            dispatch(
+                setFormErrors({
+                    ...errors,
+                    [name]: 'Thời gian không thể nhỏ hơn thời gian hiện tại',
+                }),
+            );
+            return;
+        }
+
+        dispatch(
+            setRequestFormData({
+                ...requestFormData,
+                leave_registration: {
+                    ...requestFormData.leave_registration,
+                    [name]: value,
+                },
+            }),
+        );
     };
 
     const leaveReasons = [
@@ -91,31 +120,39 @@ function LeaveRequestForm() {
     }, []);
 
     return (
-        <>
+        <Stack spacing={2}>
             <Stack direction="row" alignItems="center" spacing={2}>
                 <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Thời gian bắt đầu: (*)</Typography>
                 <TextField
                     fullWidth
                     name="start_time"
-                    value={requestFormData?.leave_registration?.start_time || ''}
-                    onChange={handleChange}
-                    size="medium"
                     type="datetime-local"
-                    inputProps={{ style: { fontSize: '1.4rem' } }}
+                    value={requestFormData?.leave_registration?.start_time || ''}
+                    onChange={handleTimeChange}
+                    size="medium"
+                    inputProps={{
+                        style: { fontSize: '1.4rem' },
+                        min: dayjs().format('YYYY-MM-DDTHH:mm'),
+                        step: 300,
+                    }}
                     error={!!errors?.start_time}
                     helperText={errors?.start_time || ''}
                 />
             </Stack>
+
             <Stack direction="row" alignItems="center" spacing={2}>
                 <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Thời gian kết thúc: (*)</Typography>
                 <TextField
                     fullWidth
                     name="end_time"
-                    value={requestFormData?.leave_registration?.end_time || ''}
-                    onChange={handleChange}
-                    size="medium"
                     type="datetime-local"
-                    inputProps={{ style: { fontSize: '1.4rem' } }}
+                    value={requestFormData?.leave_registration?.end_time || ''}
+                    onChange={handleTimeChange}
+                    size="medium"
+                    inputProps={{
+                        style: { fontSize: '1.4rem' },
+                        step: 300,
+                    }}
                     error={!!errors?.end_time}
                     helperText={errors?.end_time || ''}
                 />
@@ -183,7 +220,7 @@ function LeaveRequestForm() {
                     inputProps={{ style: { fontSize: '1.4rem' } }}
                 />
             </Stack>
-        </>
+        </Stack>
     );
 }
 

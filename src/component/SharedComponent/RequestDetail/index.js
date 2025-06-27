@@ -1,11 +1,16 @@
-import { Box, Typography, Stack, Divider, Chip } from '@mui/material';
+import { Box, Typography, Stack, Divider, Chip, IconButton } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { format } from 'date-fns';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Action from '../Action';
 import LoadingPage from '../LoadingPage';
 import LeaveDetail from '../DetailComponents/LeaveDetail';
 import OverTimeRequestDetail from '../DetailComponents/OverTimeDetail';
 import TaskConfirmDetail from '../DetailComponents/TaskConfirmDetail';
+import PaymentDetail from '../DetailComponents/PaymentDetail';
+import AdvanceMoneyDetail from '../DetailComponents/AdvanceMoneyDetail';
+import AttachmentsDetail from '../DetailComponents/AttachmentsDetail';
+import OtherAction from '../OtherAction';
 
 const DetailItem = ({ label, value }) => (
     <Stack direction="row" spacing={2} sx={{ py: 1 }}>
@@ -26,6 +31,8 @@ function RequestDetail() {
     const requestDetail = useSelector((state) => state.requestDetail.requestDetailvalue);
     const loading = useSelector((state) => state.requestDetail.loading);
     const error = useSelector((state) => state.requestDetail.error);
+    const user = useSelector((state) => state.user.userInfo);
+    const approverid = requestDetail?.approvers?.map((item) => item.user_id) || [];
 
     // Loading state
     if (loading) {
@@ -60,20 +67,39 @@ function RequestDetail() {
     const description = requestDetail?.description || '-';
     const requestTypeId = requestDetail?.requestType_id || 0;
 
+    // Handler cho nút arrow
+    const handleArrowClick = () => {
+        console.log('Arrow button clicked!');
+        console.log('Request Detail:', requestDetail);
+    };
+
     return (
         <Box sx={{ bgcolor: 'background.paper', p: 3, borderRadius: 1 }}>
-            {/* Title Section */}
+            {/* Title Section with Arrow Button */}
             <Box sx={{ mb: 3 }}>
-                <Typography
-                    sx={{
-                        fontSize: '1.8rem',
-                        fontWeight: 'bold',
-                        color: 'primary.main',
-                        mb: 1,
-                    }}
-                >
-                    {requestDetail?.requestName || '-'}
-                </Typography>
+                <Stack direction="row" alignItems="center" justifyContent="space-between">
+                    <Typography
+                        sx={{
+                            fontSize: '1.8rem',
+                            fontWeight: 'bold',
+                            color: 'primary.main',
+                            mb: 1,
+                            flex: 1,
+                        }}
+                    >
+                        {requestDetail?.requestName || '-'}
+                    </Typography>
+
+                    <IconButton
+                        onClick={handleArrowClick}
+                        sx={{
+                            color: 'primary.main',
+                        }}
+                        size="large"
+                    >
+                        <ExpandMoreIcon sx={{ fontSize: '2rem' }} />
+                    </IconButton>
+                </Stack>
 
                 <Stack direction="row" spacing={3} alignItems="center" sx={{ mb: 1 }}>
                     <Typography
@@ -119,12 +145,19 @@ function RequestDetail() {
                 </Stack>
             </Box>
 
-            {/* Divider */}
+            {/* Content - Always visible */}
             <Divider sx={{ my: 2 }} />
 
             {/* Action Buttons */}
-            <Box sx={{ mb: 3 }}>
-                <Action />
+            {approverid.includes(user.id) ? (
+                <Box sx={{ mb: 0 }}>
+                    <Action />
+                </Box>
+            ) : (
+                ''
+            )}
+            <Box sx={{ mb: 0 }}>
+                <OtherAction />
             </Box>
 
             {/* Details Section */}
@@ -135,11 +168,14 @@ function RequestDetail() {
                 <DetailItem label="Tên đề nghị" value={requestDetail?.requestName || '-'} />
                 <DetailItem label="Ngày đề nghị" value={formatDate(requestDetail?.createAt)} />
                 <DetailItem label="Người đề nghị" value={`${requestorName} - ${requestorDept}`} />
+                {requestTypeId == 1 ? <PaymentDetail /> : ''}
+                {requestTypeId == 2 ? <AdvanceMoneyDetail /> : ''}
                 {requestTypeId == 3 ? <LeaveDetail /> : ''}
                 {requestTypeId == 7 ? <OverTimeRequestDetail /> : ''}
                 {requestTypeId == 8 ? <TaskConfirmDetail /> : ''}
 
                 <DetailItem label="Mô tả" value={description} />
+                <AttachmentsDetail />
             </Stack>
         </Box>
     );

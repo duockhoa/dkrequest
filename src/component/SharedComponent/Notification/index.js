@@ -1,10 +1,21 @@
-import React, { useState } from 'react';
-import { IconButton, Badge, Popover } from '@mui/material'; // Import Badge và IconButton từ Material-UI
-import NotificationsOutlinedIcon from '@mui/icons-material/NotificationsOutlined'; // Import biểu tượng chuông dạng outline
+import { useState, useEffect } from 'react';
+import { IconButton, Badge, Popover } from '@mui/material';
+import NotificationsOutlinedIcon from '@mui/icons-material/NotificationsOutlined';
 import NotificationList from '../NotificationList';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchNotifications } from '../../../redux/slice/notificationSlice';
 
-function Notification({ notifications }) {
+function Notification() {
     const [anchorEl, setAnchorEl] = useState(null);
+    const dispatch = useDispatch();
+    const user = useSelector((state) => state.user.userInfo);
+    const unreadCount = useSelector((state) => state.notification.unreadCount);
+
+    useEffect(() => {
+        if (user && user.id) {
+            dispatch(fetchNotifications(user.id));
+        }
+    }, [user, dispatch]);
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -25,8 +36,8 @@ function Notification({ notifications }) {
                     color: 'text.primary',
                 }}
             >
-                <Badge badgeContent={notifications?.length || 2} color="error">
-                    <NotificationsOutlinedIcon sx={{ fontSize: '2.5rem' }} /> {/* Chuông dạng outline */}
+                <Badge badgeContent={unreadCount} color="error">
+                    <NotificationsOutlinedIcon sx={{ fontSize: '2.5rem' }} />
                 </Badge>
             </IconButton>
 
@@ -43,7 +54,7 @@ function Notification({ notifications }) {
                     horizontal: 'right',
                 }}
             >
-                <NotificationList notifications={notifications} />
+                <NotificationList onClose={handleClose} />
             </Popover>
         </>
     );

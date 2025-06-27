@@ -15,6 +15,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { logoutService } from '../../../services/logoutService';
+import AppsIcon from '@mui/icons-material/Apps';
 
 function MyAvatar() {
     const user = useSelector((state) => state.user.userInfo);
@@ -75,7 +76,7 @@ function MyAvatar() {
                     <Popper {...bindPopper(popupState)} transition>
                         {({ TransitionProps }) => (
                             <Fade {...TransitionProps} timeout={350}>
-                                <Paper elevation={5} sx={{ padding: 1 }}>
+                                <Paper elevation={5} sx={{ padding: 1, zIndex: 2 }}>
                                     <List disablePadding>
                                         <Link to="/profile" style={{ textDecoration: 'none', color: 'inherit' }}>
                                             <ListItem disablePadding>
@@ -84,12 +85,25 @@ function MyAvatar() {
                                                     <ListItemText
                                                         primary="Hồ sơ của bạn"
                                                         primaryTypographyProps={{
-                                                            fontSize: '1.4rem', // Tăng kích thước chữ
+                                                            fontSize: '1.4rem',
                                                         }}
                                                     />
                                                 </ListItemButton>
                                             </ListItem>
                                         </Link>
+                                        <ListItem disablePadding>
+                                            <ListItemButton
+                                                onClick={() => (window.location.href = 'https://dkpharma.io.vn')}
+                                            >
+                                                <AppsIcon sx={{ fontSize: 20, mr: 1 }} />
+                                                <ListItemText
+                                                    primary="Tất cả ứng dụng"
+                                                    primaryTypographyProps={{
+                                                        fontSize: '1.4rem',
+                                                    }}
+                                                />
+                                            </ListItemButton>
+                                        </ListItem>
                                         <ListItem disablePadding sx={{ color: 'error.main' }}>
                                             <ListItemButton onClick={handleLogout}>
                                                 <LogoutIcon sx={{ fontSize: 20, mr: 1 }} />
