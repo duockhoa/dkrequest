@@ -55,7 +55,7 @@ export default function Request() {
                 dispatch(setRequestTypeId(matchedType.id));
             } else {
                 // Optional: Clear requestTypeId if no match, or handle default
-                // dispatch(setRequestTypeId(null));
+                dispatch(setRequestTypeId('all')); // Set to 'all' or handle as needed
             }
         }
     }, [location.pathname, requestTypes, dispatch]);

@@ -8,7 +8,7 @@ import items from '../pages/Items';
 const publicRoutes = [
     {
         path: '/',
-        component: Home,
+        component: Request,
     },
     { path: '/profile', component: Profile, layout: HeaderOnlyLayout },
     {
@@ -60,9 +60,14 @@ const publicRoutes = [
         component: Request,
     },
     {
+        path: '/refund-request',
+        component: Request,
+    },
+    {
         path: '/items',
         component: items,
     },
+
     {
         path: '*',
         component: Error,

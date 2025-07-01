@@ -93,6 +93,7 @@ function AdvanceMoneyRequestForm() {
                     value={requestFormData?.advance_request?.reason || ''}
                     onChange={handleChange}
                     size="medium"
+                    py={0.5}
                     inputProps={{ style: { fontSize: '1.4rem' } }}
                     error={!!errors?.reason}
                     helperText={errors?.reason || ''}

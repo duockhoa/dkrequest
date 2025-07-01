@@ -33,16 +33,6 @@ export default function Home() {
                     </Grid>
                 ))}
             </Grid>
-            <Box mt={4}>
-                <Typography variant="subtitle1" color="text.secondary" gutterBottom>
-                    Biểu đồ thống kê yêu cầu
-                </Typography>
-                <BarChart
-                    xAxis={[{ data: stats.map((s) => s.label), scaleType: 'band' }]}
-                    series={[{ data: stats.map((s) => s.value), color: '#1976d2' }]}
-                    height={300}
-                />
-            </Box>
         </Paper>
     );
 }

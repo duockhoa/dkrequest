@@ -8,7 +8,6 @@ import { checkTokenService } from './services/checkTokenService';
 
 function App() {
     const dispatch = useDispatch();
-
     useEffect(() => {
         dispatch(fetchUser());
         const checkToken = async () => {

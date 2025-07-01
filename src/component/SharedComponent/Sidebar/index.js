@@ -128,7 +128,7 @@ export default function Sidebar() {
             <List>
                 {/* menu1 */}
                 <ListItemButton
-                    id="Tổng quan"
+                    id="Quan trọng"
                     sx={{
                         '&:hover': {
                             backgroundColor: '#f5f5f5',
@@ -140,9 +140,9 @@ export default function Sidebar() {
                     onClick={() => switchActiveSidebar('/')} // Thêm dòng này
                 >
                     <ListItemIcon sx={{ minWidth: '40px' }}>
-                        <HomeIcon sx={commonIconStyle} />
+                        <StarBorder sx={commonIconStyle} />
                     </ListItemIcon>
-                    <ListItemText primary={!isOpen || 'Tổng quan'} primaryTypographyProps={{ sx: commonTextStyle }} />
+                    <ListItemText primary={!isOpen || 'Quan trọng'} primaryTypographyProps={{ sx: commonTextStyle }} />
                 </ListItemButton>
                 <Divider />
 

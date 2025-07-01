@@ -16,6 +16,7 @@ import objectToFormData from '../../../utils/makeFromDataFromObject';
 import { fetchCreateRequest } from '../../../redux/slice/requestFormDataSlice';
 import { fetchNotifications } from '../../../redux/slice/notificationSlice';
 import AdvanceMoneyRequestForm from '../AdvanceMoneyRequestForm';
+import SupplyStationeryForm from '../SupplyStationeryForm';
 
 function AddRequestForm({ onClose }) {
     const requestTypeId = useSelector((state) => state.requestId.requestTypeId);
@@ -57,7 +58,7 @@ function AddRequestForm({ onClose }) {
                     return `${user.name} đề nghị xin nghỉ`;
                 case 4:
                     return `${user.department} đề nghị cung ứng văn phòng phẩm tháng ${
-                        new Date().getMonth() + 1
+                        new Date().getMonth() + 2
                     } năm ${new Date().getFullYear()}`;
 
                 case 7:
@@ -130,7 +131,7 @@ function AddRequestForm({ onClose }) {
         if (!validateForm()) {
             return;
         }
-
+        console.log('Submitting requestFormData:', requestFormData);
         // Convert requestFormData to FormData
         const formData = objectToFormData(requestFormData);
 
@@ -185,6 +186,7 @@ function AddRequestForm({ onClose }) {
             </Stack>
 
             {requestTypeId === 3 ? <LeaveRequestForm /> : ''}
+            {requestTypeId === 4 ? <SupplyStationeryForm /> : ''}
             {requestTypeId === 7 ? <OverTimeRequestForm /> : ''}
             {requestTypeId === 8 ? <TaskConfirm /> : ''}
             {requestTypeId === 1 ? <PaymentRequestForm /> : ''}
@@ -198,7 +200,7 @@ function AddRequestForm({ onClose }) {
                     onChange={handleChange}
                     size="medium"
                     multiline
-                    rows={2}
+                    rows={1}
                     inputProps={{ style: { fontSize: '1.4rem' } }}
                     error={!!errors.description}
                     helperText={errors.description || ''}

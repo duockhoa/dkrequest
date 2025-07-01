@@ -14,12 +14,15 @@ import { fetchRequests } from '../../../redux/slice/requestSlice';
 import { useNavigate } from 'react-router-dom';
 import { useElementWidth } from '../../../hooks/useElementWidth';
 import { clearRequestFormData, clearErrors } from '../../../redux/slice/requestFormDataSlice';
+import { setRequestData } from '../../../redux/slice/requestSlice';
 import LoadingPage from '../LoadingPage';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import ExportReportForm from '../../Form/ExportReportForm';
 
 const tabList = ['Tất cả', 'Đến lượt duyệt', 'Quá hạn', 'Đang chờ duyệt', 'Đã chấp nhận', 'Đã từ chối'];
 
 export default function Requests() {
+    const [isOpentExportForm, setIsOpenExportForm] = useState(false);
     const isMobile = useMediaQuery((theme) => theme.breakpoints.down('sm'));
 
     const navigate = useNavigate();
@@ -27,16 +30,69 @@ export default function Requests() {
     const [openForm, setOpenForm] = useState(false);
     const dispatch = useDispatch();
     const requests = useSelector((state) => state.request.requestData);
+    const originalData = useSelector((state) => state.request.originalData); // Lấy dữ liệu gốc
     const loading = useSelector((state) => state.request.loading);
     const requestTypeId = useSelector((state) => state.requestId.requestTypeId);
     const requestId = useSelector((state) => state.requestId.requestId);
-    const user_id = useSelector((state) => state.user.userInfo.id);
+    const user = useSelector((state) => state.user.userInfo);
 
     useEffect(() => {
         if (requestTypeId) {
-            dispatch(fetchRequests({ requestTypeId, user_id }));
+            dispatch(fetchRequests({ requestTypeId, user_id: user.id }));
         }
     }, [dispatch, requestTypeId]);
+
+    // Thêm useEffect để filter theo tab
+    useEffect(() => {
+        if (originalData.length > 0) {
+            let filteredRequests = [...originalData];
+
+            switch (tabList[tab]) {
+                case 'Tất cả':
+                    // Hiển thị tất cả
+                    filteredRequests = originalData;
+                    break;
+                case 'Đang chờ duyệt':
+                    filteredRequests = originalData.filter((request) => request.status === 'pending');
+                    break;
+                case 'Đã chấp nhận':
+                    filteredRequests = originalData.filter((request) => request.status === 'approved');
+                    break;
+                case 'Đã từ chối':
+                    filteredRequests = originalData.filter((request) => request.status === 'rejected');
+                    break;
+                case 'Đến lượt duyệt':
+                    // Filter requests mà user hiện tại cần phê duyệt
+                    filteredRequests = originalData.filter((request) => {
+                        if (request.status !== 'pending') return false;
+
+                        // Tìm approver có step nhỏ nhất trong các pending approvers
+                        const pendingApprovers = request.approvers.filter((approver) => approver.status === 'pending');
+                        if (pendingApprovers.length === 0) return false;
+
+                        const nextStep = Math.min(...pendingApprovers.map((approver) => approver.step));
+                        const nextApprover = pendingApprovers.find((approver) => approver.step === nextStep);
+
+                        return nextApprover && nextApprover.user_id === user.id;
+                    });
+                    break;
+                case 'Quá hạn':
+                    // Có thể thêm logic quá hạn nếu có trường deadline
+                    filteredRequests = originalData.filter((request) => {
+                        // Tạm thời filter theo requests pending quá 7 ngày
+                        const createDate = new Date(request.createAt);
+                        const now = new Date();
+                        const daysDiff = Math.floor((now - createDate) / (1000 * 60 * 60 * 24));
+                        return request.status === 'pending' && daysDiff > 7;
+                    });
+                    break;
+                default:
+                    filteredRequests = originalData;
+            }
+
+            dispatch(setRequestData(filteredRequests));
+        }
+    }, [tab, originalData, dispatch, user.id]);
 
     // Hàm để mở/đóng form
     const handleToggleForm = () => {
@@ -49,7 +105,7 @@ export default function Requests() {
 
     // Hàm xuất báo cáo
     const handleExportReport = () => {
-        alert('Tính năng xuất báo cáo đang được phát triển');
+        setIsOpenExportForm(true);
     };
 
     // Thêm hàm getStatusConfig để xử lý style và label theo requestStatus
@@ -209,7 +265,7 @@ export default function Requests() {
                 >
                     <Tabs
                         value={tab}
-                        onChange={(e, newValue) => setTab(newValue)}
+                        onChange={(e, newValue) => setTab(newValue)} // Logic filter sẽ chạy qua useEffect
                         variant="scrollable"
                         scrollButtons="auto"
                         allowScrollButtonsMobile
@@ -228,7 +284,7 @@ export default function Requests() {
                         minWidth: 'fit-content',
                     }}
                 >
-                    {showExportButton && requestTypeId === 4 && (
+                    {showExportButton && requestTypeId === 4 && user.department === 'Tổ chức' && (
                         <Button
                             variant="outlined"
                             color="primary"
@@ -244,7 +300,7 @@ export default function Requests() {
                             Danh mục hàng hoá
                         </Button>
                     )}
-                    {showExportButton && (
+                    {showExportButton && typeof requestTypeId === 'number' && requestTypeId > 0 && (
                         <Button
                             variant="outlined"
                             color="primary"
@@ -260,19 +316,21 @@ export default function Requests() {
                             {isMobile ? 'Báo cáo' : 'Xuất báo cáo'}
                         </Button>
                     )}
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        startIcon={<AddIcon />}
-                        onClick={handleToggleForm}
-                        sx={{
-                            fontSize: 12,
-                            whiteSpace: 'nowrap',
-                            minWidth: 'auto',
-                        }}
-                    >
-                        {isMobile ? 'Thêm' : 'Thêm mới'}
-                    </Button>
+                    {typeof requestTypeId === 'number' && requestTypeId > 0 && (
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            startIcon={<AddIcon />}
+                            onClick={handleToggleForm}
+                            sx={{
+                                fontSize: 12,
+                                whiteSpace: 'nowrap',
+                                minWidth: 'auto',
+                            }}
+                        >
+                            {isMobile ? 'Thêm' : 'Thêm mới'}
+                        </Button>
+                    )}
                 </Stack>
             </Box>
 
@@ -285,7 +343,7 @@ export default function Requests() {
                 sx={{
                     '& .MuiDialog-paper': {
                         borderRadius: 2,
-                        maxWidth: '650px',
+                        maxWidth: requestTypeId === 4 ? 'lg' : 'xs',
                         width: '100%',
                     },
                 }}
@@ -504,6 +562,21 @@ export default function Requests() {
                     ))}
                 </Box>
             )}
+            <Dialog
+                open={isOpentExportForm}
+                onClose={() => setIsOpenExportForm(false)}
+                fullWidth
+                maxWidth="md"
+                PaperProps={{
+                    sx: {
+                        borderRadius: 2,
+                        width: isMobile ? '100%' : '600px',
+                        height: isMobile ? '100%' : 'auto',
+                    },
+                }}
+            >
+                <ExportReportForm onClose={() => setIsOpenExportForm(false)} />
+            </Dialog>
         </Stack>
     );
 }

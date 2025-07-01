@@ -10,6 +10,7 @@ import TaskConfirmDetail from '../DetailComponents/TaskConfirmDetail';
 import PaymentDetail from '../DetailComponents/PaymentDetail';
 import AdvanceMoneyDetail from '../DetailComponents/AdvanceMoneyDetail';
 import AttachmentsDetail from '../DetailComponents/AttachmentsDetail';
+import SupplyStationeryDetail from '../DetailComponents/SupplyStationeryDetail';
 import OtherAction from '../OtherAction';
 
 const DetailItem = ({ label, value }) => (
@@ -168,11 +169,12 @@ function RequestDetail() {
                 <DetailItem label="Tên đề nghị" value={requestDetail?.requestName || '-'} />
                 <DetailItem label="Ngày đề nghị" value={formatDate(requestDetail?.createAt)} />
                 <DetailItem label="Người đề nghị" value={`${requestorName} - ${requestorDept}`} />
-                {requestTypeId == 1 ? <PaymentDetail /> : ''}
-                {requestTypeId == 2 ? <AdvanceMoneyDetail /> : ''}
-                {requestTypeId == 3 ? <LeaveDetail /> : ''}
-                {requestTypeId == 7 ? <OverTimeRequestDetail /> : ''}
-                {requestTypeId == 8 ? <TaskConfirmDetail /> : ''}
+                {requestTypeId === 1 ? <PaymentDetail /> : ''}
+                {requestTypeId === 2 ? <AdvanceMoneyDetail /> : ''}
+                {requestTypeId === 3 ? <LeaveDetail /> : ''}
+                {requestTypeId === 4 ? <SupplyStationeryDetail /> : ''}
+                {requestTypeId === 7 ? <OverTimeRequestDetail /> : ''}
+                {requestTypeId === 8 ? <TaskConfirmDetail /> : ''}
 
                 <DetailItem label="Mô tả" value={description} />
                 <AttachmentsDetail />
