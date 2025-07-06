@@ -1,4 +1,4 @@
-import axios from './customize-axios';
+import axios from './auth-axios';
 import Cookies from 'js-cookie';
 import { domain } from './domain';
 

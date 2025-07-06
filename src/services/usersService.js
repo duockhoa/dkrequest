@@ -1,4 +1,5 @@
-import axios from './customize-axios';
+
+import axios from './auth-axios';
 
 async function getAllUsersService() {
     try {
@@ -18,4 +19,28 @@ async function getAllUsersService() {
         }
     }
 }
-export { getAllUsersService };
+
+
+async function  changePasswordService(data) {
+   try {
+       const response = await axios.put('/user/changepassword', data);
+       if (response.status === 200) {
+           return response.data.result;
+       } else {
+          throw new Error('Không thể thay đổi mật khẩu');
+       }
+   } catch (error) {
+       if (error.response) {
+           throw new Error(error.response.data.error || 'Lỗi từ server');
+       } else if (error.request) {
+           throw new Error('Không thể kết nối đến server');
+       } else {
+           throw new Error(error.message || 'Đã xảy ra lỗi khi thay đổi mật khẩu');
+       }
+   }
+}
+
+
+
+
+export { getAllUsersService , changePasswordService };
