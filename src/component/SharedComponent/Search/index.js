@@ -30,8 +30,15 @@ function Search() {
             }}
             value={value}
             onChange={handleChange}
+            autoComplete="off"
+            inputProps={{
+                autoComplete: "off",
+                autoCorrect: "off",
+                autoCapitalize: "off",
+                spellCheck: "false"
+            }}
             InputProps={{
-                startAdornment: <SearchIcon sx={{ color: '#888', mr: 1, fontSize: 22 }} />, // Tăng kích thước icon
+                startAdornment: <SearchIcon sx={{ color: '#888', mr: 1, fontSize: 22 }} />,
                 sx: {
                     fontSize: '1.4rem',
                     fontWeight: '400',

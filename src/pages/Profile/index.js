@@ -550,8 +550,16 @@ function Profile() {
                                             variant="outlined"
                                             size="medium"
                                             fullWidth
+                                            autoComplete="current-password"
+                                            inputProps={{
+                                                autoComplete: "current-password",
+                                                form: {
+                                                    autoComplete: "off"
+                                                }
+                                            }}
                                             InputProps={{
-                                                style: { fontSize: '14px' }
+                                                style: { fontSize: '14px' },
+                                                autoComplete: "current-password"
                                             }}
                                             error={!!error.currentPassword}
                                             helperText={error.currentPassword || ''}
@@ -564,6 +572,10 @@ function Profile() {
                                             variant="outlined"
                                             size="medium"
                                             fullWidth
+                                            autoComplete="new-password"
+                                            inputProps={{
+                                                autoComplete: "new-password"
+                                            }}
                                             InputProps={{
                                                 style: { fontSize: '14px' }
                                             }}
@@ -578,6 +590,10 @@ function Profile() {
                                             variant="outlined"
                                             size="medium"
                                             fullWidth
+                                            autoComplete="new-password"
+                                            inputProps={{
+                                                autoComplete: "new-password"
+                                            }}
                                             InputProps={{
                                                 style: { fontSize: '14px' }
                                             }}
