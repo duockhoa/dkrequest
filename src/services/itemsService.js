@@ -62,7 +62,7 @@ async function deleteItem(itemId) {
     try {
         const response = await axios.delete(`/items/delete/${itemId}`);
         if (response.status === 200) {
-            return response.data.result;
+            return response.data;
         } else {
             throw new Error('Không thể xóa mặt hàng');
         }

@@ -19,6 +19,7 @@ function Action() {
     const userId = useSelector((state) => state.user.userInfo.id);
     const requestId = useSelector((state) => state.requestId.requestId);
     const requestDetail = useSelector((state) => state.requestDetail.requestDetailvalue);
+    const requestTypeId = useSelector((state) => state.requestId.requestTypeId);
 
     const handleApprove = () => {
         setActionType('approved');
@@ -49,7 +50,7 @@ function Action() {
             dispatch(fetchRequestDetail(requestId));
             dispatch(
                 fetchRequests({
-                    requestTypeId: requestDetail.requestType_id,
+                    requestTypeId: requestTypeId,
                     user_id: userId,
                 }),
             );
@@ -72,7 +73,7 @@ function Action() {
             dispatch(fetchRequestDetail(requestId));
             dispatch(
                 fetchRequests({
-                    requestTypeId: requestDetail.requestType_id,
+                    requestTypeId: requestTypeId,
                     user_id: userId,
                 }),
             );

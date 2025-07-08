@@ -131,13 +131,12 @@ function AddRequestForm({ onClose }) {
         if (!validateForm()) {
             return;
         }
-        console.log('Submitting requestFormData:', requestFormData);
         // Convert requestFormData to FormData
         const formData = objectToFormData(requestFormData);
 
         try {
-            const reponse = await dispatch(fetchCreateRequest(formData));
-            dispatch(setRequestData([reponse.payload, ...requestData])); // Update request data in the store
+            const response = await dispatch(fetchCreateRequest(formData));
+            dispatch(setRequestData([response.payload, ...requestData])); // Update request data in the store
             dispatch(setRequestFormData({})); // Clear form data in the store
             dispatch(fetchNotifications(user.id)); // Fetch notifications after creating request
             onClose();

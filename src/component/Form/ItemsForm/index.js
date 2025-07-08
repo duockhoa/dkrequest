@@ -1,8 +1,9 @@
 import { Stack, Typography, TextField, Box, Button } from '@mui/material';
 import { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch , useSelector } from 'react-redux';
 import { createNewItem, updateItem } from '../../../services/itemsService';
-import { fetchItems } from '../../../redux/slice/itemsSlice';
+import { fetchItems , setItems } from '../../../redux/slice/itemsSlice';
+
 
 function ItemsForm({ initialValues, onClose, type }) {
     const dispatch = useDispatch();
@@ -12,9 +13,11 @@ function ItemsForm({ initialValues, onClose, type }) {
         unit: initialValues?.unit || '',
         user_id: initialValues?.user_id || '',
     });
+    const items = useSelector((state) => state.items.items);
 
     // Cập nhật lại formData khi initialValues thay đổi (khi edit)
     useEffect(() => {
+    
         if (initialValues) {
             setFormData({
                 product_code: initialValues.product_code || '',
@@ -49,8 +52,20 @@ function ItemsForm({ initialValues, onClose, type }) {
             response = await createNewItem(formData);
         }
         if (response) {
+            if (type === 'edit') {
+         // Cập nhật lại danh sách items sau khi thêm/sửa thành công
+             const updatedItems = items.map((item) => {
+                if (item.product_code === response.product_code) {
+                    return { ...item, ...response };
+                }
+                return item;
+            });
+            dispatch(setItems(updatedItems));
+            } else {
+            dispatch(setItems([...items, response])); // Lấy lại danh sách items sau khi thêm mới
+            }
+
             onClose();
-            dispatch(fetchItems());
         } else {
             console.error('Failed to save item');
         }

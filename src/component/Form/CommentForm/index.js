@@ -6,7 +6,6 @@ import TextSnippetIcon from '@mui/icons-material/TextSnippet';
 import { useSelector, useDispatch } from 'react-redux';
 import { useState, useRef } from 'react';
 import { createComment } from '../../../redux/slice/commentSlice';
-import { fetchUsers } from '../../../redux/slice/usersSlice';
 
 function CommentForm() {
     const dispatch = useDispatch();
