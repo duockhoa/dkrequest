@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { format } from 'date-fns';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useState } from 'react';
-import Action from '../Action';
+import Action from '../Action/MainAction';
 import LoadingPage from '../LoadingPage';
 import LeaveDetail from '../DetailComponents/LeaveDetail';
 import OverTimeRequestDetail from '../DetailComponents/OverTimeDetail';
@@ -12,7 +12,7 @@ import PaymentDetail from '../DetailComponents/PaymentDetail';
 import AdvanceMoneyDetail from '../DetailComponents/AdvanceMoneyDetail';
 import AttachmentsDetail from '../DetailComponents/AttachmentsDetail';
 import SupplyStationeryDetail from '../DetailComponents/SupplyStationeryDetail';
-import OtherAction from '../OtherAction';
+import OtherAction from '../Action/OtherAction';
 
 const DetailItem = ({ label, value }) => (
     <Stack direction="row" spacing={2} sx={{ py: 1 }}>

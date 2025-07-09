@@ -3,14 +3,14 @@ import { Box, Button, Stack, Dialog, DialogContent } from '@mui/material';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import ForwardIcon from '@mui/icons-material/Forward';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
-import ConfirmForm from '../../Form/ConfirmForm';
-import RejectForm from '../../Form/RejectForm';
-import ForwardForm from '../../Form/ForwardForm';
-import { approverUpdateStatus, approverForward } from '../../../services/approverService';
+import ConfirmForm from '../../../Form/ConfirmForm';
+import RejectForm from '../../../Form/RejectForm';
+import ForwardForm from '../../../Form/ForwardForm';
+import { approverUpdateStatus, approverForward } from '../../../../services/approverService';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchRequestDetail } from '../../../redux/slice/requestDetailSlice';
-import { fetchRequests } from '../../../redux/slice/requestSlice';
-import { fetchNotifications } from '../../../redux/slice/notificationSlice';
+import { fetchRequestDetail } from '../../../../redux/slice/requestDetailSlice';
+import { fetchRequests } from '../../../../redux/slice/requestSlice';
+import { fetchNotifications } from '../../../../redux/slice/notificationSlice';
 
 function Action() {
     const dispatch = useDispatch();
