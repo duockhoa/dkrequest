@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Box, Button, Stack, Dialog, DialogContent } from '@mui/material';
+import { Box, Button, Stack, Dialog, DialogContent, MenuItem, ListItemIcon, ListItemText } from '@mui/material';
 import DoneAllIcon from '@mui/icons-material/DoneAll';
 import DownloadIcon from '@mui/icons-material/Download';
 import ConfirmForm from '../../Form/ConfirmForm';
@@ -12,7 +12,7 @@ import dayjs from 'dayjs';
 import { numberToVietnameseWords, formatNumberWithCommas } from '../../../utils/numberToWords';
 import { markCompleted } from '../../../services/requestService';
 
-function OtherAction() {
+function OtherAction({ onClose }) {
     const dispatch = useDispatch();
     const [open, setOpen] = useState(false);
     const user = useSelector((state) => state.user.userInfo);
@@ -93,6 +93,7 @@ function OtherAction() {
 
     const handleExportFile = async () => {
         await exportsFileDocService(template, data);
+        if (onClose) onClose(); // Close popover after action
     };
 
     const handleClose = () => setOpen(false);
@@ -107,6 +108,7 @@ function OtherAction() {
             dispatch(fetchRequestDetail(requestId));
             dispatch(fetchRequests(requestDetail.requestType_id));
             handleClose();
+            if (onClose) onClose(); // Close popover after action
         } catch (error) {
             console.error('Error updating status:', error);
         }
@@ -115,38 +117,56 @@ function OtherAction() {
     const question = 'Bạn có chắc chắn muốn xác nhận hoàn thành yêu cầu này?';
 
     return (
-        <Box sx={{ bgcolor: 'background.paper', p: 2, borderRadius: 1 }}>
-            <Stack direction="row" spacing={2} justifyContent="center" flexWrap="wrap" rowGap={2}>
+        <Box sx={{ minWidth: 200 }}>
+            <Stack direction="column" spacing={0}>
                 {/* Only show complete button if request is not completed */}
                 {!isCompleted && user.department === requestDetail?.requestType?.department.name && (
-                    <Button
-                        variant="contained"
-                        color="success"
-                        startIcon={<DoneAllIcon />}
+                    <MenuItem
                         onClick={handleComplete}
                         sx={{
-                            fontSize: '1.4rem',
-                            textTransform: 'none',
-                            minWidth: 150,
+                            py: 1.5,
+                            px: 2,
+                            '&:hover': {
+                                backgroundColor: 'success.light',
+                                color: 'success.contrastText',
+                            },
                         }}
                     >
-                        Đánh dấu hoàn thành
-                    </Button>
+                        <ListItemIcon sx={{ color: 'inherit' }}>
+                            <DoneAllIcon />
+                        </ListItemIcon>
+                        <ListItemText 
+                            primary="Đánh dấu hoàn thành"
+                            primaryTypographyProps={{
+                                fontSize: '14px',
+                                fontWeight: 500,
+                            }}
+                        />
+                    </MenuItem>
                 )}
 
-                <Button
-                    variant="contained"
-                    color="primary"
-                    startIcon={<DownloadIcon />}
+                <MenuItem
                     onClick={handleExportFile}
                     sx={{
-                        fontSize: '1.4rem',
-                        textTransform: 'none',
-                        minWidth: 120,
+                        py: 1.5,
+                        px: 2,
+                        '&:hover': {
+                            backgroundColor: 'primary.light',
+                            color: 'primary.contrastText',
+                        },
                     }}
                 >
-                    Xuất File
-                </Button>
+                    <ListItemIcon sx={{ color: 'inherit' }}>
+                        <DownloadIcon />
+                    </ListItemIcon>
+                    <ListItemText 
+                        primary="Xuất File"
+                        primaryTypographyProps={{
+                            fontSize: '14px',
+                            fontWeight: 500,
+                        }}
+                    />
+                </MenuItem>
             </Stack>
 
             <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>

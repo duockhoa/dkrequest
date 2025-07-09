@@ -1,7 +1,8 @@
-import { Box, Typography, Stack, Divider, Chip, IconButton } from '@mui/material';
+import { Box, Typography, Stack, Divider, Chip, IconButton, Popover } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { format } from 'date-fns';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { useState } from 'react';
 import Action from '../Action';
 import LoadingPage from '../LoadingPage';
 import LeaveDetail from '../DetailComponents/LeaveDetail';
@@ -34,6 +35,9 @@ function RequestDetail() {
     const error = useSelector((state) => state.requestDetail.error);
     const user = useSelector((state) => state.user.userInfo);
     const approverid = requestDetail?.approvers?.map((item) => item.user_id) || [];
+
+    // State for popover
+    const [anchorEl, setAnchorEl] = useState(null);
 
     // Loading state
     if (loading) {
@@ -68,15 +72,21 @@ function RequestDetail() {
     const description = requestDetail?.description || '-';
     const requestTypeId = requestDetail?.requestType_id || 0;
 
-    // Handler cho nút arrow
-    const handleArrowClick = () => {
-        console.log('Arrow button clicked!');
-        console.log('Request Detail:', requestDetail);
+    // Handler cho popover
+    const handleMoreClick = (event) => {
+        setAnchorEl(event.currentTarget);
     };
+
+    const handleClosePopover = () => {
+        setAnchorEl(null);
+    };
+
+    const open = Boolean(anchorEl);
+    const id = open ? 'other-action-popover' : undefined;
 
     return (
         <Box sx={{ bgcolor: 'background.paper', p: 3, borderRadius: 1 }}>
-            {/* Title Section with Arrow Button */}
+            {/* Title Section with ExpandMore Button */}
             <Box sx={{ mb: 3 }}>
                 <Stack direction="row" alignItems="center" justifyContent="space-between">
                     <Typography
@@ -92,11 +102,14 @@ function RequestDetail() {
                     </Typography>
 
                     <IconButton
-                        onClick={handleArrowClick}
+                        onClick={handleMoreClick}
                         sx={{
                             color: 'primary.main',
+                            transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
+                            transition: 'transform 0.3s ease-in-out',
                         }}
                         size="large"
+                        aria-describedby={id}
                     >
                         <ExpandMoreIcon sx={{ fontSize: '2rem' }} />
                     </IconButton>
@@ -146,20 +159,43 @@ function RequestDetail() {
                 </Stack>
             </Box>
 
+            {/* Popover for OtherAction */}
+            <Popover
+                id={id}
+                open={open}
+                anchorEl={anchorEl}
+                onClose={handleClosePopover}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right',
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                }}
+                sx={{
+                    '& .MuiPopover-paper': {
+                        p: 1,
+                        boxShadow: 3,
+                        borderRadius: 2,
+                        minWidth: 200,
+                    },
+                }}
+            >
+                <OtherAction onClose={handleClosePopover} />
+            </Popover>
+
             {/* Content - Always visible */}
             <Divider sx={{ my: 2 }} />
 
             {/* Action Buttons */}
             {approverid.includes(user.id) ? (
-                <Box sx={{ mb: 0 }}>
+                <Box sx={{ mb: 3 }}>
                     <Action />
                 </Box>
             ) : (
                 ''
             )}
-            <Box sx={{ mb: 0 }}>
-                <OtherAction />
-            </Box>
 
             {/* Details Section */}
             <Typography variant="h6" sx={{ mb: 2, fontSize: '1.6rem', fontWeight: 'bold' }}>
