@@ -54,8 +54,7 @@ export default function Request() {
             if (matchedType) {
                 dispatch(setRequestTypeId(matchedType.id));
             } else {
-                // Optional: Clear requestTypeId if no match, or handle default
-                dispatch(setRequestTypeId('all')); // Set to 'all' or handle as needed
+                dispatch(setRequestTypeId('all'));
             }
         }
     }, [location.pathname, requestTypes, dispatch]);
@@ -66,49 +65,102 @@ export default function Request() {
         if (idFromParams) {
             dispatch(setRequestId(parseInt(idFromParams, 10)));
         }
-    }, [searchParams, dispatch]); // Removed location from deps as it's covered by searchParams
+    }, [searchParams, dispatch]);
 
     const view = searchParams.get('view');
 
     return (
-        <Grid2 container spacing={1} sx={{ width: '100%', height: '100%', overflow: 'hidden' }} ref={elementRef}>
+        <Grid2
+            container
+            spacing={1}
+            sx={{
+                width: '100%',
+                height: '100%',
+                overflow: 'hidden',
+            }}
+            ref={elementRef}
+        >
             <Grid2
                 xs={view === 'detail' ? 5 : 12}
-                borderRadius={2}
-                height={'100%'}
-                display={view === 'detail' && width < 720 ? 'none' : 'block'}
+                sx={{
+                    borderRadius: 2,
+                    height: '100%',
+                    display: view === 'detail' && width < 720 ? 'none' : 'block',
+                }}
             >
                 <Box
-                    height={'100%'}
-                    sx={{ overflowY: 'auto' }}
-                    backgroundColor={'#fff'}
-                    borderRadius={2}
-                    overflowY={'auto'}
+                    sx={{
+                        height: '100%',
+                        overflowY: 'auto',
+                        backgroundColor: '#fff',
+                        borderRadius: 2,
+                    }}
                 >
                     <Requests />
                 </Box>
             </Grid2>
+
             {view === 'detail' && (
                 <Grid2
                     xs={width < 720 ? 12 : 7}
-                    sx={{ overflowY: 'auto' }}
-                    spacing={1}
                     container
-                    overflow={'auto'}
-                    height={'100%'}
+                    spacing={1}
+                    sx={{
+                        height: '100%',
+                        overflow: 'auto',
+                    }}
                 >
-                    <Grid2 item xs={width < 1200 ? 12 : 7} height={width > 1200 ? '100%' : 'auto'}>
-                        <Box borderRadius={2} overflow={'hidden'} backgroundColor={'#fff'} height={'100%'}>
-                            <Stack sx={{ p: 1 }} overflow={'auto'} height={'100%'} spacing={1}>
+                    <Grid2
+                        xs={width < 1200 ? 12 : 7}
+                        sx={{
+                            height: width > 1200 ? '100%' : 'auto',
+                        }}
+                    >
+                        <Box
+                            sx={{
+                                borderRadius: 2,
+                                overflow: 'hidden',
+                                backgroundColor: '#fff',
+                                height: '100%',
+                            }}
+                        >
+                            <Stack
+                                sx={{
+                                    p: 1,
+                                    overflow: 'auto',
+                                    height: '100%',
+                                }}
+                                spacing={1}
+                            >
                                 <RequestDetail />
                                 <Divider sx={{ borderColor: 'black', mb: 1 }} />
                                 <Comment />
                             </Stack>
                         </Box>
                     </Grid2>
-                    <Grid2 item xs={width < 1200 ? 12 : 5} height={width > 1200 ? '100%' : 'auto'}>
-                        <Box borderRadius={2} overflow={'hidden'} backgroundColor={'#fff'} height={'100%'}>
-                            <Stack sx={{ p: 1 }} overflow={'auto'} height={'100%'} spacing={1}>
+
+                    <Grid2
+                        xs={width < 1200 ? 12 : 5}
+                        sx={{
+                            height: width > 1200 ? '100%' : 'auto',
+                        }}
+                    >
+                        <Box
+                            sx={{
+                                borderRadius: 2,
+                                overflow: 'hidden',
+                                backgroundColor: '#fff',
+                                height: '100%',
+                            }}
+                        >
+                            <Stack
+                                sx={{
+                                    p: 1,
+                                    overflow: 'auto',
+                                    height: '100%',
+                                }}
+                                spacing={1}
+                            >
                                 <Approver />
                                 <Divider sx={{ borderColor: 'black', mb: 1 }} />
                                 <Follower />

@@ -3,7 +3,6 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { getAllRequestService } from '../../services/requestService';
 
 const fetchRequests = createAsyncThunk('request/fetchRequests', async ({ requestTypeId, user_id }) => {
-    console.log(user_id);
     const response = await getAllRequestService(requestTypeId, user_id);
     if (response) {
         const sortedResponse = [...response].sort((a, b) => {

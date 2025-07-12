@@ -65,7 +65,7 @@ function MarkCompleted({ onClose }) {
                 <ListItemIcon sx={{ color: 'inherit' }}>
                     <DoneAllIcon />
                 </ListItemIcon>
-                <ListItemText 
+                <ListItemText
                     primary="Đánh dấu hoàn thành"
                     primaryTypographyProps={{
                         fontSize: '14px',
