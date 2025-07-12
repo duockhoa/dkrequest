@@ -1,5 +1,6 @@
 import { Stack, Typography, TextField, Autocomplete, InputAdornment } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
+import { useEffect, useLayoutEffect } from 'react';
 import { setRequestFormData, clearErrors } from '../../../redux/slice/requestFormDataSlice';
 import { numberToVietnameseWords, formatNumberWithCommas, parseFormattedNumber } from '../../../utils/numberToWords';
 import { removeAccentsAndUppercase, formatBankAccountNumber, parseBankAccountNumber } from '../../../utils/bankAccount';
@@ -9,6 +10,46 @@ function AdvanceMoneyRequestForm() {
     const dispatch = useDispatch();
     const requestFormData = useSelector((state) => state.requestFormData.value);
     const errors = useSelector((state) => state.requestFormData.errors);
+    const userInfo = useSelector((state) => state.user.userInfo);
+
+    // Initialize default values when component mounts
+    useEffect(() => {
+        if (userInfo) {
+            const currentAdvanceRequest = requestFormData?.advance_request || {};
+            console.log(userInfo.department);
+            dispatch(
+                setRequestFormData({
+                    ...requestFormData,
+                    advance_request: {
+                        ...currentAdvanceRequest,
+                        address: userInfo.department || '',
+                        beneficiary_name: removeAccentsAndUppercase(userInfo.name || ''),
+                    },
+                }),
+            );
+        }
+    }, []);
+
+    // Sử dụng useLayoutEffect để chạy ĐỒNG BỘ sau khi DOM được update
+    useLayoutEffect(() => {
+        if (
+            userInfo &&
+            (!requestFormData?.advance_request?.address || !requestFormData?.advance_request?.beneficiary_name)
+        ) {
+            dispatch(
+                setRequestFormData({
+                    ...requestFormData,
+                    advance_request: {
+                        ...requestFormData?.advance_request,
+                        address: requestFormData?.advance_request?.address || userInfo.department || '',
+                        beneficiary_name:
+                            requestFormData?.advance_request?.beneficiary_name ||
+                            removeAccentsAndUppercase(userInfo.name || ''),
+                    },
+                }),
+            );
+        }
+    }, [userInfo, requestFormData, dispatch]);
 
     const handleChange = (e) => {
         dispatch(clearErrors());
@@ -115,7 +156,7 @@ function AdvanceMoneyRequestForm() {
             </Stack>
 
             <Stack direction="row" alignItems="center" spacing={2}>
-                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Đề nghị tạm ứng số tiền (*)</Typography>
+                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Sô tiền tạm ứng (*)</Typography>
                 <TextField
                     fullWidth
                     name="amountText"

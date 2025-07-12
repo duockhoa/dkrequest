@@ -5,7 +5,6 @@ import RequestFollowers from '../RequestFollowers';
 import LeaveRequestForm from '../LeaveRequestForm';
 import { useEffect } from 'react';
 import RequestApprovers from '../RequestApprovers';
-import { createRequestService } from '../../../services/requestService';
 import { setRequestData } from '../../../redux/slice/requestSlice';
 import { setFieldError, clearErrors } from '../../../redux/slice/requestFormDataSlice';
 import { flattenObject } from '../../../hooks/flattenObject';
@@ -73,8 +72,11 @@ function AddRequestForm({ onClose }) {
             }
         };
 
+        console.log(requestFormData);
+
         dispatch(
             setRequestFormData({
+                ...requestFormData,
                 requestName: requestName(),
                 requestType_id: requestTypeId,
                 requestor_id: user.id,
