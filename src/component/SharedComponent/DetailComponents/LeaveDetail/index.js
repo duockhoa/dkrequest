@@ -33,10 +33,11 @@ export default function LeaveDetail() {
 
     return (
         <>
+            <DetailItem label="Lý do xin nghỉ" value={leaveReason} />
             <DetailItem label="Thời gian bắt đầu" value={formatDate(leaveStart)} />
             <DetailItem label="Thời gian kết thúc" value={formatDate(leaveEnd)} />
             <DetailItem label="Số giờ nghỉ" value={formatWorkingTime(leaveHours)} />
-            <DetailItem label="Lý do xin nghỉ" value={leaveReason} />
+  
         </>
     );
 }

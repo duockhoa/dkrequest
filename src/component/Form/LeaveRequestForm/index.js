@@ -122,6 +122,25 @@ function LeaveRequestForm() {
     return (
         <Stack spacing={2}>
             <Stack direction="row" alignItems="center" spacing={2}>
+                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Lý do xin nghỉ:(*)</Typography>
+                <Select
+                    fullWidth
+                    name="reason"
+                    value={requestFormData?.leave_registration?.reason || ''}
+                    onChange={handleChange}
+                    size="medium"
+                    multiline
+                    sx={{ fontSize: '1.4rem' }}
+                    error={!!errors?.reason}
+                >
+                    {leaveReasons.map((reason) => (
+                        <MenuItem key={reason} value={reason} sx={{ fontSize: '1.4rem' }}>
+                            {reason}
+                        </MenuItem>
+                    ))}
+                </Select>
+            </Stack>
+            <Stack direction="row" alignItems="center" spacing={2}>
                 <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Thời gian bắt đầu: (*)</Typography>
                 <TextField
                     fullWidth
@@ -179,25 +198,7 @@ function LeaveRequestForm() {
                     ))}
                 </Select>
             </Stack>
-            <Stack direction="row" alignItems="center" spacing={2}>
-                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Lý do xin nghỉ:(*)</Typography>
-                <Select
-                    fullWidth
-                    name="reason"
-                    value={requestFormData?.leave_registration?.reason || ''}
-                    onChange={handleChange}
-                    size="medium"
-                    multiline
-                    sx={{ fontSize: '1.4rem' }}
-                    error={!!errors?.reason}
-                >
-                    {leaveReasons.map((reason) => (
-                        <MenuItem key={reason} value={reason} sx={{ fontSize: '1.4rem' }}>
-                            {reason}
-                        </MenuItem>
-                    ))}
-                </Select>
-            </Stack>
+
             <Stack direction="row" alignItems="center" spacing={2}>
                 <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Số ngày phép đã dùng</Typography>
                 <TextField
