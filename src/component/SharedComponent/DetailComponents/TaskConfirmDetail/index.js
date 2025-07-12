@@ -35,8 +35,8 @@ export default function TaskConfirmDetail() {
         <>
             <DetailItem label="Thời gian bắt đầu" value={formatDate(leaveStart)} />
             <DetailItem label="Thời gian kết thúc" value={formatDate(leaveEnd)} />
-            <DetailItem label="Số giờ vắng mặt" value={formatWorkingTime(leaveHours)} />
-            <DetailItem label="Lý do vắng mặt" value={leaveReason} />
+            <DetailItem label="Số giờ xác nhận" value={formatWorkingTime(leaveHours)} />
+            <DetailItem label="Lý do xác nhận" value={leaveReason} />
         </>
     );
 }

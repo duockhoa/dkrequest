@@ -87,7 +87,7 @@ function TaskRequestForm() {
                 />
             </Stack>
             <Stack direction="row" alignItems="center" spacing={2}>
-                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Thời gian vắng mặt: (*)</Typography>
+                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Thời gian xác nhận: (*)</Typography>
                 <Select
                     fullWidth
                     name="hoursText"
@@ -105,7 +105,7 @@ function TaskRequestForm() {
                 </Select>
             </Stack>
             <Stack direction="row" alignItems="center" spacing={2}>
-                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Lý do vắng mặt:(*)</Typography>
+                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Lý do xác nhận:(*)</Typography>
                 <Select
                     fullWidth
                     name="reason"
