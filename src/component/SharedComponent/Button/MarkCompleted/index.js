@@ -18,7 +18,10 @@ function MarkCompleted({ onClose }) {
     const isCompleted = requestDetail?.isCompleted;
 
     // Check if user has permission to mark as completed
-    const hasPermission = !isCompleted && user.department === requestDetail?.requestType?.department.name;
+    const hasPermission =
+        !isCompleted &&
+        requestDetail?.status === 'approved' &&
+        user?.department === requestDetail?.requestType?.department?.name;
 
     const handleComplete = () => {
         setOpen(true);

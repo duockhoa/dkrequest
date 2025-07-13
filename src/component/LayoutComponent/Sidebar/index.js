@@ -11,7 +11,6 @@ import { Box } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
 import { setActiveCollapse } from '../../../redux/slice/sibarSlice';
 import { fetchDepartments } from '../../../redux/slice/departmentSlice';
-import HomeIcon from '@mui/icons-material/Home';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PaymentIcon from '@mui/icons-material/Payment';
@@ -23,6 +22,7 @@ import SchoolIcon from '@mui/icons-material/School';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import FeedbackIcon from '@mui/icons-material/Feedback';
 import Tooltip from '@mui/material/Tooltip';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { setIsOpen } from '../../../redux/slice/sibarSlice';
@@ -88,8 +88,26 @@ export default function Sidebar() {
     const activeCollapse = useSelector((state) => state.sidebar.activeCollapse);
     const departments = useSelector((state) => state.department.departments);
     const isOpen = useSelector((state) => state.sidebar.isOpen);
+
     const switchActiveSidebar = (path) => {
-        navigator(path);
+        // Xử lý external links (bắt đầu với http/https)
+        if (path.startsWith('http')) {
+            window.open(path, '_blank');
+        } else {
+            navigator(path);
+        }
+
+        if (isMobile) {
+            dispatch(setIsOpen(false));
+        }
+    };
+
+    // Handler riêng cho feedback
+    const handleFeedbackClick = () => {
+        const feedbackUrl =
+            'https://docs.google.com/spreadsheets/d/1lmycHuIN5G415SxacnqFWMortfMYv48iUTfWzHKIzJw/edit?gid=0#gid=0';
+        window.open(feedbackUrl, '_blank');
+
         if (isMobile) {
             dispatch(setIsOpen(false));
         }
@@ -126,24 +144,25 @@ export default function Sidebar() {
             }}
         >
             <List>
-                {/* menu1 */}
+                {/* Menu Quan trọng */}
                 <ListItemButton
                     id="Quan trọng"
                     sx={{
                         '&:hover': {
                             backgroundColor: '#f5f5f5',
                         },
-                        py: 0.7, // Giảm chiều cao menu
+                        py: 0.7,
                         borderRadius: '800px',
-                        backgroundColor: activeSidebar === '/' ? '#e3f2fd' : 'inherit', // Thêm dòng này
+                        backgroundColor: activeSidebar === '/' ? '#e3f2fd' : 'inherit',
                     }}
-                    onClick={() => switchActiveSidebar('/')} // Thêm dòng này
+                    onClick={() => switchActiveSidebar('/')}
                 >
                     <ListItemIcon sx={{ minWidth: '40px' }}>
                         <StarBorder sx={commonIconStyle} />
                     </ListItemIcon>
                     <ListItemText primary={!isOpen || 'Quan trọng'} primaryTypographyProps={{ sx: commonTextStyle }} />
                 </ListItemButton>
+
                 <Divider />
 
                 {/* Render động các phòng ban và request type */}
@@ -156,8 +175,8 @@ export default function Sidebar() {
                                 '&:hover': {
                                     backgroundColor: '#f5f5f5',
                                 },
-                                py: 0.7, // Giảm chiều cao menu
-                                borderRadius: '800px', // Thêm dòng này
+                                py: 0.7,
+                                borderRadius: '800px',
                             }}
                         >
                             <ListItemIcon sx={{ minWidth: '40px' }}>
@@ -185,8 +204,8 @@ export default function Sidebar() {
                                             },
                                             backgroundColor:
                                                 activeSidebar === requestType.requestTypePath ? '#e3f2fd' : 'inherit',
-                                            py: 0.7, // Giảm chiều cao menu
-                                            borderRadius: '800px', // Thêm dòng này
+                                            py: 0.7,
+                                            borderRadius: '800px',
                                         }}
                                         onClick={() => {
                                             switchActiveSidebar(requestType.requestTypePath);
@@ -205,7 +224,33 @@ export default function Sidebar() {
                         </Collapse>
                     </div>
                 ))}
+
+                {/* Divider trước menu Góp ý */}
+                <Divider />
+
+                {/* Menu Góp ý - mở Google Sheets trong tab mới */}
+                <ListItemButton
+                    id="Góp ý"
+                    sx={{
+                        '&:hover': {
+                            backgroundColor: '#f5f5f5',
+                        },
+                        py: 0.7,
+                        borderRadius: '800px',
+                        backgroundColor: 'inherit', // Không highlight vì không phải internal route
+                    }}
+                    onClick={handleFeedbackClick}
+                >
+                    <ListItemIcon sx={{ minWidth: '40px' }}>
+                        <FeedbackIcon sx={commonIconStyle} />
+                    </ListItemIcon>
+                    <ListItemText
+                        primary={!isOpen || 'Đóng góp ý kiến'}
+                        primaryTypographyProps={{ sx: commonTextStyle }}
+                    />
+                </ListItemButton>
             </List>
+
             <Box flexGrow={1}></Box>
         </Stack>
     );

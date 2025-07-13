@@ -1,12 +1,12 @@
 import AppBar from '@mui/material/AppBar';
 import { Box, Toolbar, Typography } from '@mui/material';
-import Avatar from '../Avatar';
-import Notification from '../Notification';
+import Avatar from '../../SharedComponent/Avatar';
+import Notification from '../../SharedComponent/Notification';
 import { logo } from '../../../assets/images';
 import { Link } from 'react-router-dom';
-import Search from '../Search';
+import Search from '../../SharedComponent/Search';
 import { useSelector, useDispatch } from 'react-redux';
-import { setIsOpen, clearActiveCollapse } from '../../../redux/slice/sibarSlice';
+import { setIsOpen } from '../../../redux/slice/sibarSlice';
 import MenuIcon from '@mui/icons-material/Menu';
 import IconButton from '@mui/material/IconButton';
 

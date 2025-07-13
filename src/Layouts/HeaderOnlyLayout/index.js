@@ -1,6 +1,6 @@
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
-import Header from '../../component/SharedComponent/Header';
+import Header from '../../component/LayoutComponent/Header';
 import LoadingPage from '../../component/SharedComponent/LoadingPage';
 import { useSelector } from 'react-redux';
 
