@@ -1,5 +1,4 @@
 import ErrorLayout from '../Layouts/ErrorLayout';
-import Home from '../pages/Home';
 import Profile from '../pages/Profile';
 import HeaderOnlyLayout from '../Layouts/HeaderOnlyLayout';
 import Error from '../pages/Error';

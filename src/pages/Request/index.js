@@ -2,7 +2,7 @@ import Requests from '../../component/SharedComponent/Requests';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import { useLocation, useSearchParams } from 'react-router-dom';
-import { setRequestTypeId, setRequestId } from '../../redux/slice/requestId';
+import { setRequestTypeId, setRequestId, setDepartment } from '../../redux/slice/requestId';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchRequestDetail } from '../../redux/slice/requestDetailSlice';
@@ -53,6 +53,7 @@ export default function Request() {
             const matchedType = requestTypes.find((type) => currentPath.includes(type.path));
             if (matchedType) {
                 dispatch(setRequestTypeId(matchedType.id));
+                dispatch(setDepartment(matchedType.despartmentName));
             } else {
                 dispatch(setRequestTypeId('all'));
             }
@@ -172,56 +173,5 @@ export default function Request() {
                 </Grid2>
             )}
         </Grid2>
-
-        // <Stack flexDirection={'row'} gap={1} flexWrap={'wrap'} overflow={'auto'} flexGrow={1}>
-        //     <Box
-        //         sx={{
-        //             bgcolor: '#ffffff',
-        //             borderRadius: 2,
-        //             minWidth: { xs: '100%', sm: 320, md: 375 },
-        //         }}
-        //         height={width < 750 ? 'auto' : '100%'}
-        //         maxWidth={width < 750 ? '100%' : '55%'}
-        //         overflow={'auto'}
-        //         flex={1}
-        //     >
-        //         <Box
-        //             sx={{
-        //                 display: 'flex',
-        //                 flexDirection: 'column',
-        //                 gap: 3,
-        //                 p: 3,
-        //             }}
-        //         >
-        //             <RequestDetail />
-        //             <Comment />
-        //         </Box>
-        //     </Box>
-        //     <Box
-        //         sx={{
-        //             bgcolor: '#ffffff',
-        //             borderRadius: 2,
-        //             minWidth: { xs: '100%', sm: 320, md: 375 },
-        //         }}
-        //         height={width < 750 ? 'auto' : '100%'}
-        //         maxWidth={width < 750 ? '100%' : '45%'}
-        //         flex={1}
-        //     >
-        //         <Box
-        //             sx={{
-        //                 height: '100%',
-        //                 display: 'flex',
-        //                 flexDirection: 'column',
-        //                 gap: 3,
-        //                 p: 3,
-        //                 overflow: 'auto',
-        //             }}
-        //         >
-        //             <Approver />
-        //             <Follower />
-        //             <Progress />
-        //         </Box>
-        //     </Box>
-        // </Stack>
     );
 }

@@ -1,11 +1,9 @@
 import { Tabs, Tab, Box, Typography, Stack, Avatar, Chip, AvatarGroup, Dialog, Divider, Badge } from '@mui/material';
 import { useState, useEffect, useRef } from 'react';
 import AddIcon from '@mui/icons-material/Add';
-import AssessmentIcon from '@mui/icons-material/Assessment';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
-import InventoryIcon from '@mui/icons-material/Inventory';
 import Button from '@mui/material/Button';
 import { format, isSameDay } from 'date-fns';
 import AddRequestForm from '../../Form/AddRequestForm';
@@ -17,12 +15,12 @@ import { clearRequestFormData, clearErrors } from '../../../redux/slice/requestF
 import { setRequestData } from '../../../redux/slice/requestSlice';
 import LoadingPage from '../LoadingPage';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import ExportReportForm from '../../Form/ExportReportForm';
+import ExportReport from '../Button/ExportReport';
+import StationeryItems from '../Button/StationeryItems'; // Import component mới
 
 const tabList = ['Tất cả', 'Đến lượt duyệt', 'Quá hạn', 'Đang chờ duyệt', 'Đã chấp nhận', 'Đã từ chối'];
 
 export default function Requests() {
-    const [isOpentExportForm, setIsOpenExportForm] = useState(false);
     const isMobile = useMediaQuery((theme) => theme.breakpoints.down('sm'));
 
     const navigate = useNavigate();
@@ -30,7 +28,7 @@ export default function Requests() {
     const [openForm, setOpenForm] = useState(false);
     const dispatch = useDispatch();
     const requests = useSelector((state) => state.request.requestData);
-    const originalData = useSelector((state) => state.request.originalData); // Lấy dữ liệu gốc
+    const originalData = useSelector((state) => state.request.originalData);
     const loading = useSelector((state) => state.request.loading);
     const requestTypeId = useSelector((state) => state.requestId.requestTypeId);
     const requestId = useSelector((state) => state.requestId.requestId);
@@ -103,11 +101,6 @@ export default function Requests() {
         }
     };
 
-    // Hàm xuất báo cáo
-    const handleExportReport = () => {
-        setIsOpenExportForm(true);
-    };
-
     // Thêm hàm getStatusConfig để xử lý style và label theo requestStatus
     const getStatusConfig = (status) => {
         switch (status) {
@@ -161,9 +154,6 @@ export default function Requests() {
             default:
                 return null;
         }
-    };
-    const handleGotoItems = () => {
-        navigate('/items');
     };
 
     // Hàm nhóm requests theo ngày
@@ -284,38 +274,12 @@ export default function Requests() {
                         minWidth: 'fit-content',
                     }}
                 >
-                    {showExportButton && requestTypeId === 4 && user.department === 'Tổ chức' && (
-                        <Button
-                            variant="outlined"
-                            color="primary"
-                            startIcon={<InventoryIcon />}
-                            onClick={handleGotoItems}
-                            sx={{
-                                fontSize: 12,
-                                textTransform: 'none',
-                                whiteSpace: 'nowrap',
-                                minWidth: 'auto',
-                            }}
-                        >
-                            Danh mục hàng hoá
-                        </Button>
-                    )}
-                    {showExportButton && typeof requestTypeId === 'number' && requestTypeId > 0 && (
-                        <Button
-                            variant="outlined"
-                            color="primary"
-                            startIcon={<AssessmentIcon />}
-                            onClick={handleExportReport}
-                            sx={{
-                                fontSize: 12,
-                                textTransform: 'none',
-                                whiteSpace: 'nowrap',
-                                minWidth: 'auto',
-                            }}
-                        >
-                            {isMobile ? 'Báo cáo' : 'Xuất báo cáo'}
-                        </Button>
-                    )}
+                    {/* Sử dụng component StationeryItems */}
+                    {showExportButton && <StationeryItems />}
+
+                    {/* Sử dụng component ExportReport */}
+                    {showExportButton && <ExportReport />}
+
                     {typeof requestTypeId === 'number' && requestTypeId > 0 && (
                         <Button
                             variant="contained"
@@ -562,21 +526,6 @@ export default function Requests() {
                     ))}
                 </Box>
             )}
-            <Dialog
-                open={isOpentExportForm}
-                onClose={() => setIsOpenExportForm(false)}
-                fullWidth
-                maxWidth="md"
-                PaperProps={{
-                    sx: {
-                        borderRadius: 2,
-                        width: isMobile ? '100%' : '600px',
-                        height: isMobile ? '100%' : 'auto',
-                    },
-                }}
-            >
-                <ExportReportForm onClose={() => setIsOpenExportForm(false)} />
-            </Dialog>
         </Stack>
     );
 }

@@ -5,6 +5,7 @@ const requestIdSlice = createSlice({
     initialState: {
         requestId: null,
         requestTypeId: null,
+        department: 'ĐBCL',
         previousRequestId: null,
         previousRequestTypeId: null,
     },
@@ -17,6 +18,9 @@ const requestIdSlice = createSlice({
             state.previousRequestTypeId = state.requestTypeId;
             state.requestTypeId = action.payload;
         },
+        setDepartment: (state, action) => {
+            state.department = action.payload;
+        },
         clearRequestIds: (state) => {
             state.previousRequestId = state.requestId;
             state.previousRequestTypeId = state.requestTypeId;
@@ -26,5 +30,5 @@ const requestIdSlice = createSlice({
     },
 });
 
-export const { setRequestId, setRequestTypeId, clearRequestIds } = requestIdSlice.actions;
+export const { setRequestId, setRequestTypeId, clearRequestIds, setDepartment } = requestIdSlice.actions;
 export default requestIdSlice.reducer;
