@@ -4,6 +4,8 @@ import AddIcon from '@mui/icons-material/Add';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
+import MarkAsUnreadIcon from '@mui/icons-material/MarkAsUnread';
+// Bỏ import DraftsIcon
 import Button from '@mui/material/Button';
 import { format, isSameDay } from 'date-fns';
 import AddRequestForm from '../../Form/AddRequestForm';
@@ -16,7 +18,7 @@ import { setRequestData } from '../../../redux/slice/requestSlice';
 import LoadingPage from '../LoadingPage';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import ExportReport from '../Button/ExportReport';
-import StationeryItems from '../Button/StationeryItems'; // Import component mới
+import StationeryItems from '../Button/StationeryItems';
 
 const tabList = ['Tất cả', 'Đến lượt duyệt', 'Quá hạn', 'Đang chờ duyệt', 'Đã chấp nhận', 'Đã từ chối'];
 
@@ -153,6 +155,23 @@ export default function Requests() {
                 );
             default:
                 return null;
+        }
+    };
+
+    // Hàm lấy trạng thái tiếp nhận - Cập nhật để bỏ icon và hiển thị cho cả trường hợp
+    const getReceiveStatus = (request) => {
+        if (!request.isReceived) {
+            return {
+                icon: <MarkAsUnreadIcon sx={{ fontSize: 16, color: 'warning.main' }} />,
+                label: 'Chưa tiếp nhận',
+                color: 'warning.main',
+            };
+        } else {
+            return {
+                icon: null, // Bỏ icon
+                label: 'Đã tiếp nhận',
+                color: 'success.main',
+            };
         }
     };
 
@@ -393,6 +412,19 @@ export default function Requests() {
                                                     titleAccess="Đã hoàn thành"
                                                 />
                                             )}
+                                            {/* Receive Status Icon - Hiển thị cho approved requests và chỉ khi chưa tiếp nhận */}
+                                            {request.status === 'approved' && !request.isReceived && (
+                                                <Box
+                                                    sx={{
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        flexShrink: 0,
+                                                    }}
+                                                    title={getReceiveStatus(request).label}
+                                                >
+                                                    {getReceiveStatus(request).icon}
+                                                </Box>
+                                            )}
                                         </Stack>
                                     </Box>
 
@@ -478,18 +510,19 @@ export default function Requests() {
                                         </Box>
                                     )}
 
-                                    {/* ID and Completion Status - Ẩn khi màn hình nhỏ */}
+                                    {/* ID and Completion + Receive Status - Ẩn khi màn hình nhỏ */}
                                     {showId && (
                                         <Box
                                             sx={{
                                                 ml: 2,
-                                                minWidth: 140,
+                                                minWidth: 250, // Tăng width để chứa thêm receive status chip
                                                 display: 'flex',
                                                 alignItems: 'center',
                                                 justifyContent: 'flex-end',
                                             }}
                                         >
                                             <Stack direction="row" spacing={1} alignItems="center">
+                                                {/* Completion Status */}
                                                 <Chip
                                                     label={request.isCompleted ? 'Hoàn thành' : 'Chưa hoàn thành'}
                                                     size="small"
@@ -501,6 +534,36 @@ export default function Requests() {
                                                         height: 24,
                                                     }}
                                                 />
+
+                                                {/* Receive Status - hiển thị cho tất cả approved requests với style tương tự completion */}
+                                                {
+                                                    <Chip
+                                                        label={request.isReceived ? 'Đã tiếp nhận' : 'Chưa tiếp nhận'}
+                                                        size="small"
+                                                        variant="outlined"
+                                                        sx={{
+                                                            fontSize: 10,
+                                                            color: request.isReceived ? 'success.main' : 'warning.main',
+                                                            borderColor: request.isReceived
+                                                                ? 'success.main'
+                                                                : 'warning.main',
+                                                            height: 24,
+                                                            // Thêm animation cho trạng thái chưa tiếp nhận
+                                                            ...(request.isReceived
+                                                                ? {}
+                                                                : {
+                                                                      animation: 'pulse 2s infinite',
+                                                                      '@keyframes pulse': {
+                                                                          '0%': { opacity: 1 },
+                                                                          '50%': { opacity: 0.7 },
+                                                                          '100%': { opacity: 1 },
+                                                                      },
+                                                                  }),
+                                                        }}
+                                                    />
+                                                }
+
+                                                {/* Request ID */}
                                                 <Typography
                                                     sx={{
                                                         fontSize: 12,

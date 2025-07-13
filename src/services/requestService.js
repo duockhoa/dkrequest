@@ -79,4 +79,23 @@ async function markCompleted(payload) {
     }
 }
 
-export { getAllRequestService, getRequestByIdService, createRequestService, markCompleted };
+async function markReceived(payload) {
+    try {
+        const response = await axios.put(`/request/markreceived/`, payload);
+        if (response.status === 200) {
+            return response.data.result;
+        } else {
+            throw new Error('Không thể đánh dấu yêu cầu là đã nhận');
+        }
+    } catch (error) {
+        if (error.response) {
+            throw new Error(error.response.data.message || 'Lỗi từ server');
+        } else if (error.request) {
+            throw new Error('Không thể kết nối đến server');
+        } else {
+            throw new Error(error.message || 'Đã xảy ra lỗi khi đánh dấu yêu cầu là đã nhận');
+        }
+    }
+}
+
+export { getAllRequestService, getRequestByIdService, createRequestService, markCompleted, markReceived };

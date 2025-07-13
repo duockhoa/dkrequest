@@ -1,15 +1,14 @@
 import { Box, Stack } from '@mui/material';
 import ExportFile from '../../Button/ExportFile';
 import MarkCompleted from '../../Button/MarkCompleted';
-import { useSelector } from 'react-redux';
+import MarkReceived from '../../Button/MarkReceived';
 
 function OtherAction({ onClose }) {
-    const user = useSelector((state) => state.user.userInfo);
-    const requestDetail = useSelector((state) => state.requestDetail.requestDetailvalue);
-
     return (
         <Box sx={{ minWidth: 200 }}>
             <Stack direction="column" spacing={0}>
+                {/* Mark Received Component */}
+                <MarkReceived onClose={onClose} /> 
                 {/* Mark Completed Component */}
                 <MarkCompleted onClose={onClose} />
 

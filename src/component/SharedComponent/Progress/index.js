@@ -4,6 +4,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import PendingIcon from '@mui/icons-material/PendingOutlined';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import CancelIcon from '@mui/icons-material/Cancel';
+import MarkEmailReadIcon from '@mui/icons-material/MarkEmailRead'; // Icon cho tiếp nhận
 import { useSelector } from 'react-redux';
 import { format, parseISO } from 'date-fns';
 
@@ -30,8 +31,10 @@ function Progress() {
                 return <CheckCircleIcon sx={{ color: 'success.main', fontSize: '2rem' }} />;
             case 'rejected':
                 return <CancelIcon sx={{ color: 'error.main', fontSize: '2rem' }} />;
+            case 'received':
+                return <MarkEmailReadIcon sx={{ color: 'info.main', fontSize: '2rem' }} />; // Icon cho tiếp nhận
             case 'completed':
-                return <TaskAltIcon sx={{ color: 'info.main', fontSize: '2rem' }} />;
+                return <TaskAltIcon sx={{ color: 'secondary.main', fontSize: '2rem' }} />; // Đổi màu để phân biệt
             case 'pending':
                 return <PendingIcon sx={{ color: 'warning.main', fontSize: '2rem' }} />;
             default:
@@ -74,6 +77,20 @@ function Progress() {
                     });
                 }
             });
+
+            // Add receiver activity if request is received
+            if (requestDetail.isReceived && requestDetail.receiver) {
+                activities.push({
+                    id: 'received',
+                    status: 'received',
+                    title: `${requestDetail.receiver.name || 'Unknown'} (${
+                        requestDetail.receiver.department || 'Unknown'
+                    })`,
+                    action: 'đã tiếp nhận yêu cầu vào lúc',
+                    timestamp: formatDateTime(requestDetail.received_at),
+                    sortDate: new Date(requestDetail.received_at),
+                });
+            }
 
             // Add completer activity if request is completed
             if (requestDetail.isCompleted) {
