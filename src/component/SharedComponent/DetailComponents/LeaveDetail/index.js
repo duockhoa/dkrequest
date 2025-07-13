@@ -25,11 +25,12 @@ export default function LeaveDetail() {
         return dateString ? format(new Date(dateString), 'dd/MM/yyyy HH:mm') : '-';
     };
 
-    // Safe access to nested properties;
+    // Safe access to nested properties
     const leaveStart = requestDetail?.leaveRegistration?.start_time;
     const leaveEnd = requestDetail?.leaveRegistration?.end_time;
     const leaveHours = requestDetail?.leaveRegistration?.hours || 0;
     const leaveReason = requestDetail?.leaveRegistration?.reason || '-';
+    const handoverUserName = requestDetail?.leaveRegistration?.handoverUser?.name || '-';
 
     return (
         <>
@@ -37,7 +38,7 @@ export default function LeaveDetail() {
             <DetailItem label="Thời gian bắt đầu" value={formatDate(leaveStart)} />
             <DetailItem label="Thời gian kết thúc" value={formatDate(leaveEnd)} />
             <DetailItem label="Số giờ nghỉ" value={formatWorkingTime(leaveHours)} />
-  
+            <DetailItem label="Người ban giao" value={handoverUserName} />
         </>
     );
 }

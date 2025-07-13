@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Stack, Typography, TextField, Select, MenuItem } from '@mui/material';
+import { Stack, Typography, TextField, Select, MenuItem, Autocomplete } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
 import dayjs from 'dayjs';
 import { setRequestFormData, clearErrors, setFormErrors } from '../../../redux/slice/requestFormDataSlice';
@@ -11,6 +11,22 @@ function LeaveRequestForm() {
     const requestFormData = useSelector((state) => state.requestFormData.value);
     const errors = useSelector((state) => state.requestFormData.errors);
     const userInfo = useSelector((state) => state.user.userInfo);
+    const users = useSelector((state) => state.users.users);
+    const [handoverUser, setHandoverUser] = useState(null); // Đổi từ followers thành handoverUser
+
+    const handleHandoverUserChange = (event, newValue) => {
+        setHandoverUser(newValue);
+        dispatch(
+            setRequestFormData({
+                ...requestFormData,
+                leave_registration: {
+                    ...requestFormData.leave_registration,
+                    handover_user_id: newValue?.id || null, // Lưu handover_user_id trong leave_registration
+                },
+            }),
+        );
+    };
+
     const [leaveDay, setLeaveDay] = useState({
         hasAnnualLeaveDay: 0,
         usedLeaveDay: 0,
@@ -42,7 +58,6 @@ function LeaveRequestForm() {
                 },
             }),
         );
-        // Clear error if validation passes
     };
 
     const handleTimeChange = (event) => {
@@ -118,6 +133,15 @@ function LeaveRequestForm() {
         };
         fetchLeaveHours();
     }, []);
+
+    // Effect để sync handoverUser với requestFormData khi load data
+    useEffect(() => {
+        const handoverUserId = requestFormData?.leave_registration?.handover_user_id;
+        if (handoverUserId && users.length > 0) {
+            const foundUser = users.find((user) => user.id === handoverUserId);
+            setHandoverUser(foundUser || null);
+        }
+    }, [requestFormData?.leave_registration?.handover_user_id, users]);
 
     return (
         <Stack spacing={2}>
@@ -198,7 +222,43 @@ function LeaveRequestForm() {
                     ))}
                 </Select>
             </Stack>
-
+            <Stack direction="row" alignItems="center" spacing={2}>
+                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Người ban giao:</Typography>
+                <Autocomplete
+                    fullWidth
+                    options={users}
+                    getOptionLabel={(option) => option.name}
+                    value={handoverUser}
+                    onChange={handleHandoverUserChange}
+                    renderInput={(params) => (
+                        <TextField
+                            {...params}
+                            size="medium"
+                            inputProps={{
+                                ...params.inputProps,
+                                style: { fontSize: '1.4rem' },
+                            }}
+                        />
+                    )}
+                    sx={{
+                        '& .MuiChip-root': {
+                            height: '24px',
+                            backgroundColor: '#e8f5e9',
+                            '& .MuiChip-label': {
+                                fontSize: '1.2rem',
+                                color: '#2e7d32',
+                            },
+                        },
+                        '& .MuiAutocomplete-option': {
+                            fontSize: '1.6rem',
+                            padding: '18px 18px',
+                            '&:hover': {
+                                backgroundColor: '#f5f5f5',
+                            },
+                        },
+                    }}
+                />
+            </Stack>
             <Stack direction="row" alignItems="center" spacing={2}>
                 <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Số ngày phép đã dùng</Typography>
                 <TextField
