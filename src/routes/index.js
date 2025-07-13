@@ -63,6 +63,10 @@ const publicRoutes = [
         component: Request,
     },
     {
+        path: '/meeting-room-request',
+        component: Request,
+    },
+    {
         path: '/items',
         component: items,
     },

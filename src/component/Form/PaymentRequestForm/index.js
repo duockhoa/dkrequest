@@ -115,6 +115,7 @@ function PaymentRequestForm() {
                     name="payment_content"
                     value={requestFormData?.payment_request?.payment_content || ''}
                     onChange={handleChange}
+                    multiline
                     size="medium"
                     inputProps={{ style: { fontSize: '1.4rem' } }}
                     error={!!errors?.payment_content}
@@ -215,6 +216,7 @@ function PaymentRequestForm() {
                             {...params}
                             name="bank_name"
                             size="medium"
+                            multiline
                             inputProps={{
                                 ...params.inputProps,
                                 style: { fontSize: '1.4rem' },

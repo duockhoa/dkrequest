@@ -16,6 +16,7 @@ import { fetchCreateRequest } from '../../../redux/slice/requestFormDataSlice';
 import { fetchNotifications } from '../../../redux/slice/notificationSlice';
 import AdvanceMoneyRequestForm from '../AdvanceMoneyRequestForm';
 import SupplyStationeryForm from '../SupplyStationeryForm';
+import MeetingRoomRequestForm from '../MeetingRoomRequestForm';
 import OtherAttachFile from '../OtherAttachFile';
 
 function AddRequestForm({ onClose }) {
@@ -68,6 +69,8 @@ function AddRequestForm({ onClose }) {
                     return `${user.name}  xin xác nhận công việc`;
                 case 9:
                     return `${user.name} Đề nghị tuyển dụng nhân sự cho phòng ${user.department}`;
+                case 14:
+                    return `${user.name} Đề nghị chuẩn bị phòng họp`;
                 default:
                     return '';
             }
@@ -107,7 +110,9 @@ function AddRequestForm({ onClose }) {
         if (requestTypeId === 8) {
             requiredFields.push('start_time', 'end_time', 'hours', 'reason', 'hoursText');
         }
-
+        if (requestTypeId === 14) {
+            requiredFields.push('usage_date', 'start_time', 'end_time', 'location', 'purpose');
+        }
         const flattenedData = flattenObject(requestFormData);
         let isValid = true;
         let errors = {};
@@ -151,8 +156,6 @@ function AddRequestForm({ onClose }) {
 
     return (
         <Box
-            component="form"
-            onSubmit={handleSubmit}
             noValidate
             autoComplete="off"
             sx={{
@@ -187,12 +190,13 @@ function AddRequestForm({ onClose }) {
                 />
             </Stack>
 
+            {requestTypeId === 1 ? <PaymentRequestForm /> : ''}
+            {requestTypeId === 2 ? <AdvanceMoneyRequestForm /> : ''}
             {requestTypeId === 3 ? <LeaveRequestForm /> : ''}
             {requestTypeId === 4 ? <SupplyStationeryForm /> : ''}
             {requestTypeId === 7 ? <OverTimeRequestForm /> : ''}
             {requestTypeId === 8 ? <TaskConfirm /> : ''}
-            {requestTypeId === 1 ? <PaymentRequestForm /> : ''}
-            {requestTypeId === 2 ? <AdvanceMoneyRequestForm /> : ''}
+            {requestTypeId === 14 ? <MeetingRoomRequestForm /> : ''}
             <Stack direction="row" alignItems="flex-start" spacing={2}>
                 <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Mô tả ( nếu có):</Typography>
                 <TextField
@@ -202,7 +206,6 @@ function AddRequestForm({ onClose }) {
                     onChange={handleChange}
                     size="medium"
                     multiline
-                    rows={1}
                     inputProps={{ style: { fontSize: '1.4rem' } }}
                     error={!!errors.description}
                     helperText={errors.description || ''}
@@ -244,6 +247,7 @@ function AddRequestForm({ onClose }) {
                     fullWidth
                     type="submit"
                     variant="contained"
+                    onClick={handleSubmit}
                     sx={{
                         py: 0.8,
                         maxWidth: 150,

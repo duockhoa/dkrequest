@@ -12,6 +12,7 @@ import PaymentDetail from '../DetailComponents/PaymentDetail';
 import AdvanceMoneyDetail from '../DetailComponents/AdvanceMoneyDetail';
 import AttachmentsDetail from '../DetailComponents/AttachmentsDetail';
 import SupplyStationeryDetail from '../DetailComponents/SupplyStationeryDetail';
+import MeetingRoomRequestDetail from '../DetailComponents/MeetingRoomRequestDetail';
 import OtherAction from '../Action/OtherAction';
 
 const DetailItem = ({ label, value }) => (
@@ -236,6 +237,7 @@ function RequestDetail() {
                 {requestTypeId === 4 ? <SupplyStationeryDetail /> : ''}
                 {requestTypeId === 7 ? <OverTimeRequestDetail /> : ''}
                 {requestTypeId === 8 ? <TaskConfirmDetail /> : ''}
+                {requestTypeId === 14 ? <MeetingRoomRequestDetail /> : ''}
 
                 <DetailItem label="Mô tả" value={description} />
                 <AttachmentsDetail />

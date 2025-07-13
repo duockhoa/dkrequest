@@ -131,6 +131,7 @@ function AdvanceMoneyRequestForm() {
                 <TextField
                     fullWidth
                     name="reason"
+                    multiline
                     value={requestFormData?.advance_request?.reason || ''}
                     onChange={handleChange}
                     size="medium"
@@ -232,6 +233,7 @@ function AdvanceMoneyRequestForm() {
                         <TextField
                             {...params}
                             name="bank_name"
+                            multiline
                             size="medium"
                             inputProps={{
                                 ...params.inputProps,

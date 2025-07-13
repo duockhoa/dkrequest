@@ -125,7 +125,6 @@ function OvertimeRequestForm() {
                     onChange={handleChange}
                     size="medium"
                     multiline
-                    rows={1}
                     inputProps={{ style: { fontSize: '1.4rem' } }}
                     error={!!errors?.reason}
                     helperText={errors?.reason || ''}
