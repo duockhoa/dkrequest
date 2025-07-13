@@ -16,6 +16,7 @@ import { fetchCreateRequest } from '../../../redux/slice/requestFormDataSlice';
 import { fetchNotifications } from '../../../redux/slice/notificationSlice';
 import AdvanceMoneyRequestForm from '../AdvanceMoneyRequestForm';
 import SupplyStationeryForm from '../SupplyStationeryForm';
+import OtherAttachFile from '../OtherAttachFile';
 
 function AddRequestForm({ onClose }) {
     const requestTypeId = useSelector((state) => state.requestId.requestTypeId);
@@ -209,6 +210,7 @@ function AddRequestForm({ onClose }) {
             </Stack>
 
             <RequestFollowers />
+            <OtherAttachFile />
             <RequestApprovers />
 
             <Stack
