@@ -1,4 +1,4 @@
-import { Stack, Typography, TextField, Autocomplete, InputAdornment } from '@mui/material';
+import { Stack, Typography, TextField, Autocomplete, InputAdornment, Select, MenuItem } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
 import { useEffect, useLayoutEffect } from 'react';
 import { setRequestFormData, clearErrors } from '../../../redux/slice/requestFormDataSlice';
@@ -124,22 +124,28 @@ function AdvanceMoneyRequestForm() {
         ...bank,
     }));
 
+    // Thêm options cho lý do tạm ứng
+    const reasonOptions = ['Tạm ứng tiền mua vật tư', 'Tạm ứng lương'];
+
     return (
         <Stack spacing={3}>
             <Stack direction="row" alignItems="center" spacing={2}>
                 <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Lý do tạm ứng: (*)</Typography>
-                <TextField
+                <Select
                     fullWidth
                     name="reason"
-                    multiline
                     value={requestFormData?.advance_request?.reason || ''}
                     onChange={handleChange}
                     size="medium"
-                    py={0.5}
-                    inputProps={{ style: { fontSize: '1.4rem' } }}
+                    sx={{ fontSize: '1.4rem' }}
                     error={!!errors?.reason}
-                    helperText={errors?.reason || ''}
-                />
+                >
+                    {reasonOptions.map((reason) => (
+                        <MenuItem key={reason} value={reason} sx={{ fontSize: '1.4rem' }}>
+                            {reason}
+                        </MenuItem>
+                    ))}
+                </Select>
             </Stack>
 
             <Stack direction="row" alignItems="center" spacing={2}>
