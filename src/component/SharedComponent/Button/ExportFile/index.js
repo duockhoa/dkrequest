@@ -14,6 +14,7 @@ function ExportFile({ onClose }) {
     const year = createdAt ? dayjs(createdAt).year() : '';
     const userName = requestDetail?.requestor?.name || '';
     const department = requestDetail?.requestor?.department || '';
+    const requesterPosition = requestDetail?.requestor?.position || '';
     const departmentHead =
         Array.isArray(requestDetail?.approvers) && requestDetail.approvers.length > 0
             ? requestDetail.approvers[0]?.approver?.name || ''
@@ -47,7 +48,7 @@ function ExportFile({ onClose }) {
                         department_head: departmentHead,
                         description: requestDetail.description || '',
                         request_name: requestDetail.requestName || '',
-                    }
+                    },
                 };
             case 2:
                 const advance = requestDetail?.advance_request || {};
@@ -68,12 +69,54 @@ function ExportFile({ onClose }) {
                         bank_account_number: advance.bank_account_number || '',
                         beneficiary_name: advance.beneficiary_name || '',
                         department_head: departmentHead,
-                    }
+                    },
+                };
+            case 9:
+                const recruitment = requestDetail?.recruitmentRequest || {};
+                return {
+                    template: 'recruitment/BMTD01TC.docx',
+                    data: {
+                        department: department,
+                        day: day,
+                        month: month,
+                        year: year,
+                        userName: userName,
+                        requesterPosition: requesterPosition,
+                        position: recruitment.position || '',
+                        quantity: recruitment.quantity || '',
+                        probation_start_date: recruitment.probation_start_date
+                            ? dayjs(recruitment.probation_start_date).format('DD/MM/YYYY')
+                            : '',
+                        probation_salary: formatNumberWithCommas(parseInt(Number(recruitment.probation_salary))) || '',
+                        probation_salary_text: recruitment.probation_salary
+                            ? numberToVietnameseWords(parseInt(Number(recruitment.probation_salary)))
+                            : '',
+                        official_salary: formatNumberWithCommas(parseInt(Number(recruitment.official_salary))) || '',
+                        official_salary_text: recruitment.official_salary
+                            ? numberToVietnameseWords(parseInt(Number(recruitment.official_salary)))
+                            : '',
+                        recruitment_reason: recruitment.recruitment_reason || '',
+                        education_level: recruitment.education_level || '',
+                        major: recruitment.major || '',
+                        foreign_language: recruitment.foreign_language || '',
+                        computer_skill: recruitment.computer_skill || '',
+                        experience: recruitment.experience || '',
+                        contract_type: recruitment.contract_type || '',
+                        gender: recruitment.gender || '',
+                        age_range: recruitment.age_range || '',
+                        work_location: recruitment.work_location || '',
+                        working_hours: recruitment.working_hours || '',
+                        job_description: recruitment.job_description || '',
+                        other_requirements: recruitment.other_requirements || '',
+                        department_head: departmentHead,
+                        description: requestDetail.description || '',
+                        request_name: requestDetail.requestName || '',
+                    },
                 };
             default:
                 return {
                     template: 'default_template',
-                    data: requestDetail.data || {}
+                    data: requestDetail.data || {},
                 };
         }
     };
@@ -103,7 +146,7 @@ function ExportFile({ onClose }) {
             <ListItemIcon sx={{ color: 'inherit' }}>
                 <DownloadIcon />
             </ListItemIcon>
-            <ListItemText 
+            <ListItemText
                 primary="Xuất File"
                 primaryTypographyProps={{
                     fontSize: '14px',

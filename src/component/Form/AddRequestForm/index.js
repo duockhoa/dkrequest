@@ -18,6 +18,7 @@ import AdvanceMoneyRequestForm from '../AdvanceMoneyRequestForm';
 import SupplyStationeryForm from '../SupplyStationeryForm';
 import MeetingRoomRequestForm from '../MeetingRoomRequestForm';
 import OtherAttachFile from '../OtherAttachFile';
+import RecruitmentForm from '../RecruitmentForm';
 
 function AddRequestForm({ onClose }) {
     const requestTypeId = useSelector((state) => state.requestId.requestTypeId);
@@ -108,6 +109,27 @@ function AddRequestForm({ onClose }) {
         if (requestTypeId === 8) {
             requiredFields.push('start_time', 'end_time', 'hours', 'reason', 'hoursText');
         }
+        if (requestTypeId === 9) {
+            requiredFields.push(
+                'position',
+                'quantity',
+                'probation_start_date',
+                'probation_salary_text',
+                'official_salary_text',
+                'recruitment_reason',
+                'education_level',
+                'major',
+                'foreign_language',
+                'computer_skill',
+                'experience',
+                'contract_type',
+                'gender',
+                'age_range',
+                'work_location',
+                'working_hours',
+            );
+        }
+
         if (requestTypeId === 14) {
             requiredFields.push('usage_date', 'start_time', 'end_time', 'location', 'purpose');
         }
@@ -213,6 +235,7 @@ function AddRequestForm({ onClose }) {
             {requestTypeId === 4 ? <SupplyStationeryForm /> : ''}
             {requestTypeId === 7 ? <OverTimeRequestForm /> : ''}
             {requestTypeId === 8 ? <TaskConfirm /> : ''}
+            {requestTypeId === 9 ? <RecruitmentForm /> : ''}
             {requestTypeId === 14 ? <MeetingRoomRequestForm /> : ''}
             {/* Hiển thị lỗi chung cho supply_stationery */}
             {errors?.supply_stationery_editing && (
