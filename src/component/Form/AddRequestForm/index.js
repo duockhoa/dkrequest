@@ -132,7 +132,6 @@ function AddRequestForm({ onClose }) {
         const flattenedData = flattenObject(requestFormData);
         let isValid = true;
         let errors = {};
-        console.log('Flattened Data:', flattenedData);
 
         // Validate only basic required fields
         requiredFields.forEach((field) => {

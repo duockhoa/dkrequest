@@ -12,7 +12,16 @@ function LeaveRequestForm() {
     const errors = useSelector((state) => state.requestFormData.errors);
     const userInfo = useSelector((state) => state.user.userInfo);
     const users = useSelector((state) => state.users.users);
-    const [handoverUser, setHandoverUser] = useState(null); // Đổi từ followers thành handoverUser
+    const [handoverUser, setHandoverUser] = useState(null);
+
+    // Filter users theo department của userInfo
+    const filteredUsers = useMemo(() => {
+        if (!userInfo?.department || !users) return [];
+
+        return users.filter(
+            (user) => user.department === userInfo.department && user.id !== userInfo.id, // Loại bỏ chính user hiện tại
+        );
+    }, [users, userInfo?.department, userInfo?.id]);
 
     const handleHandoverUserChange = (event, newValue) => {
         setHandoverUser(newValue);
@@ -21,16 +30,11 @@ function LeaveRequestForm() {
                 ...requestFormData,
                 leave_registration: {
                     ...requestFormData.leave_registration,
-                    handover_user_id: newValue?.id || null, // Lưu handover_user_id trong leave_registration
+                    handover_user_id: newValue?.id || null,
                 },
             }),
         );
     };
-
-    const [leaveDay, setLeaveDay] = useState({
-        hasAnnualLeaveDay: 0,
-        usedLeaveDay: 0,
-    });
 
     const handleChange = (event) => {
         dispatch(clearErrors());
@@ -42,8 +46,8 @@ function LeaveRequestForm() {
                     ...requestFormData,
                     leave_registration: {
                         ...requestFormData.leave_registration,
-                        [name]: value, // Update the specific field in leave_registration
-                        hours: totalHours, // Update total hours based on selected time text
+                        [name]: value,
+                        hours: totalHours,
                     },
                 }),
             );
@@ -54,7 +58,7 @@ function LeaveRequestForm() {
                 ...requestFormData,
                 leave_registration: {
                     ...requestFormData.leave_registration,
-                    [name]: value, // Update the specific field in leave_registration
+                    [name]: value,
                 },
             }),
         );
@@ -113,6 +117,11 @@ function LeaveRequestForm() {
         return generateHourOptions(new Date(start), new Date(end));
     }, [requestFormData?.leave_registration?.start_time, requestFormData?.leave_registration?.end_time]);
 
+    const [leaveDay, setLeaveDay] = useState({
+        hasAnnualLeaveDay: 0,
+        usedLeaveDay: 0,
+    });
+
     useEffect(() => {
         const fetchLeaveHours = async () => {
             try {
@@ -137,11 +146,11 @@ function LeaveRequestForm() {
     // Effect để sync handoverUser với requestFormData khi load data
     useEffect(() => {
         const handoverUserId = requestFormData?.leave_registration?.handover_user_id;
-        if (handoverUserId && users.length > 0) {
-            const foundUser = users.find((user) => user.id === handoverUserId);
+        if (handoverUserId && filteredUsers.length > 0) {
+            const foundUser = filteredUsers.find((user) => user.id === handoverUserId);
             setHandoverUser(foundUser || null);
         }
-    }, [requestFormData?.leave_registration?.handover_user_id, users]);
+    }, [requestFormData?.leave_registration?.handover_user_id, filteredUsers]);
 
     return (
         <Stack spacing={2}>
@@ -153,7 +162,6 @@ function LeaveRequestForm() {
                     value={requestFormData?.leave_registration?.reason || ''}
                     onChange={handleChange}
                     size="medium"
-                    multiline
                     sx={{ fontSize: '1.4rem' }}
                     error={!!errors?.reason}
                 >
@@ -226,10 +234,19 @@ function LeaveRequestForm() {
                 <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Người ban giao:</Typography>
                 <Autocomplete
                     fullWidth
-                    options={users}
-                    getOptionLabel={(option) => option.name}
+                    options={filteredUsers}
+                    getOptionLabel={(option) => `${option.name} - ${option.position}`}
                     value={handoverUser}
                     onChange={handleHandoverUserChange}
+                    renderOption={(props, option) => (
+                        <li {...props} key={option.id}>
+                            <Stack direction="column" spacing={0.5}>
+                                <Typography sx={{ fontSize: '1.2rem' }}>
+                                    {option.name} ({option.position})
+                                </Typography>
+                            </Stack>
+                        </li>
+                    )}
                     renderInput={(params) => (
                         <TextField
                             {...params}
@@ -241,22 +258,15 @@ function LeaveRequestForm() {
                         />
                     )}
                     sx={{
-                        '& .MuiChip-root': {
-                            height: '24px',
-                            backgroundColor: '#e8f5e9',
-                            '& .MuiChip-label': {
-                                fontSize: '1.2rem',
-                                color: '#2e7d32',
-                            },
-                        },
                         '& .MuiAutocomplete-option': {
-                            fontSize: '1.6rem',
-                            padding: '18px 18px',
+                            fontSize: '1.4rem',
+                            padding: '12px 16px',
                             '&:hover': {
                                 backgroundColor: '#f5f5f5',
                             },
                         },
                     }}
+                    noOptionsText={`Không có đồng nghiệp nào trong phòng ban ${userInfo?.department}`}
                 />
             </Stack>
             <Stack direction="row" alignItems="center" spacing={2}>

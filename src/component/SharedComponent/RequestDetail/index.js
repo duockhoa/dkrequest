@@ -36,9 +36,6 @@ function RequestDetail() {
     const error = useSelector((state) => state.requestDetail.error);
     const user = useSelector((state) => state.user.userInfo);
 
-    console.log('Request Detail:', requestDetail);
-    console.log('User Info:', user);
-
     // State for popover
     const [anchorEl, setAnchorEl] = useState(null);
 
