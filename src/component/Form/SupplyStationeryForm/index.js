@@ -149,7 +149,7 @@ export default function SupplyStationeryForm() {
             ...newRow,
             product_code: matchedItem ? matchedItem.product_code : '',
             unit: matchedItem ? matchedItem.unit?.replace(/\r/g, '').trim() : '',
-            isNew: false,
+            isNew: false, // Đánh dấu là đã được lưu
         };
         setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
         return updatedRow;

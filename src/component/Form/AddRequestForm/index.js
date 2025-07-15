@@ -99,11 +99,9 @@ function AddRequestForm({ onClose }) {
         if (requestTypeId === 2) {
             requiredFields.push('reason', 'address', 'amount', 'due_date');
         }
-
         if (requestTypeId === 3) {
             requiredFields.push('reason', 'start_time', 'end_time', 'hours', 'hoursText');
         }
-
         if (requestTypeId === 7) {
             requiredFields.push('start_time', 'end_time', 'hours', 'reason', 'hoursText');
         }
@@ -113,9 +111,29 @@ function AddRequestForm({ onClose }) {
         if (requestTypeId === 14) {
             requiredFields.push('usage_date', 'start_time', 'end_time', 'location', 'purpose');
         }
+        if (requestTypeId === 4) {
+            requiredFields.push('supply_stationery');
+
+            // Kiểm tra xem có mặt hàng nào đang trong edit mode không
+            if (requestFormData.supply_stationery && requestFormData.supply_stationery.length > 0) {
+                const hasEditingItems = requestFormData.supply_stationery.some((item) => item.isNew === true);
+                if (hasEditingItems) {
+                    dispatch(
+                        setFieldError({
+                            field: 'supply_stationery_editing',
+                            message: 'Vui lòng lưu tất cả các mặt hàng đang chỉnh sửa trước khi gửi đề xuất!',
+                        }),
+                    );
+                    return false;
+                }
+            }
+        }
+
         const flattenedData = flattenObject(requestFormData);
         let isValid = true;
         let errors = {};
+        console.log('Flattened Data:', flattenedData);
+
         // Validate only basic required fields
         requiredFields.forEach((field) => {
             if (!flattenedData[field] || (typeof flattenedData[field] === 'string' && !flattenedData[field].trim())) {
@@ -197,6 +215,23 @@ function AddRequestForm({ onClose }) {
             {requestTypeId === 7 ? <OverTimeRequestForm /> : ''}
             {requestTypeId === 8 ? <TaskConfirm /> : ''}
             {requestTypeId === 14 ? <MeetingRoomRequestForm /> : ''}
+            {/* Hiển thị lỗi chung cho supply_stationery */}
+            {errors?.supply_stationery_editing && (
+                <Box
+                    sx={{
+                        p: 2,
+                        mb: 2,
+                        border: '1px solid #f44336',
+                        borderRadius: 1,
+                        backgroundColor: '#ffebee',
+                        color: '#d32f2f',
+                        fontSize: '14px',
+                        textAlign: 'center',
+                    }}
+                >
+                    {errors.supply_stationery_editing}
+                </Box>
+            )}
             <Stack direction="row" alignItems="flex-start" spacing={2}>
                 <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Mô tả ( nếu có):</Typography>
                 <TextField
