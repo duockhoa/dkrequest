@@ -395,7 +395,7 @@ export default function Requests() {
                                                     whiteSpace: 'nowrap',
                                                     overflow: 'hidden',
                                                     textOverflow: 'ellipsis',
-                                                    maxWidth: '250px',
+                                                    maxWidth: '900px',
                                                     lineHeight: 1.2,
                                                 }}
                                             >
