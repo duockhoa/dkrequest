@@ -19,6 +19,7 @@ import SupplyStationeryForm from '../SupplyStationeryForm';
 import MeetingRoomRequestForm from '../MeetingRoomRequestForm';
 import OtherAttachFile from '../OtherAttachFile';
 import RecruitmentForm from '../RecruitmentForm';
+import ExpressDeliveryForm from '../ExpressDeliveryForm';
 
 function AddRequestForm({ onClose }) {
     const requestTypeId = useSelector((state) => state.requestId.requestTypeId);
@@ -72,6 +73,8 @@ function AddRequestForm({ onClose }) {
                     return `${user.name} Đề nghị tuyển dụng nhân sự cho phòng ${user.department}`;
                 case 14:
                     return `${user.name} Đề nghị chuẩn bị phòng họp`;
+                case 15:
+                    return `${user.name} Đề nghị giao hàng nhanh`;
                 default:
                     return '';
             }
@@ -150,6 +153,25 @@ function AddRequestForm({ onClose }) {
                 }
             }
         }
+        if (requestTypeId === 15) {
+            // Các trường bắt buộc cơ bản
+            const basicExpressFields = [
+                'item_type',
+                'item_weight',
+                'delivery_method',
+                'receiving_unit',
+                'receiving_address',
+                'recipient_name',
+                'recipient_phone',
+            ];
+
+            requiredFields.push(...basicExpressFields);
+
+            // Nếu chọn "Gửi hỏa tốc" thì cần thêm 2 trường bắt buộc
+            if (requestFormData?.express_delivery_request?.delivery_method === 'Gửi hỏa tốc') {
+                requiredFields.push('express_reason', 'expected_receive_date');
+            }
+        }
 
         const flattenedData = flattenObject(requestFormData);
         let isValid = true;
@@ -167,6 +189,7 @@ function AddRequestForm({ onClose }) {
         Object.keys(errors).forEach((field) => {
             dispatch(setFieldError({ field, message: errors[field] }));
         });
+
         console.error('Validation errors:', errors);
         return isValid;
     };
@@ -237,6 +260,7 @@ function AddRequestForm({ onClose }) {
             {requestTypeId === 8 ? <TaskConfirm /> : ''}
             {requestTypeId === 9 ? <RecruitmentForm /> : ''}
             {requestTypeId === 14 ? <MeetingRoomRequestForm /> : ''}
+            {requestTypeId === 15 ? <ExpressDeliveryForm /> : ''}
             {/* Hiển thị lỗi chung cho supply_stationery */}
             {errors?.supply_stationery_editing && (
                 <Box

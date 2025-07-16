@@ -70,7 +70,10 @@ const publicRoutes = [
         path: '/items',
         component: items,
     },
-
+    {
+        path: 'express-delivery-request',
+        component: Request,
+    },
     {
         path: '*',
         component: Error,
