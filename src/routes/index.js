@@ -75,6 +75,10 @@ const publicRoutes = [
         component: Request,
     },
     {
+        path: 'office-equipment-repair',
+        component: Request,
+    },
+    {
         path: '*',
         component: Error,
         layout: ErrorLayout,

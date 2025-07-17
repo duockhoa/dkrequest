@@ -20,6 +20,7 @@ import MeetingRoomRequestForm from '../MeetingRoomRequestForm';
 import OtherAttachFile from '../OtherAttachFile';
 import RecruitmentForm from '../RecruitmentForm';
 import ExpressDeliveryForm from '../ExpressDeliveryForm';
+import OfficeEquipmentRepairForm from '../OfficeEquipmentRepairForm';
 
 function AddRequestForm({ onClose }) {
     const requestTypeId = useSelector((state) => state.requestId.requestTypeId);
@@ -54,27 +55,29 @@ function AddRequestForm({ onClose }) {
         const requestName = () => {
             switch (requestTypeId) {
                 case 1:
-                    return `${user.name} đề nghị thanh toán tiền `;
+                    return `${user.name}  ${user.department} đề nghị thanh toán tiền `;
                 case 2:
-                    return `${user.name} đề nghị ứng tiền `;
+                    return `${user.name}  ${user.department} đề nghị ứng tiền `;
                 case 3:
-                    return `${user.name} đề nghị xin nghỉ`;
+                    return `${user.name}  ${user.department} đề nghị xin nghỉ`;
                 case 4:
                     return `${user.department} đề nghị cung ứng văn phòng phẩm tháng ${
                         new Date().getMonth() + 2
                     } năm ${new Date().getFullYear()}`;
 
                 case 7:
-                    return `${user.name} đề nghị làm thêm giờ`;
+                    return `${user.name} ${user.department} đề nghị làm thêm giờ`;
 
                 case 8:
-                    return `${user.name}  xin xác nhận công việc`;
+                    return `${user.name} ${user.department} xin xác nhận công việc`;
                 case 9:
-                    return `${user.name} Đề nghị tuyển dụng nhân sự cho phòng ${user.department}`;
+                    return `${user.name} ${user.department} Đề nghị tuyển dụng nhân sự cho phòng ${user.department}`;
                 case 14:
-                    return `${user.name} Đề nghị chuẩn bị phòng họp`;
+                    return `${user.name} ${user.department} Đề nghị chuẩn bị phòng họp`;
                 case 15:
-                    return `${user.name} Đề nghị giao hàng nhanh`;
+                    return `${user.name} ${user.department} Đề nghị giao hàng nhanh`;
+                case 16:
+                    return `${user.name} ${user.department} Đề nghị sửa chữa thiết bị văn phòng`;
                 default:
                     return '';
             }
@@ -172,6 +175,17 @@ function AddRequestForm({ onClose }) {
                 requiredFields.push('express_reason', 'expected_receive_date');
             }
         }
+        if (requestTypeId === 16) {
+            const officeRepairFields = [
+                'asset_name',
+                'damage_description',
+                'damage_location',
+                'urgency_level',
+                'detected_at',
+                'requester_phone',
+            ];
+            requiredFields.push(...officeRepairFields);
+        }
 
         const flattenedData = flattenObject(requestFormData);
         let isValid = true;
@@ -261,6 +275,7 @@ function AddRequestForm({ onClose }) {
             {requestTypeId === 9 ? <RecruitmentForm /> : ''}
             {requestTypeId === 14 ? <MeetingRoomRequestForm /> : ''}
             {requestTypeId === 15 ? <ExpressDeliveryForm /> : ''}
+            {requestTypeId === 16 ? <OfficeEquipmentRepairForm /> : ''}
             {/* Hiển thị lỗi chung cho supply_stationery */}
             {errors?.supply_stationery_editing && (
                 <Box
