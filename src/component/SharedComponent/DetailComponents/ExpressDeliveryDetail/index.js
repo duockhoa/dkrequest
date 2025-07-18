@@ -90,11 +90,13 @@ export default function ExpressDeliveryDetail() {
 
             <DetailItem label="Hình thức vận chuyển" value={getDeliveryMethodLabel(expressData.delivery_method)} />
 
-            {/* Chỉ hiển thị khi là "Gửi hỏa tốc" */}
-            {expressData.delivery_method === 'Gửi hỏa tốc' && (
+            {/* Hiển thị lý do và ngày nhận cho cả "Gửi hỏa tốc" và "Gửi đảm bảo" */}
+            {['Gửi hỏa tốc', 'Gửi đảm bảo'].includes(expressData.delivery_method) && (
                 <>
-                    <DetailItem label="Lý do gửi hỏa tốc" value={expressData.express_reason || '-'} />
-
+                    <DetailItem
+                        label={`Lý do gửi ${expressData.delivery_method.toLowerCase()}`}
+                        value={expressData.express_reason || '-'}
+                    />
                     <DetailItem label="Ngày mong muốn nhận" value={formatDate(expressData.expected_receive_date)} />
                 </>
             )}

@@ -171,7 +171,10 @@ function AddRequestForm({ onClose }) {
             requiredFields.push(...basicExpressFields);
 
             // Nếu chọn "Gửi hỏa tốc" thì cần thêm 2 trường bắt buộc
-            if (requestFormData?.express_delivery_request?.delivery_method === 'Gửi hỏa tốc') {
+            if (
+                requestFormData?.express_delivery_request?.delivery_method === 'Gửi hỏa tốc' ||
+                requestFormData?.express_delivery_request?.delivery_method === 'Gửi đảm bảo'
+            ) {
                 requiredFields.push('express_reason', 'expected_receive_date');
             }
         }

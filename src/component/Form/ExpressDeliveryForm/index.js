@@ -111,12 +111,12 @@ function ExpressDeliveryForm() {
                 </Select>
             </Stack>
 
-            {/* Chỉ hiển thị khi phương thức là "Gửi hỏa tốc" */}
-            {requestFormData?.express_delivery_request?.delivery_method === 'Gửi hỏa tốc' && (
+            {/* Chỉ hiển thị khi phương thức là "Gửi hỏa tốc" hoặc "Gửi đảm bảo" */}
+            {['Gửi hỏa tốc', 'Gửi đảm bảo'].includes(requestFormData?.express_delivery_request?.delivery_method) && (
                 <>
                     <Stack direction="row" alignItems="flex-start" spacing={2}>
                         <Typography sx={{ minWidth: 120, fontSize: '1.4rem', mt: 1 }}>
-                            Lý do gửi hoả tốc: (*)
+                            Lý do gửi {requestFormData?.express_delivery_request?.delivery_method.toLowerCase()}: (*)
                         </Typography>
                         <TextField
                             fullWidth
@@ -130,7 +130,6 @@ function ExpressDeliveryForm() {
                             inputProps={{ style: { fontSize: '1.4rem' } }}
                             error={!!errors?.express_reason}
                             helperText={errors?.express_reason || ''}
-                            placeholder="Mô tả lý do cần gửi nhanh..."
                         />
                     </Stack>
 
@@ -183,7 +182,6 @@ function ExpressDeliveryForm() {
                     inputProps={{ style: { fontSize: '1.4rem' } }}
                     error={!!errors?.receiving_address}
                     helperText={errors?.receiving_address || ''}
-                    placeholder="Địa chỉ chi tiết để giao hàng..."
                 />
             </Stack>
 
@@ -216,7 +214,6 @@ function ExpressDeliveryForm() {
                     }}
                     error={!!errors?.recipient_phone}
                     helperText={errors?.recipient_phone || ''}
-                    placeholder="0xxxxxxxxx"
                 />
             </Stack>
         </Stack>
