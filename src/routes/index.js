@@ -79,6 +79,10 @@ const publicRoutes = [
         component: Request,
     },
     {
+        path: '/office-document-request',
+        component: Request,
+    },
+    {
         path: '*',
         component: Error,
         layout: ErrorLayout,

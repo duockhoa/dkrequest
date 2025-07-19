@@ -21,6 +21,7 @@ import OtherAttachFile from '../OtherAttachFile';
 import RecruitmentForm from '../RecruitmentForm';
 import ExpressDeliveryForm from '../ExpressDeliveryForm';
 import OfficeEquipmentRepairForm from '../OfficeEquipmentRepairForm';
+import OfficeDocumentForm from '../OfficeDocumentForm';
 
 function AddRequestForm({ onClose }) {
     const requestTypeId = useSelector((state) => state.requestId.requestTypeId);
@@ -78,6 +79,8 @@ function AddRequestForm({ onClose }) {
                     return `${user.name} ${user.department} Đề nghị giao hàng nhanh`;
                 case 16:
                     return `${user.name} ${user.department} Đề nghị sửa chữa thiết bị văn phòng`;
+                case 17:
+                    return `${user.name} ${user.department} Đề nghị hỗ trợ công tác văn thư`;
                 default:
                     return '';
             }
@@ -189,6 +192,18 @@ function AddRequestForm({ onClose }) {
             ];
             requiredFields.push(...officeRepairFields);
         }
+        if (requestTypeId === 17) {
+            const officeDocumentFields = [
+                'document_type',
+                'document_name',
+                'issue_date',
+                'copy_count',
+                'purpose',
+                'approved_by',
+                'seal_type',
+            ];
+            requiredFields.push(...officeDocumentFields);
+        }
 
         const flattenedData = flattenObject(requestFormData);
         let isValid = true;
@@ -279,6 +294,7 @@ function AddRequestForm({ onClose }) {
             {requestTypeId === 14 ? <MeetingRoomRequestForm /> : ''}
             {requestTypeId === 15 ? <ExpressDeliveryForm /> : ''}
             {requestTypeId === 16 ? <OfficeEquipmentRepairForm /> : ''}
+            {requestTypeId === 17 ? <OfficeDocumentForm /> : ''}
             {/* Hiển thị lỗi chung cho supply_stationery */}
             {errors?.supply_stationery_editing && (
                 <Box

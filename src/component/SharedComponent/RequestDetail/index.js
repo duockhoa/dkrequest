@@ -17,6 +17,7 @@ import OtherAction from '../Action/OtherAction';
 import RecruitmentDetail from '../DetailComponents/RecuitmentDetail';
 import ExpressDeliveryDetail from '../DetailComponents/ExpressDeliveryDetail';
 import OfficeEquipmentRepairDetail from '../DetailComponents/OfficeEquipmentRepairDetail';
+import OfficeDocumentDetail from '../DetailComponents/OfficeDocumentDetail';
 const DetailItem = ({ label, value }) => (
     <Stack direction="row" spacing={2} sx={{ py: 1 }}>
         <Typography
@@ -240,6 +241,7 @@ function RequestDetail() {
                 {requestTypeId === 14 ? <MeetingRoomRequestDetail /> : ''}
                 {requestTypeId === 15 ? <ExpressDeliveryDetail /> : ''}
                 {requestTypeId === 16 ? <OfficeEquipmentRepairDetail /> : ''}
+                {requestTypeId === 17 ? <OfficeDocumentDetail /> : ''}
 
                 <DetailItem label="Mô tả" value={description} />
                 <AttachmentsDetail />
