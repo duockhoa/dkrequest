@@ -8,7 +8,8 @@ function ExpressDeliveryForm() {
     const dispatch = useDispatch();
     const requestFormData = useSelector((state) => state.requestFormData.value);
     const errors = useSelector((state) => state.requestFormData.errors);
-
+    const user = useSelector((state) => state.user.userInfo);
+    const requestTypeId = useSelector((state) => state.requestId.requestTypeId);
     // useEffect để init default values
     useEffect(() => {
         if (!requestFormData?.express_delivery_request) {
@@ -30,6 +31,15 @@ function ExpressDeliveryForm() {
             );
         }
     }, [dispatch, requestFormData]);
+
+    useEffect(() => {
+        const method = requestFormData?.express_delivery_request?.delivery_method;
+        if (method === 'Gửi hỏa tốc' || method === 'Gửi đảm bảo') {
+            dispatch(fetchRequestApprovers({ requestTypeId: 6, userId: user.id }));
+        } else {
+            dispatch(fetchRequestApprovers({ requestTypeId, userId: user.id }));
+        }
+    }, [dispatch, requestFormData?.express_delivery_request?.delivery_method]);
 
     const handleChange = (e) => {
         dispatch(clearErrors());

@@ -107,7 +107,13 @@ function MeetingRoomRequestForm() {
 
     const locations = ['Văn Phòng Hà Nội', 'Nhà Máy Bắc Ninh'];
 
-    const roomNames = ['Phòng khách VP', 'Phòng họp VP', 'Phòng họp tầng 1 BN', 'Hội trường tầng 3 BN'];
+    const roomNames = [
+        'Phòng khách VP',
+        'Phòng họp VP',
+        'Phòng họp tầng 1 BN',
+        'Phòng họp tầng 1 BN',
+        'Hội trường tầng 3 BN',
+    ];
 
     const purposeOptions = ['Họp nội bộ', 'Họp đối tác', 'Tiếp khách', 'Phỏng vấn'];
 
