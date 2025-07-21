@@ -82,6 +82,11 @@ const publicRoutes = [
         path: '/office-document-request',
         component: Request,
     },
+
+    {
+        path: '/office-equipment-supply',
+        component: Request,
+    },
     {
         path: '*',
         component: Error,

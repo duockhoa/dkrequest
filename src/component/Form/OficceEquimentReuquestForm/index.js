@@ -1,15 +1,10 @@
-import { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Close';
-import { useSelector, useDispatch } from 'react-redux';
-import { setRequestFormData, clearErrors, setFormErrors } from '../../../redux/slice/requestFormDataSlice';
-import { fetchItems } from '../../../redux/slice/itemsSlice';
 import {
     GridRowModes,
     DataGrid,
@@ -17,59 +12,39 @@ import {
     GridRowEditStopReasons,
     GridToolbarContainer,
 } from '@mui/x-data-grid';
-import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
-import TextField from '@mui/material/TextField';
+import { Button } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { setRequestFormData, clearErrors, setFormErrors } from '../../../redux/slice/requestFormDataSlice';
 
-// Tạo dữ liệu mẫu thay thế cho data-grid-generator
-
-const createRandomId = () => Math.floor(Math.random() * 100000);
-
-const initialRows = [
-    {
-        id: createRandomId(),
-        product_code: 'VPP00075',
-        product_name: 'Bút bi xanh Double A Tritouch ngòi 0.7mm',
-        quantity: 1,
-        unit: 'Cái',
-        usage_purpose: '',
-        note: '',
-    },
-];
-
-// Hàm bỏ dấu tiếng Việt
-function removeVietnameseTones(str) {
-    return str
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .replace(/đ/g, 'd')
-        .replace(/Đ/g, 'D');
+function randomId() {
+    return Math.random().toString(36).substr(2, 9);
 }
+
+const initialRows = [];
 
 function EditToolbar(props) {
     const { setRows, setRowModesModel } = props;
-    const dispatch = useDispatch();
-    useEffect(() => {
-        dispatch(fetchItems());
-    }, [dispatch]);
-    const handleClick = () => {
-        const id = createRandomId();
 
+    const handleClick = () => {
+        const id = randomId();
         setRows((oldRows) => [
             ...oldRows,
             {
                 id,
-                product_code: '',
-                product_name: '',
-                quantity: 1,
+                index: oldRows.length + 1,
+                name: '',
+                reason: '',
+                handling_old_equipment: '',
                 unit: '',
-                usage_purpose: '',
-                note: '',
+                quantity: '',
+                reference_info: '',
                 isNew: true,
             },
         ]);
         setRowModesModel((oldModel) => ({
             ...oldModel,
-            [id]: { mode: GridRowModes.Edit, fieldToFocus: 'product_name' },
+            [id]: { mode: GridRowModes.Edit, fieldToFocus: 'name' },
         }));
     };
 
@@ -80,12 +55,13 @@ function EditToolbar(props) {
                     color="primary"
                     startIcon={<AddIcon sx={{ fontSize: 20 }} />}
                     onClick={handleClick}
-                    size="medium" // Thay đổi từ "small" thành "medium"
+                    size="medium"
                     sx={{
                         textTransform: 'none',
-                        fontSize: '14px', // Tăng font size
-                        padding: '8px 16px', // Tăng padding
-                        minHeight: '40px', // Đặt chiều cao tối thiểu
+                        fontSize: '14px',
+                        padding: '8px 16px',
+                        minHeight: '40px',
+                        fontWeight: 500,
                     }}
                 >
                     Thêm mặt hàng
@@ -95,14 +71,13 @@ function EditToolbar(props) {
     );
 }
 
-export default function SupplyStationeryForm() {
-    const dispatch = useDispatch();
-    const requestFormData = useSelector((state) => state.requestFormData.value);
-
+export default function OfficeEquipmentRequestForm() {
     const [rows, setRows] = useState(initialRows);
     const [rowModesModel, setRowModesModel] = useState({});
+    const dispatch = useDispatch();
+    const requestFormData = useSelector((state) => state.requestFormData.value);
     useEffect(() => {
-        dispatch(setRequestFormData({ ...requestFormData, supply_stationery: rows  }));
+        dispatch(setRequestFormData({ ...requestFormData, office_equipment_request: rows }));
         dispatch(clearErrors());
     }, [rows]);
 
@@ -122,7 +97,6 @@ export default function SupplyStationeryForm() {
 
     const handleDeleteClick = (id) => () => {
         setRows(rows.filter((row) => row.id !== id));
-        console.log(rows);
     };
 
     const handleCancelClick = (id) => () => {
@@ -138,19 +112,7 @@ export default function SupplyStationeryForm() {
     };
 
     const processRowUpdate = (newRow) => {
-        // Tìm item theo tên hàng (không phân biệt dấu, hoa thường)
-        const matchedItem = items.find(
-            (item) =>
-                removeVietnameseTones(item.product_name.toLowerCase()) ===
-                removeVietnameseTones((newRow.product_name || '').toLowerCase()),
-        );
-
-        const updatedRow = {
-            ...newRow,
-            product_code: matchedItem ? matchedItem.product_code : '',
-            unit: matchedItem ? matchedItem.unit?.replace(/\r/g, '').trim() : '',
-            isNew: false, // Đánh dấu là đã được lưu
-        };
+        const updatedRow = { ...newRow, isNew: false };
         setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
         return updatedRow;
     };
@@ -159,95 +121,65 @@ export default function SupplyStationeryForm() {
         setRowModesModel(newRowModesModel);
     };
 
-    const items = useSelector((state) => state.items.items);
+    useEffect(() => {
+        // Dispatch action to update the request form data with the current rows
+    }, [rows]);
 
     const columns = [
         {
-            field: 'product_code',
-            headerName: 'Mã hàng',
-            width: 100,
-            editable: false, // Không cho phép chỉnh sửa
-        },
-        {
-            field: 'product_name',
-            headerName: 'Tên hàng',
-            width: 300,
-            editable: true,
-            renderEditCell: (params) => {
-                return (
-                    <Autocomplete
-                        freeSolo
-                        options={items.map((item) => item.product_name)}
-                        value={params.value || ''}
-                        fullWidth
-                        filterOptions={(options, state) => {
-                            // Bỏ dấu và tách từ khóa
-                            const keywords = removeVietnameseTones(state.inputValue.toLowerCase())
-                                .split(' ')
-                                .filter(Boolean);
-                            return options.filter((option) => {
-                                const optionNoTone = removeVietnameseTones(option.toLowerCase());
-                                return keywords.every((kw) => optionNoTone.includes(kw));
-                            });
-                        }}
-                        onInputChange={(_, newInputValue) => {
-                            // Tìm item phù hợp
-                            const matchedItem = items.find(
-                                (item) =>
-                                    removeVietnameseTones(item.product_name.toLowerCase()) ===
-                                    removeVietnameseTones((newInputValue || '').toLowerCase()),
-                            );
-                            // Cập nhật cả product_name, product_code, unit ngay khi nhập
-                            params.api.setEditCellValue({
-                                id: params.id,
-                                field: 'product_name',
-                                value: newInputValue,
-                            });
-                            params.api.setEditCellValue({
-                                id: params.id,
-                                field: 'product_code',
-                                value: matchedItem ? matchedItem.product_code : '',
-                            });
-                            params.api.setEditCellValue({
-                                id: params.id,
-                                field: 'unit',
-                                value: matchedItem ? matchedItem.unit?.replace(/\r/g, '').trim() : '',
-                            });
-                        }}
-                        renderInput={(paramsInput) => (
-                            <TextField {...paramsInput} variant="outlined" size="small" autoFocus fullWidth />
-                        )}
-                    />
-                );
-            },
-        },
-        {
-            field: 'quantity',
-            headerName: 'Số lượng',
+            field: 'index',
+            headerName: 'STT',
             type: 'number',
-            width: 100,
-            align: 'left',
-            headerAlign: 'left',
+            width: 60,
+            align: 'center',
+            headerAlign: 'center',
+            editable: false,
+        },
+        {
+            field: 'name',
+            headerName: 'Tên mặt hàng',
+            width: 211,
+            align: 'start',
+            headerAlign: 'center',
             editable: true,
         },
+        {
+            field: 'reason',
+            headerName: 'Lý do cung ứng',
+            type: 'text',
+            width: 200,
+            editable: true,
+        },
+
         {
             field: 'unit',
             headerName: 'Đơn vị tính',
             width: 100,
             editable: true,
+            type: 'text',
         },
         {
-            field: 'usage_purpose',
-            headerName: 'Mục đích sử dụng',
-            width: 250,
+            field: 'quantity',
+            headerName: 'Số lượng',
+            width: 100,
             editable: true,
+            type: 'number',
         },
         {
-            field: 'note',
-            headerName: 'Ghi chú',
+            field: 'reference_info',
+            headerName: 'Thông tin tham khảo',
+            width: 180,
+            editable: true,
+            type: 'text',
+        },
+        {
+            field: 'handling_old_equipment',
+            headerName: 'Hướng dẫn XL TB cũ (nếu có)',
             width: 200,
             editable: true,
+            type: 'text',
         },
+
         {
             field: 'actions',
             type: 'actions',
@@ -263,9 +195,7 @@ export default function SupplyStationeryForm() {
                             key="save"
                             icon={<SaveIcon sx={{ fontSize: 20 }} />}
                             label="Lưu"
-                            sx={{
-                                color: 'primary.main',
-                            }}
+                            sx={{ color: 'primary.main' }}
                             onClick={handleSaveClick(id)}
                         />,
                         <GridActionsCellItem
@@ -321,13 +251,11 @@ export default function SupplyStationeryForm() {
                     fontWeight: 600,
                     borderRight: '1px solid rgba(224, 224, 224, 1)',
                     borderBottom: '1px solid rgba(224, 224, 224, 1)',
-                    borderTop: '1px solid rgba(224, 224, 224, 1)', // Thêm border trên cho header
+                    borderTop: '1px solid rgba(224, 224, 224, 1)',
                 },
-                // Thêm border top cho header container
                 '& .MuiDataGrid-columnHeaders': {
                     borderTop: '1px solid rgba(224, 224, 224, 1)',
                 },
-                // Thêm styling cho input khi edit
                 '& .MuiDataGrid-cell--editing': {
                     fontSize: '14px',
                 },
@@ -340,15 +268,12 @@ export default function SupplyStationeryForm() {
                 '& .MuiDataGrid-cell--editing .MuiSelect-select': {
                     fontSize: '14px',
                 },
-                // Thêm border cho toàn bộ bảng
                 '& .MuiDataGrid-root': {
                     border: '1px solid rgba(224, 224, 224, 1)',
                 },
-                // Thêm border cho các row
                 '& .MuiDataGrid-row': {
                     borderBottom: '1px solid rgba(224, 224, 224, 1)',
                 },
-                // Đảm bảo cột cuối không có border phải
                 '& .MuiDataGrid-cell:last-child': {
                     borderRight: 'none',
                 },
@@ -369,7 +294,7 @@ export default function SupplyStationeryForm() {
                 slotProps={{
                     toolbar: { setRows, setRowModesModel },
                 }}
-                hideFooter
+                hideFooter // Thêm dòng này để ẩn pagination
             />
         </Box>
     );

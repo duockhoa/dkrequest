@@ -22,6 +22,7 @@ import RecruitmentForm from '../RecruitmentForm';
 import ExpressDeliveryForm from '../ExpressDeliveryForm';
 import OfficeEquipmentRepairForm from '../OfficeEquipmentRepairForm';
 import OfficeDocumentForm from '../OfficeDocumentForm';
+import OfficeEquipmentRequestForm from '../OficceEquimentReuquestForm';
 
 function AddRequestForm({ onClose }) {
     const requestTypeId = useSelector((state) => state.requestId.requestTypeId);
@@ -278,7 +279,7 @@ function AddRequestForm({ onClose }) {
                     size="medium"
                     required
                     multiline
-                    inputProps={{ style: { fontSize: '1.4rem' } }}
+                    inputProps={{ style: { fontSize: '1.4rem', padding: '1px 0px' } }}
                     error={!!errors.requestName}
                     helperText={errors.requestName || ''}
                 />
@@ -295,6 +296,7 @@ function AddRequestForm({ onClose }) {
             {requestTypeId === 15 ? <ExpressDeliveryForm /> : ''}
             {requestTypeId === 16 ? <OfficeEquipmentRepairForm /> : ''}
             {requestTypeId === 17 ? <OfficeDocumentForm /> : ''}
+            {requestTypeId === 18 ? <OfficeEquipmentRequestForm /> : ''}
             {/* Hiển thị lỗi chung cho supply_stationery */}
             {errors?.supply_stationery_editing && (
                 <Box
@@ -321,7 +323,7 @@ function AddRequestForm({ onClose }) {
                     onChange={handleChange}
                     size="medium"
                     multiline
-                    inputProps={{ style: { fontSize: '1.4rem' } }}
+                    inputProps={{ style: { fontSize: '1.3rem', padding: '1px 0px' } }}
                     error={!!errors.description}
                     helperText={errors.description || ''}
                 />

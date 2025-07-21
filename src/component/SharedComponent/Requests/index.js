@@ -81,12 +81,12 @@ export default function Requests() {
                     filteredRequests = originalData.filter((request) => {
                         if (request.status !== 'pending') return false;
                         // Lấy tất cả approver còn pending
-                        const pendingApprovers = request.approvers.filter(a => a.status === 'pending');
+                        const pendingApprovers = request.approvers.filter((a) => a.status === 'pending');
                         if (pendingApprovers.length === 0) return false;
 
                         // Tìm approver có step nhỏ nhất (người duyệt tiếp theo)
-                        const nextStep = Math.min(...pendingApprovers.map(a => a.step));
-                        const nextApprover = pendingApprovers.find(a => a.step === nextStep);
+                        const nextStep = Math.min(...pendingApprovers.map((a) => a.step));
+                        const nextApprover = pendingApprovers.find((a) => a.step === nextStep);
 
                         const now = new Date();
 
@@ -99,8 +99,8 @@ export default function Requests() {
                             return false;
                         } else {
                             // Nếu không phải người duyệt tiếp theo, kiểm tra người cuối cùng còn pending
-                            const lastStep = Math.max(...pendingApprovers.map(a => a.step));
-                            const lastApprover = pendingApprovers.find(a => a.step === lastStep);
+                            const lastStep = Math.max(...pendingApprovers.map((a) => a.step));
+                            const lastApprover = pendingApprovers.find((a) => a.step === lastStep);
                             if (lastApprover && lastApprover.deadline && new Date(lastApprover.deadline) < now) {
                                 return true;
                             }
@@ -348,7 +348,7 @@ export default function Requests() {
                 sx={{
                     '& .MuiDialog-paper': {
                         borderRadius: 2,
-                        maxWidth: requestTypeId === 4 ? 'lg' : 'xs',
+                        maxWidth: requestTypeId === 4 || requestTypeId === 18 ? 'lg' : 'xs',
                         width: '100%',
                     },
                 }}
