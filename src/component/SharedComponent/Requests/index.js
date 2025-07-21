@@ -79,11 +79,33 @@ export default function Requests() {
                 case 'Quá hạn':
                     // Có thể thêm logic quá hạn nếu có trường deadline
                     filteredRequests = originalData.filter((request) => {
-                        // Tạm thời filter theo requests pending quá 7 ngày
-                        const createDate = new Date(request.createAt);
+                        if (request.status !== 'pending') return false;
+                        // Lấy tất cả approver còn pending
+                        const pendingApprovers = request.approvers.filter(a => a.status === 'pending');
+                        if (pendingApprovers.length === 0) return false;
+
+                        // Tìm approver có step nhỏ nhất (người duyệt tiếp theo)
+                        const nextStep = Math.min(...pendingApprovers.map(a => a.step));
+                        const nextApprover = pendingApprovers.find(a => a.step === nextStep);
+
                         const now = new Date();
-                        const daysDiff = Math.floor((now - createDate) / (1000 * 60 * 60 * 24));
-                        return request.status === 'pending' && daysDiff > 7;
+
+                        // Nếu user là người duyệt tiếp theo
+                        if (nextApprover && nextApprover.user_id === user.id) {
+                            // Nếu quá deadline mà chưa duyệt thì là quá hạn
+                            if (nextApprover.deadline && new Date(nextApprover.deadline) < now) {
+                                return true;
+                            }
+                            return false;
+                        } else {
+                            // Nếu không phải người duyệt tiếp theo, kiểm tra người cuối cùng còn pending
+                            const lastStep = Math.max(...pendingApprovers.map(a => a.step));
+                            const lastApprover = pendingApprovers.find(a => a.step === lastStep);
+                            if (lastApprover && lastApprover.deadline && new Date(lastApprover.deadline) < now) {
+                                return true;
+                            }
+                            return false;
+                        }
                     });
                     break;
                 default:
