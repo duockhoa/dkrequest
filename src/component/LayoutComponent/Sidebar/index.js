@@ -26,43 +26,62 @@ import FeedbackIcon from '@mui/icons-material/Feedback';
 import Tooltip from '@mui/material/Tooltip';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { setIsOpen } from '../../../redux/slice/sibarSlice';
+import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
+import LocalShippingIcon from '@mui/icons-material/LocalShipping';
+import BuildIcon from '@mui/icons-material/Build';
+import FolderSharedIcon from '@mui/icons-material/FolderShared';
 
 // Hàm ánh xạ tên đề nghị sang icon
 const getRequestIcon = (name, description) => {
     let icon;
     switch (name) {
         case 'Đề nghị thanh toán':
-            icon = <PaymentIcon fontSize="large" />;
+            icon = <PaymentIcon fontSize="medium" />;
             break;
         case 'Đề nghị tạm ứng':
-            icon = <AddCircleOutlineIcon fontSize="large" />;
+            icon = <AddCircleOutlineIcon fontSize="medium" />;
             break;
         case 'Đề nghị xin nghỉ':
-            icon = <TimeToLeaveIcon fontSize="large" />;
+            icon = <TimeToLeaveIcon fontSize="medium" />;
             break;
         case 'Đề nghị đăng ký làm thêm':
-            icon = <WorkIcon fontSize="large" />;
+            icon = <WorkIcon fontSize="medium" />;
             break;
         case 'Đề nghị xác nhận công việc':
-            icon = <AssignmentIcon fontSize="large" />;
+            icon = <AssignmentIcon fontSize="medium" />;
             break;
         case 'Đề nghị cung ứng VPP':
-            icon = <LocalMallIcon fontSize="large" />;
+            icon = <LocalMallIcon fontSize="medium" />;
+            break;
+        case 'Đề nghị cung ứng thiết bị văn phòng':
+            icon = <LocalMallIcon fontSize="medium" />;
             break;
         case 'Đề nghị cung ứng BHLĐ':
-            icon = <LocalMallIcon fontSize="large" />;
+            icon = <LocalMallIcon fontSize="medium" />;
             break;
         case 'Đề nghị đào tạo':
-            icon = <SchoolIcon fontSize="large" />;
+            icon = <SchoolIcon fontSize="medium" />;
             break;
         case 'Đề nghị tuyển dụng':
-            icon = <GroupAddIcon fontSize="large" />;
+            icon = <GroupAddIcon fontSize="medium" />;
             break;
         case 'Đề nghị đánh giá NL':
-            icon = <AssessmentIcon fontSize="large" />;
+            icon = <AssessmentIcon fontSize="medium" />;
+            break;
+        case 'Yêu cầu chuẩn bị phòng họp':
+            icon = <MeetingRoomIcon fontSize="medium" />;
+            break;
+        case 'Đề nghị chuyển phát nhanh':
+            icon = <LocalShippingIcon fontSize="medium" />;
+            break;
+        case 'Đề nghị sửa chữa thiết bị văn phòng':
+            icon = <BuildIcon fontSize="medium" />;
+            break;
+        case 'Công tác văn thư':
+            icon = <FolderSharedIcon fontSize="medium" />;
             break;
         default:
-            icon = <AssignmentIcon fontSize="large" />;
+            icon = <AssignmentIcon fontSize="medium" />;
     }
     return (
         <Tooltip
