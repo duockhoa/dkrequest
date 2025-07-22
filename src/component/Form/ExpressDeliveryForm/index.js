@@ -34,7 +34,7 @@ function ExpressDeliveryForm() {
 
     useEffect(() => {
         const method = requestFormData?.express_delivery_request?.delivery_method;
-        if (method === 'Gửi hỏa tốc' || method === 'Gửi đảm bảo') {
+        if (method === 'Gửi hỏa tốc' || method === 'Gửi đảm bảo' || method === 'Gửi đi nước ngoài') {
             dispatch(fetchRequestApprovers({ requestTypeId: 6, userId: user.id }));
         } else {
             dispatch(fetchRequestApprovers({ requestTypeId, userId: user.id }));
