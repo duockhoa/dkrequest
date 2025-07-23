@@ -111,7 +111,7 @@ function MeetingRoomRequestForm() {
         'Phòng khách VP',
         'Phòng họp VP',
         'Phòng họp tầng 1 BN',
-        'Phòng họp tầng 1 BN',
+        'Phòng họp tầng 2 BN',
         'Hội trường tầng 3 BN',
     ];
 

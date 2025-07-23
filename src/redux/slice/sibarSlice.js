@@ -4,7 +4,7 @@ const sidebarSlice = createSlice({
     name: 'sidebar',
     initialState: {
         activeSidebar: '/',
-        activeCollapse: ['Tổ chức', 'Kế toán'],
+        activeCollapse: ['Tổ chức', 'HC' , "Kế toán SX & DA"],
         isOpen: true,
     },
     reducers: {
