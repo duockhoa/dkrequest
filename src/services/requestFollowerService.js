@@ -1,5 +1,5 @@
 import axios from './customize-axios';
-async function getRequestApprover(requestTypeId, userId) {
+async function getRequestFollower(requestTypeId, userId) {
     try {
         const response = await axios.get(`/requestfollower/getbytype/${requestTypeId}/${userId}`);
         if (response.status === 200) {
@@ -18,4 +18,4 @@ async function getRequestApprover(requestTypeId, userId) {
     }
 }
 
-export { getRequestApprover };
+export { getRequestFollower };

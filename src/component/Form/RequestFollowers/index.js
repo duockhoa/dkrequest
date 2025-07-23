@@ -3,19 +3,48 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useState, useEffect } from 'react';
 import { fetchUsers } from '../../../redux/slice/usersSlice';
 import { setRequestFormData } from '../../../redux/slice/requestFormDataSlice';
-import { fetchRequestApprovers } from '../../../redux/slice/requestApproverSlice';
+import { fetchRequestFollowers } from '../../../redux/slice/requestFollowerSlice';
+import { set } from 'date-fns';
+
+// Hàm khởi tạo followers từ dữ liệu requestFollowers
+const initFollowers = (requestFollowers, users) => {
+    if (!Array.isArray(requestFollowers) || requestFollowers.length === 0) return [];
+    // Map user_id từ requestFollowers sang user object trong users
+    return requestFollowers.map((f) => users.find((u) => u.id === f.user_id)).filter(Boolean); // Loại bỏ undefined nếu không tìm thấy user
+};
 
 function RequestFollowers() {
     const dispatch = useDispatch();
     const [followers, setFollowers] = useState([]);
     const users = useSelector((state) => state.users.users);
+    const requestTypeId = useSelector((state) => state.requestId.requestTypeId);
+    const user = useSelector((state) => state.user.userInfo);
     const requestFormData = useSelector((state) => state.requestFormData.value);
+    const requestFollowers = useSelector((state) => state.requestFollower.followerData);
 
     useEffect(() => {
+        if (requestTypeId && user.id) {
+            dispatch(fetchRequestFollowers({ requestTypeId, userId: user.id }));
+        }
         if (users.length === 0) {
             dispatch(fetchUsers());
         }
     }, [dispatch, users.length]);
+
+    // Khởi tạo followers khi có dữ liệu
+    useEffect(() => {
+        if (requestFollowers.length > 0) {
+            setFollowers(requestFollowers);
+            dispatch(
+                setRequestFormData({
+                    ...requestFormData,
+                    followers: requestFollowers.map((follower) => {
+                        return { user_id: follower.id };
+                    }),
+                }),
+            );
+        }
+    }, [requestFollowers]);
 
     const handleFollowersChange = (event, newValue) => {
         setFollowers(newValue);

@@ -12,6 +12,7 @@ import requestIdReducer from './slice/requestId';
 import commentReducer from './slice/commentSlice';
 import notificationReducer from './slice/notificationSlice';
 import itemsReducer from './slice/itemsSlice';
+import requestFollowerReducer from './slice/requestFollowerSlice'; // Ensure this is imported correctly
 export default configureStore({
     reducer: {
         user: userReducer,
@@ -22,6 +23,7 @@ export default configureStore({
         requestFormData: requestFormDataReducer,
         users: usersReducer,
         requestApprover: requestApproverReducer,
+        requestFollower: requestFollowerReducer, // Ensure this is imported correctly
         requestDetail: requestDetailReducer,
         requestId: requestIdReducer,
         comment: commentReducer,

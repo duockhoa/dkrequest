@@ -379,6 +379,7 @@ export default function Requests() {
                             {group.requests.map((request, index) => (
                                 <Box
                                     key={request.id}
+                                    id={request.id}
                                     onClick={() => {
                                         navigate(`?view=detail&requestid=${request.id}`);
                                     }}

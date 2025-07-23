@@ -4,7 +4,6 @@ async function getItems() {
     try {
         const response = await axios.get('/items/getall');
         if (response.status === 200) {
-            console.log('Danh sách mặt hàng:', response.data.result);
             return response.data.result;
         } else {
             throw new Error('Không thể lấy danh sách mặt hàng');
