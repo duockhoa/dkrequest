@@ -76,31 +76,6 @@ function RequestDetail() {
     const description = requestDetail?.description || '-';
     const requestTypeId = requestDetail?.requestType_id || 0;
 
-    // KIỂM TRA XEM CÓ PHẢI LƯỢT DUYỆT CỦA USER HIỆN TẠI KHÔNG
-    const canApprove = () => {
-        // CHỈ HIỆN ACTION KHI REQUEST CÓ STATUS LÀ "PENDING"
-        if (requestDetail?.status !== 'pending') {
-            return false;
-        }
-
-        if (!requestDetail?.approvers || !user?.id) return false;
-
-        // Tìm step tiếp theo cần duyệt (step có status = 'pending' và nhỏ nhất)
-        const pendingApprovers = requestDetail.approvers.filter((approver) => approver.status === 'pending');
-
-        if (pendingApprovers.length === 0) return false; // Không còn ai cần duyệt
-
-        // Tìm step nhỏ nhất trong các pending approvers
-        const nextStep = Math.min(...pendingApprovers.map((approver) => approver.step));
-
-        // Kiểm tra xem user hiện tại có phải là người duyệt ở step tiếp theo không
-        const currentStepApprover = pendingApprovers.find(
-            (approver) => approver.step === nextStep && approver.user_id === user.id,
-        );
-
-        return !!currentStepApprover;
-    };
-
     // Handler cho popover
     const handleMoreClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -217,12 +192,10 @@ function RequestDetail() {
             {/* Content - Always visible */}
             <Divider sx={{ my: 2 }} />
 
-            {/* Action Buttons - CHỈ HIỆN KHI REQUEST PENDING VÀ ĐẾN LƯỢT DUYỆT */}
-            {canApprove() && (
-                <Box sx={{ mb: 3 }}>
-                    <Action />
-                </Box>
-            )}
+            {/* Action Buttons - LUÔN HIỆN Action, logic ẩn/hiện chuyển sang Action/MainAction */}
+            <Box sx={{ mb: 3 }}>
+                <Action />
+            </Box>
 
             {/* Details Section */}
             <Typography variant="h6" sx={{ mb: 2, fontSize: '1.6rem', fontWeight: 'bold' }}>

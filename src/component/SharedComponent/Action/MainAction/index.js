@@ -21,6 +21,22 @@ function Action() {
     const requestDetail = useSelector((state) => state.requestDetail.requestDetailvalue);
     const requestTypeId = useSelector((state) => state.requestId.requestTypeId);
 
+    // Logic kiểm tra quyền hiển thị Action
+    const canShowAction = (() => {
+        if (!requestDetail || !userId) return false;
+        if (requestDetail.status !== 'pending') return false;
+        if (!Array.isArray(requestDetail.approvers)) return false;
+        // Tìm các approver đang pending
+        const pendingApprovers = requestDetail.approvers.filter((a) => a.status === 'pending');
+        if (pendingApprovers.length === 0) return false;
+        // Tìm step nhỏ nhất
+        const nextStep = Math.min(...pendingApprovers.map((a) => a.step));
+        // Kiểm tra user hiện tại có phải là người duyệt ở step tiếp theo không
+        return pendingApprovers.some((a) => a.step === nextStep && a.user_id === userId);
+    })();
+
+    if (!canShowAction) return null;
+
     const handleApprove = () => {
         setActionType('approved');
         setOpen(true);

@@ -98,4 +98,23 @@ async function markReceived(payload) {
     }
 }
 
-export { getAllRequestService, getRequestByIdService, createRequestService, markCompleted, markReceived };
+async function markCanceled(payload) {
+    try {
+        const response = await axios.put(`/updatestatus/cancel/`, payload);
+        if (response.status === 200) {
+            return response.data.result;
+        } else {
+            throw new Error('Không thể đánh dấu yêu cầu là đã hủy');
+        }
+    } catch (error) {
+        if (error.response) {
+            throw new Error(error.response.data.message || 'Lỗi từ server');
+        } else if (error.request) {
+            throw new Error('Không thể kết nối đến server');
+        } else {
+            throw new Error(error.message || 'Đã xảy ra lỗi khi đánh dấu yêu cầu là đã hủy');
+        }
+    }
+}
+
+export { getAllRequestService, getRequestByIdService, createRequestService, markCompleted, markReceived, markCanceled };

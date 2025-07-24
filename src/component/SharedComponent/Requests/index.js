@@ -126,26 +126,40 @@ export default function Requests() {
     };
 
     // Thêm hàm getStatusConfig để xử lý style và label theo requestStatus
-    const getStatusConfig = (status) => {
+    const getStatusConfig = (status, requestStatus) => {
+        if (requestStatus?.isBlocked) {
+            return {
+                label: 'Đã khóa',
+                bgcolor: '#616161', // grey
+                color: '#fff',
+            };
+        }
+        if (requestStatus?.isCanceled || status === 'canceled') {
+            return {
+                label: 'Đã hủy',
+                bgcolor: '#9e9e9e', // grey
+                color: '#fff',
+            };
+        }
         switch (status) {
             case 'approved':
                 return {
                     label: 'Chấp nhận',
-                    bgcolor: '#4caf50', // success main color
-                    color: '#ffffff', // white text
+                    bgcolor: '#4caf50',
+                    color: '#fff',
                 };
             case 'rejected':
                 return {
                     label: 'Từ chối',
-                    bgcolor: '#f44336', // error main color
-                    color: '#ffffff', // white text
+                    bgcolor: '#f44336',
+                    color: '#fff',
                 };
             case 'pending':
             default:
                 return {
                     label: 'Chờ duyệt',
-                    bgcolor: '#ff9800', // warning main color
-                    color: '#ffffff', // white text
+                    bgcolor: '#ff9800',
+                    color: '#fff',
                 };
         }
     };
@@ -475,13 +489,13 @@ export default function Requests() {
                                         sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mx: 2 }}
                                     >
                                         <Chip
-                                            label={getStatusConfig(request.status).label}
+                                            label={getStatusConfig(request.status, request.requestStatus).label}
                                             size="small"
                                             sx={{
                                                 minWidth: 90,
                                                 fontSize: 12,
-                                                bgcolor: getStatusConfig(request.status).bgcolor,
-                                                color: getStatusConfig(request.status).color,
+                                                bgcolor: getStatusConfig(request.status, request.requestStatus).bgcolor,
+                                                color: getStatusConfig(request.status, request.requestStatus).color,
                                                 fontWeight: 600,
                                                 height: 24,
                                             }}
