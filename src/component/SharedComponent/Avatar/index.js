@@ -41,7 +41,7 @@ function MyAvatar() {
                             flexDirection="row"
                             alignItems="center"
                             style={{ cursor: 'pointer' }}
-                            sx={{ display: { xs: 'none', sm: 'flex' } }}
+                            sx={{ display: 'flex' }} // Sửa lại để avatar luôn hiển thị
                         >
                             <Stack
                                 alignItems="flex-start"

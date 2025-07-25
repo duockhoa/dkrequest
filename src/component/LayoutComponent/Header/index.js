@@ -26,17 +26,17 @@ function Header() {
                 height: '56px',
             }}
         >
-            <Toolbar variant="dense">
-                <IconButton onClick={handleMenuClick} size="small" style={{ padding: 6 }}>
-                    <MenuIcon style={{ fontSize: 22 }} />
+            <Toolbar variant="dense" sx={{ minHeight: 56, px: { xs: 1, sm: 2 } }}>
+                <IconButton onClick={handleMenuClick} size="small" sx={{ p: 0.5 }}>
+                    <MenuIcon sx={{ fontSize: 22 }} />
                 </IconButton>
-                <Link to="/" style={{ height: '100%', display: 'flex', paddingLeft: 16 }}>
+                <Link to="/" style={{ height: '100%', display: 'flex', paddingLeft: 8 }}>
                     <img
                         src={logo}
                         alt="Logo"
                         style={{
                             display: 'block',
-                            height: '70%',
+                            maxHeight: 36,
                             margin: 'auto',
                         }}
                     />
@@ -47,9 +47,10 @@ function Header() {
                     color="text.primary"
                     fontSize={18}
                     sx={{
-                        paddingLeft: 4,
-                        display: { xs: 'none', sm: 'none', md: 'block' },
+                        pl: 1,
+                        display: { xs: 'none', md: 'block' },
                         lineHeight: '56px',
+                        whiteSpace: 'nowrap',
                     }}
                 >
                     DK REQUEST
@@ -59,13 +60,17 @@ function Header() {
                 <Box flexGrow={1} />
 
                 {/* Search Input */}
-                <Search />
+                <Box sx={{ display: { xs: 'none', md: 'block' } }}>
+                    <Search />
+                </Box>
 
                 {/* Notification */}
-                <Notification notifications={[]}></Notification>
+                <Box sx={{ display: 'block' }}>
+                    <Notification notifications={[]} />
+                </Box>
 
                 {/* Avatar */}
-                <Box sx={{ paddingLeft: 1, paddingRight: 2 }}>
+                <Box sx={{ pl: 1, pr: 2, display: 'block' }}>
                     <Avatar />
                 </Box>
             </Toolbar>
