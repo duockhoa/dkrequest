@@ -88,6 +88,10 @@ const publicRoutes = [
         component: Request,
     },
     {
+        path: 'document-edit-request',
+        component: Request,
+    },
+    {
         path: '*',
         component: Error,
         layout: ErrorLayout,

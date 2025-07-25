@@ -23,6 +23,7 @@ import ExpressDeliveryForm from '../ExpressDeliveryForm';
 import OfficeEquipmentRepairForm from '../OfficeEquipmentRepairForm';
 import OfficeDocumentForm from '../OfficeDocumentForm';
 import OfficeEquipmentRequestForm from '../OficceEquimentReuquestForm';
+import DocumentEditRequestForm from '../DocumentEditRequestForm';
 
 function AddRequestForm({ onClose }) {
     const requestTypeId = useSelector((state) => state.requestId.requestTypeId);
@@ -221,7 +222,9 @@ function AddRequestForm({ onClose }) {
                 }
             }
         }
-
+        if (requestTypeId === 19) {
+            requiredFields.push('type', 'document_name', 'reason');
+        }
         const flattenedData = flattenObject(requestFormData);
         let isValid = true;
         let errors = {};
@@ -313,6 +316,7 @@ function AddRequestForm({ onClose }) {
             {requestTypeId === 16 ? <OfficeEquipmentRepairForm /> : ''}
             {requestTypeId === 17 ? <OfficeDocumentForm /> : ''}
             {requestTypeId === 18 ? <OfficeEquipmentRequestForm /> : ''}
+            {requestTypeId === 19 ? <DocumentEditRequestForm /> : ''}
             {/* Hiển thị lỗi chung cho supply_stationery */}
             {errors?.supply_stationery_editing && (
                 <Box

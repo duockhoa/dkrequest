@@ -19,6 +19,7 @@ import ExpressDeliveryDetail from '../DetailComponents/ExpressDeliveryDetail';
 import OfficeEquipmentRepairDetail from '../DetailComponents/OfficeEquipmentRepairDetail';
 import OfficeDocumentDetail from '../DetailComponents/OfficeDocumentDetail';
 import OfficeEquipmentRequestDetail from '../DetailComponents/SupplyOfficeEquipmentDetail';
+import DocumentEditDetail from '../DetailComponents/DocumentEditDetail';
 const DetailItem = ({ label, value }) => (
     <Stack direction="row" spacing={2} sx={{ py: 1 }}>
         <Typography
@@ -235,6 +236,7 @@ function RequestDetail() {
                 {requestTypeId === 16 ? <OfficeEquipmentRepairDetail /> : ''}
                 {requestTypeId === 17 ? <OfficeDocumentDetail /> : ''}
                 {requestTypeId === 18 ? <OfficeEquipmentRequestDetail /> : ''}
+                {requestTypeId === 19 ? <DocumentEditDetail /> : ''}
 
                 <DetailItem label="Mô tả" value={description} />
                 <AttachmentsDetail />

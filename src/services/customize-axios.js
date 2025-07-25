@@ -4,7 +4,7 @@ const tokenMatch = document.cookie.match(/token=([^;]+)/);
 const token = tokenMatch ? tokenMatch[1] : null;
 
 const instance = axios.create({
-    baseURL: 'https://mysql.dkpharma.io.vn/api/v1',
+    baseURL: `${process.env.REACT_APP_BACKEND_URL}/api/v1`,
     timeout: 120000, // 2 phút
     headers: { 'X-Custom-Header': 'foobar', Authorization: token },
 });
