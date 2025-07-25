@@ -140,14 +140,22 @@ function RequestDetail() {
                         </Typography>
                         <Chip
                             label={
-                                requestDetail.status === 'approved'
+                                requestDetail.status === 'blocked'
+                                    ? 'Đã chặn'
+                                    : requestDetail.status === 'canceled'
+                                    ? 'Đã huỷ'
+                                    : requestDetail.status === 'approved'
                                     ? 'Đã duyệt'
                                     : requestDetail.status === 'rejected'
                                     ? 'Từ chối'
                                     : 'Đang chờ duyệt'
                             }
                             color={
-                                requestDetail.status === 'approved'
+                                requestDetail.status === 'blocked'
+                                    ? 'default'
+                                    : requestDetail.status === 'canceled'
+                                    ? 'default'
+                                    : requestDetail.status === 'approved'
                                     ? 'success'
                                     : requestDetail.status === 'rejected'
                                     ? 'error'
@@ -156,6 +164,16 @@ function RequestDetail() {
                             size="small"
                             sx={{
                                 fontSize: '1.2rem',
+                                bgcolor:
+                                    requestDetail.status === 'blocked'
+                                        ? '#616161'
+                                        : requestDetail.status === 'canceled'
+                                        ? '#9e9e9e'
+                                        : undefined,
+                                color:
+                                    requestDetail.status === 'blocked' || requestDetail.status === 'canceled'
+                                        ? '#fff'
+                                        : undefined,
                                 '& .MuiChip-icon': { fontSize: '1.6rem' },
                             }}
                         />
