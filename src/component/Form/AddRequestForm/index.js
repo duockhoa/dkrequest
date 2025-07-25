@@ -205,6 +205,22 @@ function AddRequestForm({ onClose }) {
             ];
             requiredFields.push(...officeDocumentFields);
         }
+        if (requestTypeId === 18) {
+            requiredFields.push('office_equipment_request');
+            // Kiểm tra xem có mặt hàng nào đang trong edit mode không
+            if (requestFormData.office_equipment_request && requestFormData.office_equipment_request.length > 0) {
+                const hasEditingItems = requestFormData.office_equipment_request.some((item) => item.isNew === true);
+                if (hasEditingItems) {
+                    dispatch(
+                        setFieldError({
+                            field: 'office_equipment_request_editing',
+                            message: 'Vui lòng lưu tất cả các mặt hàng đang chỉnh sửa trước khi gửi đề xuất!',
+                        }),
+                    );
+                    return false;
+                }
+            }
+        }
 
         const flattenedData = flattenObject(requestFormData);
         let isValid = true;
@@ -312,6 +328,22 @@ function AddRequestForm({ onClose }) {
                     }}
                 >
                     {errors.supply_stationery_editing}
+                </Box>
+            )}
+            {errors?.office_equipment_request_editing && (
+                <Box
+                    sx={{
+                        p: 2,
+                        mb: 2,
+                        border: '1px solid #f44336',
+                        borderRadius: 1,
+                        backgroundColor: '#ffebee',
+                        color: '#d32f2f',
+                        fontSize: '14px',
+                        textAlign: 'center',
+                    }}
+                >
+                    {errors.office_equipment_request_editing}
                 </Box>
             )}
             <Stack direction="row" alignItems="flex-start" spacing={2}>
