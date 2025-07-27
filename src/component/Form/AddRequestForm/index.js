@@ -13,7 +13,6 @@ import TaskConfirm from '../TaskConfirmForm';
 import PaymentRequestForm from '../PaymentRequestForm';
 import objectToFormData from '../../../utils/makeFromDataFromObject';
 import { fetchCreateRequest } from '../../../redux/slice/requestFormDataSlice';
-import { fetchNotifications } from '../../../redux/slice/notificationSlice';
 import AdvanceMoneyRequestForm from '../AdvanceMoneyRequestForm';
 import SupplyStationeryForm from '../SupplyStationeryForm';
 import MeetingRoomRequestForm from '../MeetingRoomRequestForm';
@@ -260,7 +259,7 @@ function AddRequestForm({ onClose }) {
             const response = await dispatch(fetchCreateRequest(formData));
             dispatch(setRequestData([response.payload, ...requestData])); // Update request data in the store
             dispatch(setRequestFormData({})); // Clear form data in the store
-            dispatch(fetchNotifications(user.id)); // Fetch notifications after creating request
+
             onClose();
         } catch (error) {
             console.error('Error creating request:', error);

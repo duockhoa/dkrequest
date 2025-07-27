@@ -10,7 +10,6 @@ import { approverUpdateStatus, approverForward } from '../../../../services/appr
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchRequestDetail } from '../../../../redux/slice/requestDetailSlice';
 import { fetchRequests } from '../../../../redux/slice/requestSlice';
-import { fetchNotifications } from '../../../../redux/slice/notificationSlice';
 
 function Action() {
     const dispatch = useDispatch();
@@ -70,7 +69,6 @@ function Action() {
                     user_id: userId,
                 }),
             );
-            dispatch(fetchNotifications(userId)); // Fetch notifications after status update
             handleClose();
         } catch (error) {
             console.error('Error updating status:', error);
@@ -93,7 +91,6 @@ function Action() {
                     user_id: userId,
                 }),
             );
-            dispatch(fetchNotifications(userId)); // Fetch notifications after status update
 
             handleClose();
         } catch (error) {
@@ -113,7 +110,6 @@ function Action() {
             const response = await approverForward(payload);
             console.log('Forward response:', response);
             dispatch(fetchRequestDetail(requestId));
-            dispatch(fetchNotifications(userId)); // Fetch notifications after forwarding
             handleClose();
         } catch (error) {
             console.error('Error in handleSubmitForward:', error);

@@ -4,6 +4,7 @@ import {
     markNotificationAsRead,
     markAllNotificationsAsRead,
 } from '../../services/notificationService';
+import { set } from 'date-fns';
 
 // Fetch notifications thunk
 export const fetchNotifications = createAsyncThunk('notifications/fetchNotifications', async (userId) => {
@@ -54,6 +55,10 @@ const notificationSlice = createSlice({
             if (!action.payload.is_read) {
                 state.unreadCount += 1;
             }
+        },
+        setNotifications: (state, action) => {
+            state.notifications = action.payload;
+            state.unreadCount = action.payload.filter((n) => !n.is_read).length;
         },
         updateUnreadCount: (state) => {
             state.unreadCount = state.notifications.filter((n) => !n.is_read).length;
@@ -106,5 +111,6 @@ const notificationSlice = createSlice({
     },
 });
 
-export const { clearNotifications, addNewNotification, updateUnreadCount } = notificationSlice.actions;
+export const { clearNotifications, addNewNotification, updateUnreadCount, setNotifications } =
+    notificationSlice.actions;
 export default notificationSlice.reducer;
