@@ -357,12 +357,13 @@ export default function Requests() {
 
             <Dialog
                 open={openForm}
-              //  onClose={handleToggleForm}
+                //  onClose={handleToggleForm}
                 fullWidth
                 sx={{
                     '& .MuiDialog-paper': {
                         borderRadius: 2,
-                        maxWidth: requestTypeId === 4 || requestTypeId === 18 || requestTypeId === 20 ? 'lg' : 'xs',
+                        maxWidth: requestTypeId === 4 || requestTypeId === 18 ? 'lg' : 'xs',
+
                         width: '100%',
                     },
                 }}

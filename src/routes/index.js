@@ -23,6 +23,10 @@ const publicRoutes = [
         component: Request,
     },
     {
+        path: 'advance-clearance',
+        component: Request,
+    },
+    {
         path: '/supply-labor-protection',
         component: Request,
     },
