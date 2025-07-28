@@ -357,7 +357,7 @@ export default function Requests() {
 
             <Dialog
                 open={openForm}
-                onClose={handleToggleForm}
+              //  onClose={handleToggleForm}
                 fullWidth
                 sx={{
                     '& .MuiDialog-paper': {
