@@ -113,6 +113,19 @@ function ExportFile({ onClose }) {
                         request_name: requestDetail.requestName || '',
                     },
                 };
+            case 15:
+                const expressDeliveryRequest = requestDetail?.expressDeliveryRequest || {};
+                return {
+                    template: 'express_delivery/BMGH001.docx',
+                    data: {
+                      name: userName,
+                      department: department, 
+                      recipient_name: expressDeliveryRequest.recipient_name || '',
+                      receiving_address: expressDeliveryRequest.receiving_address || '',
+                      recipient_phone: expressDeliveryRequest.recipient_phone || '',
+                      receiving_unit: expressDeliveryRequest.receiving_unit || '',
+                    },
+                };
             default:
                 return {
                     template: 'default_template',
