@@ -12,6 +12,7 @@ function PaymentRequestForm() {
     const dispatch = useDispatch();
     const requestFormData = useSelector((state) => state.requestFormData.value);
     const errors = useSelector((state) => state.requestFormData.errors);
+    const user = useSelector((state) => state.user.userInfo);
 
     const handleChange = (e) => {
         dispatch(clearErrors());
@@ -23,51 +24,36 @@ function PaymentRequestForm() {
             processedValue = removeAccentsAndUppercase(value);
         }
 
+        // Lấy dữ liệu mới nhất sau khi thay đổi
+        let newPaymentRequest = {
+            ...requestFormData.payment_request,
+            [name]: value,
+        };
+
+        // Nếu là amountText thì cần format lại
         if (name === 'amountText') {
-            // Format the input value with commas
             const formattedValue = formatNumberWithCommas(value);
-            // Convert to number for storage
             const numericValue = parseFormattedNumber(formattedValue);
-
-            dispatch(
-                setRequestFormData({
-                    ...requestFormData,
-                    payment_request: {
-                        ...requestFormData.payment_request,
-                        amountText: formattedValue,
-                        amount: numericValue,
-                    },
-                }),
-            );
-            return; // Return early to avoid the general dispatch below
+            newPaymentRequest.amountText = formattedValue;
+            newPaymentRequest.amount = numericValue;
         }
 
+        // Nếu là bank_account_number thì cần format lại
         if (name === 'bank_account_number') {
-            // Format bank account number with spaces every 4 digits
             const formattedValue = formatBankAccountNumber(value);
-            // Store clean number for backend
             const cleanValue = parseBankAccountNumber(formattedValue);
-
-            dispatch(
-                setRequestFormData({
-                    ...requestFormData,
-                    payment_request: {
-                        ...requestFormData.payment_request,
-                        bank_account_number: formattedValue,
-                        bank_account_clean: cleanValue,
-                    },
-                }),
-            );
-            return;
+            newPaymentRequest.bank_account_number = formattedValue;
+            newPaymentRequest.bank_account_clean = cleanValue;
         }
+
+        // Cập nhật requestName theo cấu trúc mới
+        const requestName = `${user?.name || ''}  ${user?.department || ''}  ${newPaymentRequest.payment_content || ''} (${newPaymentRequest.amountText || ``} vnđ )`;
 
         dispatch(
             setRequestFormData({
                 ...requestFormData,
-                payment_request: {
-                    ...requestFormData.payment_request,
-                    [name]: processedValue,
-                },
+                payment_request: newPaymentRequest,
+                requestName,
             }),
         );
     };

@@ -400,10 +400,7 @@ export default function Requests() {
                                     sx={{
                                         display: 'flex',
                                         alignItems: 'center',
-                                        pt: 1.5,
-                                        pb: 1.5,
-                                        pl: 2,
-                                        pr: 1,
+                                        p: 2,
                                         borderBottom: '1px solid #e0e0e0',
                                         '&:hover': {
                                             bgcolor: '#f0f7ff',
@@ -429,11 +426,11 @@ export default function Requests() {
                                                 sx={{
                                                     fontWeight: 500,
                                                     fontSize: 14,
-                                                    whiteSpace: 'nowrap',
                                                     overflow: 'hidden',
                                                     textOverflow: 'ellipsis',
                                                     maxWidth: '900px',
                                                     lineHeight: 1.2,
+                                                    wordBreak: 'break-word', // THÊM DÒNG NÀY
                                                 }}
                                             >
                                                 {request.requestName}
