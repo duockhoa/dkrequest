@@ -3,7 +3,8 @@ import { useSelector } from 'react-redux';
 import TextSnippetIcon from '@mui/icons-material/TextSnippet';
 import FolderIcon from '@mui/icons-material/Folder';
 import { format } from 'date-fns';
-
+import PreviewFile from '../../PreviewFile'; // Thêm dòng này
+import { useState } from 'react';
 const DetailItem = ({ label, value }) => (
     <Stack direction="row" spacing={2} sx={{ py: 1 }}>
         <Typography
@@ -19,7 +20,8 @@ const DetailItem = ({ label, value }) => (
     </Stack>
 );
 
-const FileItem = ({ file }) => (
+// Sửa FileItem để mở preview
+const FileItem = ({ file, onPreview }) => (
     <Paper
         elevation={0}
         sx={{
@@ -46,19 +48,14 @@ const FileItem = ({ file }) => (
                 },
             }}
             title={file.file_name}
-            onClick={() =>
-                window.open(
-                    `${process.env.REACT_APP_BACKEND_URL}/api/v1/file/get?filepath=${encodeURIComponent(file.file_path)}`,
-                    '_blank',
-                )
-            }
+            onClick={() => onPreview(file)}
         >
             {file.file_name}
         </Typography>
     </Paper>
 );
 
-const FileGroupSection = ({ groupName, files }) => {
+const FileGroupSection = ({ groupName, files, onPreview }) => {
     const getGroupLabel = (group) => {
         switch (group) {
             case 'invoices':
@@ -94,7 +91,7 @@ const FileGroupSection = ({ groupName, files }) => {
 
             <Box sx={{ ml: 4 }}>
                 {files.map((file) => (
-                    <FileItem key={file.id} file={file} />
+                    <FileItem key={file.id} file={file} onPreview={onPreview} />
                 ))}
             </Box>
         </Box>
@@ -149,6 +146,9 @@ export default function AttachmentsDetail() {
         return groups;
     }, {});
 
+    // State cho preview file
+    const [previewFile, setPreviewFile] = useState(null);
+
     if (!attachments || attachments.length === 0) {
         return (
             <Box sx={{ p: 3, textAlign: 'center' }}>
@@ -173,9 +173,12 @@ export default function AttachmentsDetail() {
 
             <Stack spacing={2}>
                 {Object.entries(groupedAttachments).map(([groupName, files]) => (
-                    <FileGroupSection key={groupName} groupName={groupName} files={files} />
+                    <FileGroupSection key={groupName} groupName={groupName} files={files} onPreview={setPreviewFile} />
                 ))}
             </Stack>
+
+            {/* PreviewFile dialog */}
+            <PreviewFile open={!!previewFile} file={previewFile} onClose={() => setPreviewFile(null)} />
         </Box>
     );
 }
