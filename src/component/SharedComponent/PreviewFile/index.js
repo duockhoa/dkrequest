@@ -9,7 +9,17 @@ export default function PreviewFile({ open, file, onClose }) {
 
     return (
         <Dialog open={open} onClose={onClose} maxWidth="xl" fullWidth>
-            <Box sx={{ position: 'absolute', right: 8, top: 8 }}>
+            <Box sx={{ position: 'absolute', right: 8, top: 8, display: 'flex', gap: 1 }}>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    href={downloadUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    size="small"
+                >
+                    Tải xuống
+                </Button>
                 <IconButton onClick={onClose}>
                     <CloseIcon />
                 </IconButton>
@@ -31,14 +41,26 @@ export default function PreviewFile({ open, file, onClose }) {
                         style={{ minHeight: '80vh' }}
                     />
                 ) : (
-                    <Box sx={{ textAlign: 'center', mt: 4 }}>
-                        <Typography sx={{ mb: 2 }}>Không hỗ trợ xem trước loại file này.</Typography>
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            height: '70vh',
+                        }}
+                    >
+                        <Typography sx={{ mb: 3, fontSize: 22, fontWeight: 600 }}>
+                            Không hỗ trợ xem trước loại file này.
+                        </Typography>
                         <Button
                             variant="contained"
                             color="primary"
                             href={downloadUrl}
                             target="_blank"
                             rel="noopener noreferrer"
+                            size="large"
+                            sx={{ fontSize: 18, px: 4, py: 2 }}
                         >
                             Tải xuống
                         </Button>
