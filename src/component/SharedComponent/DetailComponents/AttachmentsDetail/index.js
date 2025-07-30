@@ -48,7 +48,7 @@ const FileItem = ({ file }) => (
             title={file.file_name}
             onClick={() =>
                 window.open(
-                    `https://mysql.dkpharma.io.vn/api/v1/file/get?filepath=${encodeURIComponent(file.file_path)}`,
+                    `${process.env.REACT_APP_BACKEND_URL}/api/v1/file/get?filepath=${encodeURIComponent(file.file_path)}`,
                     '_blank',
                 )
             }
