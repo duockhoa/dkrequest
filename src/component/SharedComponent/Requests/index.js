@@ -473,7 +473,11 @@ export default function Requests() {
                                             }}
                                         >
                                             <Stack direction="row" spacing={0.5} alignItems="center">
-                                                <Avatar src={request.requestor.avatar} sx={{ width: 24, height: 24 }} />
+                                                <Avatar
+                                                    src={request.requestor.avatar}
+                                                    loading="lazy"
+                                                    sx={{ width: 24, height: 24 }}
+                                                />
                                                 <Typography sx={{ fontSize: 13, lineHeight: 1.2 }}>
                                                     {request.requestor.name}
                                                 </Typography>
@@ -525,6 +529,7 @@ export default function Requests() {
                                                         <Avatar
                                                             src={approver?.approver.avatar}
                                                             alt={approver?.approver.name || ''}
+                                                            loading="lazy" // Thêm dòng này
                                                             sx={{
                                                                 bgcolor:
                                                                     approver.status === 'pending'
