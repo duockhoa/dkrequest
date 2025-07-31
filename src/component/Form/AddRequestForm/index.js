@@ -63,10 +63,23 @@ function AddRequestForm({ onClose }) {
                     return `${user.name}  ${user.department} đề nghị ứng tiền `;
                 case 3:
                     return `${user.name}  ${user.department} đề nghị xin nghỉ`;
-                case 4:
-                    return `${user.department} đề nghị cung ứng văn phòng phẩm tháng ${
-                        new Date().getMonth() + 2
-                    } năm ${new Date().getFullYear()}`;
+                case 4: {
+                    const now = new Date();
+                    let month, year;
+                    if (now.getDate() < 15) {
+                        month = now.getMonth() + 1;
+                        year = now.getFullYear();
+                    } else {
+                        month = now.getMonth() + 2;
+                        if (month > 12) {
+                            month = 1;
+                            year = now.getFullYear() + 1;
+                        } else {
+                            year = now.getFullYear();
+                        }
+                    }
+                    return `${user.department} đề nghị cung ứng văn phòng phẩm tháng ${month} năm ${year}`;
+                }
 
                 case 7:
                     return `${user.name} ${user.department} đề nghị làm thêm giờ`;
