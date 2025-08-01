@@ -121,10 +121,10 @@ function AddRequestForm({ onClose }) {
         const requiredFields = ['requestName', 'requestor_id', 'requestType_id'];
 
         if (requestTypeId === 1) {
-            requiredFields.push('payment_type', 'payment_content', 'pay_to', 'amount', 'due_date');
+            requiredFields.push('payment_type', 'payment_content', 'pay_to', 'amount');
         }
         if (requestTypeId === 2) {
-            requiredFields.push('reason', 'address', 'amount', 'due_date');
+            requiredFields.push('reason', 'address', 'amount');
         }
         if (requestTypeId === 3) {
             requiredFields.push('reason', 'start_time', 'end_time', 'hours', 'hoursText');

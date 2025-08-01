@@ -147,7 +147,7 @@ function PaymentRequestForm() {
             </Stack>
 
             <Stack direction="row" alignItems="center" spacing={2}>
-                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Thời hạn thanh toán (*)</Typography>
+                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Thời hạn thanh toán</Typography>
                 <TextField
                     fullWidth
                     name="due_date"
