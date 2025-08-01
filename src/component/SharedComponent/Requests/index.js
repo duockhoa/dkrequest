@@ -1,5 +1,5 @@
 import { Tabs, Tab, Box, Typography, Stack, Avatar, Chip, AvatarGroup, Dialog, Divider, Badge } from '@mui/material';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -35,7 +35,7 @@ export default function Requests() {
     const requestId = useSelector((state) => state.requestId.requestId);
     const user = useSelector((state) => state.user.userInfo);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (requestTypeId) {
             dispatch(fetchRequests({ requestTypeId, user_id: user.id }));
         }
@@ -430,7 +430,7 @@ export default function Requests() {
                                                     textOverflow: 'ellipsis',
                                                     maxWidth: '900px',
                                                     lineHeight: 1.2,
-                                                    wordBreak: 'break-word', // THÊM DÒNG NÀY
+                                                    wordBreak: 'break-word',
                                                 }}
                                             >
                                                 {request.requestName}
@@ -460,6 +460,22 @@ export default function Requests() {
                                                 </Box>
                                             )}
                                         </Stack>
+                                        {/* Hạn thanh toán dưới tên đề xuất */}
+                                        {(request.paymentRequest?.due_date ||
+                                            request.advanceMoneyRequest?.due_date) && (
+                                            <Typography
+                                                sx={{ fontSize: 13, color: 'secondary.main', fontWeight: 600, mt: 0.5 }}
+                                            >
+                                                Hạn thanh toán:{' '}
+                                                {format(
+                                                    new Date(
+                                                        request.paymentRequest?.due_date ||
+                                                            request.advanceMoneyRequest?.due_date,
+                                                    ),
+                                                    'dd/MM/yyyy',
+                                                )}
+                                            </Typography>
+                                        )}
                                     </Box>
 
                                     {/* Người tạo - Ẩn khi màn hình nhỏ */}
