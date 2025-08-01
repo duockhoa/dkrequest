@@ -3,6 +3,8 @@ import Profile from '../pages/Profile';
 import HeaderOnlyLayout from '../Layouts/HeaderOnlyLayout';
 import Error from '../pages/Error';
 import Request from '../pages/Request';
+import Payment from '../pages/Payment';
+
 import items from '../pages/Items';
 const publicRoutes = [
     {
@@ -20,7 +22,7 @@ const publicRoutes = [
     },
     {
         path: '/payment-request',
-        component: Request,
+        component: Payment,
     },
     {
         path: 'advance-clearance',
