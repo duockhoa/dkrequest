@@ -460,32 +460,39 @@ export default function Requests() {
                                                 </Box>
                                             )}
                                         </Stack>
-                                        {/* Hạn thanh toán dưới tên đề xuất */}
-                                        {(request.paymentRequest?.due_date ||
-                                            request.advanceMoneyRequest?.due_date) && (
-                                            <Typography
-                                                sx={{ fontSize: 13, color: 'secondary.main', fontWeight: 600, mt: 0.5 }}
-                                            >
-                                                Hạn thanh toán:{' '}
-                                                {format(
-                                                    new Date(
-                                                        request.paymentRequest?.due_date ||
-                                                            request.advanceMoneyRequest?.due_date,
-                                                    ),
-                                                    'dd/MM/yyyy',
-                                                )}
-                                            </Typography>
-                                        )}
                                     </Box>
+                                    {/* Hạn thanh toán dưới tên đề xuất */}
+                                    {showCreator && (request.paymentRequest?.due_date || request.advanceMoneyRequest?.due_date) && (
+                                        (() => {
+                                            const dueDate = new Date(
+                                                request.paymentRequest?.due_date || request.advanceMoneyRequest?.due_date
+                                            );
+                                            const isOverdue = dueDate < new Date() && !request.isCompleted;
+                                            return (
+                                                <Typography
+                                                    pr={3}
+                                                    pl={3}
+                                                    sx={{
+                                                        fontSize: 13,
+                                                        color: isOverdue ? 'error.main' : 'primary.main',
+                                                        fontWeight: 600,
+                                                        mt: 0.5,
+                                                    }}
+                                                >
+                                                    {format(dueDate, 'dd/MM/yyyy')}
+                                                </Typography>
+                                            );
+                                        })()
+                                    )}
 
                                     {/* Người tạo - Ẩn khi màn hình nhỏ */}
                                     {showCreator && (
                                         <Box
                                             sx={{
-                                                minWidth: 150,
+                                                minWidth: 180,
                                                 display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
+                                                alignItems: 'left',
+                                                justifyContent: 'left',
                                             }}
                                         >
                                             <Stack direction="row" spacing={0.5} alignItems="center">
