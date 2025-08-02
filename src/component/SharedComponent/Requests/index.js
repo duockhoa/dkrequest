@@ -467,14 +467,19 @@ export default function Requests() {
                                             const dueDate = new Date(
                                                 request.paymentRequest?.due_date || request.advanceMoneyRequest?.due_date
                                             );
-                                            const isOverdue = dueDate < new Date() && !request.isCompleted;
+                                            let color = 'primary.main';
+                                            if (request.requestStatus?.isCanceled || request.status === 'canceled') {
+                                                color = 'grey.900'; // màu đen
+                                            } else if (dueDate < new Date() && !request.isCompleted) {
+                                                color = 'error.main';
+                                            }
                                             return (
                                                 <Typography
                                                     pr={3}
                                                     pl={3}
                                                     sx={{
                                                         fontSize: 13,
-                                                        color: isOverdue ? 'error.main' : 'primary.main',
+                                                        color,
                                                         fontWeight: 600,
                                                         mt: 0.5,
                                                     }}
