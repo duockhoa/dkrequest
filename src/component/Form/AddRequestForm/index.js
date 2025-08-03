@@ -30,6 +30,8 @@ function AddRequestForm({ onClose }) {
     const requestFormData = useSelector((state) => state.requestFormData.value);
     const user = useSelector((state) => state.user.userInfo);
     const requestData = useSelector((state) => state.request.requestData);
+    const loading = useSelector((state) => state.requestFormData.loading);
+    const error = useSelector((state) => state.requestFormData.error);
     const errors = useSelector((state) => state.requestFormData.errors);
     const dispatch = useDispatch();
 
@@ -417,6 +419,7 @@ function AddRequestForm({ onClose }) {
                     type="submit"
                     variant="contained"
                     onClick={handleSubmit}
+                    disabled={loading}
                     sx={{
                         py: 0.8,
                         maxWidth: 150,
@@ -425,7 +428,7 @@ function AddRequestForm({ onClose }) {
                     }}
                     color="primary"
                 >
-                    Thêm mới
+                    {loading ? 'Đang gửi...' : 'Thêm mới'}
                 </Button>
             </Stack>
         </Box>
