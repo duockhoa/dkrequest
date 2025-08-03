@@ -5,7 +5,7 @@ const domain = process.env.REACT_APP_DOMAIN;
 
 const cookieOptions = {
     domain: domain, // .dkpharma.io.vn
-    secure: true, // true cho HTTPS
+    secure:  window.location.protocol === 'https:', // true cho HTTPS
     sameSite: 'lax',
     path: '/',
 };
