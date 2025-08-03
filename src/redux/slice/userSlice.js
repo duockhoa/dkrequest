@@ -1,10 +1,10 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { checkTokenService } from '../../services/checkTokenService';
 import { createSlice } from '@reduxjs/toolkit';
+import { getUserService } from '../../services/usersService';
 
 const fetchUser = createAsyncThunk('user/fetchUser', async () => {
-    const response = await checkTokenService();
-    return response;
+    const response = await getUserService();
+    return response.data?.result;
 });
 
 export const userSlice = createSlice({
@@ -19,7 +19,7 @@ export const userSlice = createSlice({
             createdAt: '',
             updatedAt: '',
         },
-        loading: true,
+        loading: false,
         error: null,
         onEditUser: false,
     },
@@ -34,13 +34,14 @@ export const userSlice = createSlice({
 
     extraReducers: (builder) => {
         builder.addCase(fetchUser.fulfilled, (state, action) => {
-            if (action.payload.userInfo) {
-                state.userInfo = action.payload.userInfo;
+            if (action.payload) {
+                state.userInfo = action.payload;
             }
             state.loading = false;
             state.error = null;
         });
         builder.addCase(fetchUser.pending, (state) => {
+            state.error = null;
             state.loading = true;
         });
         builder.addCase(fetchUser.rejected, (state, action) => {

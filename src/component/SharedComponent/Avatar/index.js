@@ -12,19 +12,17 @@ import { ListItem, ListItemButton, ListItemText } from '@mui/material';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import Paper from '@mui/material/Paper';
 import LogoutIcon from '@mui/icons-material/Logout';
-import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { logoutService } from '../../../services/logoutService';
 import AppsIcon from '@mui/icons-material/Apps';
 
 function MyAvatar() {
     const user = useSelector((state) => state.user.userInfo);
-    const navigate = useNavigate();
 
     // Hàm xử lý logout
     const handleLogout = async () => {
         await logoutService({ id: user.id });
-        window.location.href = 'https://dkpharma.io.vn';
+        window.location.href = process.env.REACT_APP_FRONTEND_ROOT_URL + '/login';
     };
 
     if (!user) {

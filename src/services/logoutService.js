@@ -1,9 +1,14 @@
 import axios from './auth-axios';
 import Cookies from 'js-cookie';
-import { domain } from './domain';
 async function logoutService(payload) {
-    Cookies.remove('token', {
-        domain: domain,
+    Cookies.remove('accessToken', {
+        domain: process.env.REACT_APP_DOMAIN,
+    });
+    Cookies.remove('refreshToken', {
+        domain: process.env.REACT_APP_DOMAIN,
+    });
+    Cookies.remove('id', {
+        domain: process.env.REACT_APP_DOMAIN,
     });
     try {
         const response = await axios.delete('/auth/logout', {

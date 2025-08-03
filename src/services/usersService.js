@@ -1,5 +1,16 @@
-
 import axios from './auth-axios';
+import Cookies from 'js-cookie';
+
+async function getUserService(id) {
+    try {
+        const id = Cookies.get('id');
+        const response = await axios.get(`/user/getbyid/${id}`);
+        return response;
+    } catch (error) {
+        console.error('Error fetching user data:', error);
+        throw error; // Rethrow the error to handle it in the calling function
+    }
+}
 
 async function getAllUsersService() {
     try {
@@ -20,27 +31,23 @@ async function getAllUsersService() {
     }
 }
 
-
-async function  changePasswordService(data) {
-   try {
-       const response = await axios.put('/user/changepassword', data);
-       if (response.status === 200) {
-           return response.data.result;
-       } else {
-          throw new Error('Không thể thay đổi mật khẩu');
-       }
-   } catch (error) {
-       if (error.response) {
-           throw new Error(error.response.data.error || 'Lỗi từ server');
-       } else if (error.request) {
-           throw new Error('Không thể kết nối đến server');
-       } else {
-           throw new Error(error.message || 'Đã xảy ra lỗi khi thay đổi mật khẩu');
-       }
-   }
+async function changePasswordService(data) {
+    try {
+        const response = await axios.put('/user/changepassword', data);
+        if (response.status === 200) {
+            return response.data.result;
+        } else {
+            throw new Error('Không thể thay đổi mật khẩu');
+        }
+    } catch (error) {
+        if (error.response) {
+            throw new Error(error.response.data.error || 'Lỗi từ server');
+        } else if (error.request) {
+            throw new Error('Không thể kết nối đến server');
+        } else {
+            throw new Error(error.message || 'Đã xảy ra lỗi khi thay đổi mật khẩu');
+        }
+    }
 }
 
-
-
-
-export { getAllUsersService , changePasswordService };
+export { getAllUsersService, changePasswordService, getUserService };
