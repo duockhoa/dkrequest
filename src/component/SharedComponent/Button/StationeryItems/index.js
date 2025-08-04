@@ -13,7 +13,7 @@ function StationeryItems() {
     // Chỉ hiển thị nút khi:
     // 1. requestTypeId === 4 (Đề nghị cung ứng VPP)
     // 2. User thuộc department "Tổ chức"
-    if (requestTypeId !== 4 || user?.department !== 'Tổ chức') {
+    if (requestTypeId !== 4 || user?.department !== 'HC') {
         return null;
     }
 
