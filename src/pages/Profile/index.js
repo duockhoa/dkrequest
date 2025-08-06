@@ -6,7 +6,7 @@ import Avatar from '@mui/material/Avatar';
 import { Button, Divider, Typography, Badge, TextField, Snackbar } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import { styled } from '@mui/material/styles';
-import { updateAvatarService } from '../../services/uploadAvatarService';
+import { updateAvatarService } from '../../services/usersService';
 import { fetchUser } from '../../redux/slice/userSlice';
 import { useNavigate } from 'react-router-dom';
 import { changePasswordService } from '../../services/usersService';

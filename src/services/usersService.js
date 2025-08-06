@@ -4,7 +4,7 @@ import Cookies from 'js-cookie';
 async function getUserService(id) {
     try {
         const id = Cookies.get('id');
-        const response = await axios.get(`/user/getbyid/${id}`);
+        const response = await axios.get(`/users/${id}`);
         return response;
     } catch (error) {
         console.error('Error fetching user data:', error);
@@ -14,7 +14,7 @@ async function getUserService(id) {
 
 async function getAllUsersService() {
     try {
-        const response = await axios.get('/user/getall');
+        const response = await axios.get('/users');
         if (response.status === 200) {
             return response.data.result;
         } else {
@@ -33,7 +33,8 @@ async function getAllUsersService() {
 
 async function changePasswordService(data) {
     try {
-        const response = await axios.put('/user/changepassword', data);
+        const id = Cookies.get('id');
+        const response = await axios.put(`/users/${id}/password`, data);
         if (response.status === 200) {
             return response.data.result;
         } else {
@@ -50,4 +51,40 @@ async function changePasswordService(data) {
     }
 }
 
-export { getAllUsersService, changePasswordService, getUserService };
+async function updateAvatarService(payload) {
+    try {
+        // Kiểm tra payload
+        if (!payload || !payload.get('avatar')) {
+            throw new Error('Không tìm thấy file ảnh');
+        }
+        const id = Cookies.get('id');
+
+        const response = await axios.put(`/users/${id}/avatar`, payload, {
+            headers: {
+                // Sửa Headers thành headers
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+
+        // Kiểm tra response
+        if (response.status === 200) {
+            return response;
+        } else {
+            throw new Error('Cập nhật avatar thất bại');
+        }
+    } catch (error) {
+        // Xử lý các loại lỗi cụ thể
+        if (error.response) {
+            // Lỗi từ server
+            throw new Error(error.response.data.message || 'Lỗi từ server');
+        } else if (error.request) {
+            // Lỗi không nhận được response
+            throw new Error('Không thể kết nối đến server');
+        } else {
+            // Lỗi khi set up request
+            throw new Error(error.message || 'Đã xảy ra lỗi khi tải ảnh lên');
+        }
+    }
+}
+
+export { getAllUsersService, changePasswordService, getUserService, updateAvatarService };
