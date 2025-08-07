@@ -56,6 +56,7 @@ function OfficeDocumentForm() {
 
     return (
         <Stack spacing={2}>
+
             {/* Loại văn bản */}
             <Stack direction="row" alignItems="center" spacing={2}>
                 <Typography sx={{ width: 150, fontSize: '1.4rem' }}>Loại văn bản: (*)</Typography>
@@ -79,6 +80,20 @@ function OfficeDocumentForm() {
                         />
                     )}
                     sx={{ width: '100%' }}
+                />
+            </Stack>
+                                    {/* Tên văn bản */}
+            <Stack direction="row" alignItems="center" spacing={2}>
+                <Typography sx={{ width: 150, fontSize: '1.4rem' }}>Số công văn:</Typography>
+                <TextField
+                    fullWidth
+                    name="document_number"
+                    value={requestFormData?.office_document_request?.document_number || ''}
+                    onChange={(e) => handleAutoChange('document_number')(null, e.target.value)}
+                    size="medium"
+                    inputProps={{ style: { fontSize: '1.4rem' } }}
+                    error={!!errors?.document_number}
+                    helperText={errors?.document_number || ''}
                 />
             </Stack>
 

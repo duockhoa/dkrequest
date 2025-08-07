@@ -54,6 +54,7 @@ export default function OfficeDocumentDetail() {
         <Stack spacing={1.5}>
             <DetailItem label="Loại văn bản" value={docData.document_type || '-'} />
             <DetailItem label="Tên văn bản/Tóm tắt nội dung" value={docData.document_name || '-'} />
+            <DetailItem label="Số công văn" value={docData.document_number || '-'} />
             <DetailItem label="Ngày ban hành" value={formatDate(docData.issue_date)} />
             <DetailItem label="Số bản đóng dấu/bản sao" value={docData.copy_count || '-'} />
             <DetailItem label="Mục đích sử dụng" value={docData.purpose || '-'} />
