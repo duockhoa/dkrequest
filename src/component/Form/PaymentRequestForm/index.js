@@ -1,10 +1,8 @@
-import { Stack, Typography, TextField, Autocomplete, InputAdornment } from '@mui/material';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
+import { Stack, Typography, TextField, Autocomplete, InputAdornment, Select, MenuItem } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
 import { setRequestFormData, clearErrors } from '../../../redux/slice/requestFormDataSlice';
 import FileUpload from '../FileUpload';
-import { numberToVietnameseWords, formatNumberWithCommas, parseFormattedNumber } from '../../../utils/numberToWords';
+import { formatNumberWithCommas, parseFormattedNumber } from '../../../utils/numberToWords';
 import { removeAccentsAndUppercase, formatBankAccountNumber, parseBankAccountNumber } from '../../../utils/bankAccount';
 import { banklist } from '../../../services/bankService';
 
@@ -13,6 +11,20 @@ function PaymentRequestForm() {
     const requestFormData = useSelector((state) => state.requestFormData.value);
     const errors = useSelector((state) => state.requestFormData.errors);
     const user = useSelector((state) => state.user.userInfo);
+
+    // Mảng các loại tiền tệ
+    const currencies = [
+        { code: 'VND', symbol: '₫' },
+        { code: 'USD', symbol: '$' },
+        { code: 'EUR', symbol: '€' },
+        { code: 'JPY', symbol: '¥' },
+        { code: 'CNY', symbol: '¥' },
+        { code: 'KRW', symbol: '₩' },
+        { code: 'SGD', symbol: 'S$' },
+        { code: 'THB', symbol: '฿' },
+        { code: 'MYR', symbol: 'RM' },
+        { code: 'GBP', symbol: '£' }
+    ];
 
     const handleChange = (e) => {
         dispatch(clearErrors());
@@ -47,7 +59,7 @@ function PaymentRequestForm() {
         }
 
         // Cập nhật requestName theo cấu trúc mới
-        const requestName = `${user?.name || ''}  ${user?.department || ''}  ${newPaymentRequest.payment_content || ''} (${newPaymentRequest.amountText || ``} vnđ )`;
+        const requestName = `${user?.name || ''}  ${user?.department || ''}  ${newPaymentRequest.payment_content || ''} (${newPaymentRequest.amountText || ``} ${newPaymentRequest.currency || 'VNĐ'} )`;
 
         dispatch(
             setRequestFormData({
@@ -56,13 +68,6 @@ function PaymentRequestForm() {
                 requestName,
             }),
         );
-    };
-
-    // Get amount in words for helper text
-    const amountInWords = () => {
-        const amount = requestFormData?.payment_request?.amount;
-        if (!amount || amount === 0) return '';
-        return numberToVietnameseWords(amount);
     };
 
     // Chuẩn bị danh sách ngân hàng
@@ -134,15 +139,37 @@ function PaymentRequestForm() {
                     inputProps={{
                         style: { fontSize: '1.4rem' },
                     }}
+                    error={!!errors?.amountText}
+                    helperText={errors?.amountText || ''}
                     InputProps={{
                         endAdornment: (
                             <InputAdornment position="end">
-                                <Typography sx={{ fontSize: '1.4rem', color: 'text.secondary' }}>vnđ</Typography>
+                                <Select
+                                    name="currency"
+                                    value={requestFormData?.payment_request?.currency || 'VND'}
+                                    onChange={handleChange}
+                                    size="small"
+                                    variant="standard"
+                                    sx={{ 
+                                        minWidth: 80,
+                                        fontSize: '1.4rem',
+                                        '&:before': { display: 'none' },
+                                        '&:after': { display: 'none' },
+                                        '& .MuiSelect-select': {
+                                            paddingRight: '24px !important'
+                                        }
+                                    }}
+                                    disableUnderline
+                                >
+                                    {currencies.map((currency) => (
+                                        <MenuItem key={currency.code} value={currency.code} sx={{ fontSize: '1.4rem' }}>
+                                            {currency.code}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
                             </InputAdornment>
-                        ),
+                        )
                     }}
-                    error={!!errors?.amountText}
-                    helperText={errors?.amountText || amountInWords() || ''}
                 />
             </Stack>
 
@@ -164,88 +191,92 @@ function PaymentRequestForm() {
                 />
             </Stack>
 
-            <Stack direction="row" alignItems="center" spacing={2}>
-                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Ngân hàng</Typography>
-                <Autocomplete
-                    fullWidth
-                    options={bankOptions}
-                    getOptionLabel={(option) => option.label}
-                    filterOptions={(options, { inputValue }) => {
-                        const normalizedInput = removeAccentsAndUppercase(inputValue).toLowerCase();
-                        return options.filter((option) => {
-                            const name = removeAccentsAndUppercase(option.name).toLowerCase();
-                            const shortName = removeAccentsAndUppercase(option.shortName).toLowerCase();
-                            return name.includes(normalizedInput) || shortName.includes(normalizedInput);
-                        });
-                    }}
-                    // FIX: Sửa logic value - so sánh đúng field
-                    value={bankOptions.find((b) => b.label === requestFormData?.payment_request?.bank_name) || null}
-                    onChange={(_, newValue) => {
-                        dispatch(clearErrors()); // FIX: Thêm clearErrors
-                        dispatch(
-                            setRequestFormData({
-                                ...requestFormData,
-                                payment_request: {
-                                    ...requestFormData.payment_request,
-                                    bank_name: newValue ? newValue.label : '', // FIX: Sử dụng label thay vì template string
-                                },
-                            }),
-                        );
-                    }}
-                    renderOption={(props, option) => (
-                        <li {...props} key={option.value}>
-                            <Typography sx={{ fontSize: 14 }}>{option.label}</Typography>
-                        </li>
-                    )}
-                    renderInput={(params) => (
+            {/* Chỉ hiển thị thông tin ngân hàng khi currency là VND */}
+            {(requestFormData?.payment_request?.currency || 'VND') === 'VND' && (
+                <>
+                    <Stack direction="row" alignItems="center" spacing={2}>
+                        <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Ngân hàng</Typography>
+                        <Autocomplete
+                            fullWidth
+                            options={bankOptions}
+                            getOptionLabel={(option) => option.label}
+                            filterOptions={(options, { inputValue }) => {
+                                const normalizedInput = removeAccentsAndUppercase(inputValue).toLowerCase();
+                                return options.filter((option) => {
+                                    const name = removeAccentsAndUppercase(option.name).toLowerCase();
+                                    const shortName = removeAccentsAndUppercase(option.shortName).toLowerCase();
+                                    return name.includes(normalizedInput) || shortName.includes(normalizedInput);
+                                });
+                            }}
+                            value={bankOptions.find((b) => b.label === requestFormData?.payment_request?.bank_name) || null}
+                            onChange={(_, newValue) => {
+                                dispatch(clearErrors());
+                                dispatch(
+                                    setRequestFormData({
+                                        ...requestFormData,
+                                        payment_request: {
+                                            ...requestFormData.payment_request,
+                                            bank_name: newValue ? newValue.label : '',
+                                        },
+                                    }),
+                                );
+                            }}
+                            renderOption={(props, option) => (
+                                <li {...props} key={option.value}>
+                                    <Typography sx={{ fontSize: 14 }}>{option.label}</Typography>
+                                </li>
+                            )}
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    name="bank_name"
+                                    size="medium"
+                                    multiline
+                                    inputProps={{
+                                        ...params.inputProps,
+                                        style: { fontSize: '1.4rem' },
+                                    }}
+                                    error={!!errors?.bank_name}
+                                    helperText={errors?.bank_name || ''}
+                                />
+                            )}
+                        />
+                    </Stack>
+
+                    <Stack direction="row" alignItems="center" spacing={2}>
+                        <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Số tài khoản</Typography>
                         <TextField
-                            {...params}
-                            name="bank_name"
+                            fullWidth
+                            name="bank_account_number"
+                            value={requestFormData?.payment_request?.bank_account_number || ''}
+                            onChange={handleChange}
                             size="medium"
-                            multiline
                             inputProps={{
-                                ...params.inputProps,
+                                style: { fontSize: '1.4rem' },
+                                maxLength: 20,
+                            }}
+                            error={!!errors?.bank_account_number}
+                            helperText={errors?.bank_account_number || ''}
+                        />
+                    </Stack>
+
+                    <Stack direction="row" alignItems="center" spacing={2}>
+                        <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Chủ tài khoản</Typography>
+                        <TextField
+                            fullWidth
+                            name="beneficiary_name"
+                            value={requestFormData?.payment_request?.beneficiary_name || ''}
+                            onChange={handleChange}
+                            size="medium"
+                            inputProps={{
                                 style: { fontSize: '1.4rem' },
                             }}
-                            error={!!errors?.bank_name}
-                            helperText={errors?.bank_name || ''}
+                            error={!!errors?.beneficiary_name}
+                            helperText={errors?.beneficiary_name || ''}
                         />
-                    )}
-                />
-            </Stack>
-
-            <Stack direction="row" alignItems="center" spacing={2}>
-                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Số tài khoản</Typography>
-                <TextField
-                    fullWidth
-                    name="bank_account_number"
-                    value={requestFormData?.payment_request?.bank_account_number || ''}
-                    onChange={handleChange}
-                    size="medium"
-                    inputProps={{
-                        style: { fontSize: '1.4rem' },
-                        maxLength: 20, // FIX: Thêm giới hạn ký tự
-                    }}
-                    error={!!errors?.bank_account_number}
-                    helperText={errors?.bank_account_number || ''}
-                />
-            </Stack>
-
-            <Stack direction="row" alignItems="center" spacing={2}>
-                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Chủ tài khoản</Typography>
-                <TextField
-                    fullWidth
-                    name="beneficiary_name"
-                    value={requestFormData?.payment_request?.beneficiary_name || ''}
-                    onChange={handleChange}
-                    size="medium"
-                    inputProps={{
-                        style: { fontSize: '1.4rem' },
-                    }}
-                    error={!!errors?.beneficiary_name}
-                    helperText={errors?.beneficiary_name || ''}
-                />
-            </Stack>
+                    </Stack>
+                </>
+            )}
 
             {/* File Upload Components */}
             {requestFormData?.payment_request?.payment_type === 'invoice' && (

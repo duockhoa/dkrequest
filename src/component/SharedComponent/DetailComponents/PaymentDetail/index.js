@@ -7,12 +7,12 @@ const DetailItem = ({ label, value }) => (
         <Typography
             sx={{
                 minWidth: 120,
-                maxWidth: 200, // Add maximum width to control when wrapping occurs
+                maxWidth: 200,
                 color: 'text.secondary',
                 fontSize: '1.4rem',
-                wordWrap: 'break-word', // Allow words to break
-                whiteSpace: 'normal', // Allow text to wrap to multiple lines
-                flexShrink: 1, // Allow the text to shrink when needed
+                wordWrap: 'break-word',
+                whiteSpace: 'normal',
+                flexShrink: 1,
             }}
         >
             {label}:
@@ -20,8 +20,8 @@ const DetailItem = ({ label, value }) => (
         <Typography
             sx={{
                 fontSize: '1.4rem',
-                flex: 1, // Take remaining space
-                wordWrap: 'break-word', // Also allow value text to wrap if needed
+                flex: 1,
+                wordWrap: 'break-word',
             }}
         >
             {value}
@@ -36,12 +36,14 @@ export default function PaymentDetail() {
     const paymentData = requestDetail?.paymentRegistration;
 
     // Format functions
-    const formatCurrency = (amount) => {
+    const formatCurrency = (amount, currency) => {
         if (!amount) return '-';
-        return new Intl.NumberFormat('vi-VN', {
-            style: 'currency',
-            currency: 'VND',
-        }).format(amount);
+        
+        // Format số với dấu phân cách
+        const formattedAmount = new Intl.NumberFormat('vi-VN').format(amount);
+        
+        // Thêm đơn vị tiền tệ
+        return `${formattedAmount} ${currency || 'VND'}`;
     };
 
     const formatDate = (dateString) => {
@@ -66,7 +68,9 @@ export default function PaymentDetail() {
 
     if (!paymentData) {
         return (
-            <Typography sx={{ fontSize: '1.4rem', color: 'text.secondary' }}>Không có thông tin thanh toán</Typography>
+            <Typography sx={{ fontSize: '1.4rem', color: 'text.secondary' }}>
+                Không có thông tin thanh toán
+            </Typography>
         );
     }
 
@@ -78,7 +82,10 @@ export default function PaymentDetail() {
 
             <DetailItem label="Người thụ hưởng" value={paymentData.pay_to || '-'} />
 
-            <DetailItem label="Số tiền" value={formatCurrency(paymentData.amount)} />
+            <DetailItem 
+                label="Số tiền" 
+                value={formatCurrency(paymentData.amount, paymentData.currency)} 
+            />
 
             <DetailItem label="Hạn thanh toán" value={formatDate(paymentData.due_date)} />
 
