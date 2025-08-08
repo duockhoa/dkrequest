@@ -4,7 +4,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import PendingIcon from '@mui/icons-material/PendingOutlined';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import CancelIcon from '@mui/icons-material/Cancel';
-import MarkEmailReadIcon from '@mui/icons-material/MarkEmailRead'; // Icon cho tiếp nhận
+import MarkEmailReadIcon from '@mui/icons-material/MarkEmailRead';
 import { useSelector } from 'react-redux';
 import { format, parseISO } from 'date-fns';
 
@@ -32,11 +32,13 @@ function Progress() {
             case 'rejected':
                 return <CancelIcon sx={{ color: 'error.main', fontSize: '2rem' }} />;
             case 'received':
-                return <MarkEmailReadIcon sx={{ color: 'info.main', fontSize: '2rem' }} />; // Icon cho tiếp nhận
+                return <MarkEmailReadIcon sx={{ color: 'info.main', fontSize: '2rem' }} />;
             case 'completed':
-                return <TaskAltIcon sx={{ color: 'secondary.main', fontSize: '2rem' }} />; // Đổi màu để phân biệt
+                return <TaskAltIcon sx={{ color: 'secondary.main', fontSize: '2rem' }} />;
             case 'pending':
                 return <PendingIcon sx={{ color: 'warning.main', fontSize: '2rem' }} />;
+            case 'cancelled':
+                return <CancelIcon sx={{ color: 'error.main', fontSize: '2rem' }} />;
             default:
                 return <PendingIcon sx={{ color: 'grey.400', fontSize: '2rem' }} />;
         }
@@ -77,6 +79,21 @@ function Progress() {
                     });
                 }
             });
+
+            // Add cancellation activity - Sửa lại logic này
+            if (requestDetail.requestStatus?.isCanceled && requestDetail.requestStatus?.canceledByUser) {
+                activities.push({
+                    id: 'cancelled',
+                    status: 'cancelled',
+                    title: `${requestDetail.requestStatus.canceledByUser.name || 'Unknown'} (${
+                        requestDetail.requestor.department || 'Unknown'
+                    })`,
+                    action: 'đã hủy yêu cầu vào lúc',
+                    timestamp: formatDateTime(requestDetail.requestStatus.canceled_at),
+                    sortDate: new Date(requestDetail.requestStatus.canceled_at),
+                    note: requestDetail.requestStatus.cancel_reason || '',
+                });
+            }
 
             // Add receiver activity if request is received
             if (requestDetail.isReceived && requestDetail.receiver) {
@@ -210,7 +227,7 @@ function Progress() {
                                         mt: 1,
                                     }}
                                 >
-                                    Ghi chú: {activity.note}
+                                    {activity.status === 'cancelled' ? 'Lý do hủy: ' : 'Ghi chú: '}{activity.note}
                                 </Typography>
                             )}
                         </Box>
