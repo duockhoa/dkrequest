@@ -361,7 +361,7 @@ export default function Requests() {
                 sx={{
                     '& .MuiDialog-paper': {
                         borderRadius: 2,
-                        maxWidth: requestTypeId === 4 || requestTypeId === 18 ? 'lg' : 'xs',
+                        maxWidth: requestTypeId === 4 ? 'lg' : requestTypeId === 18 ? 'xl' : 'sm',
 
                         width: '100%',
                     },

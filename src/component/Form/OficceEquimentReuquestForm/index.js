@@ -37,7 +37,9 @@ function EditToolbar(props) {
                 reason: '',
                 handling_old_equipment: '',
                 unit: '',
-                quantity: '',
+                quantity: 0,
+                unit_price: 0,
+                total_price: 0,
                 reference_info: '',
                 isNew: true,
             },
@@ -76,6 +78,7 @@ export default function OfficeEquipmentRequestForm() {
     const [rowModesModel, setRowModesModel] = useState({});
     const dispatch = useDispatch();
     const requestFormData = useSelector((state) => state.requestFormData.value);
+    
     useEffect(() => {
         dispatch(setRequestFormData({ ...requestFormData, office_equipment_request: rows }));
         dispatch(clearErrors());
@@ -112,7 +115,17 @@ export default function OfficeEquipmentRequestForm() {
     };
 
     const processRowUpdate = (newRow) => {
-        const updatedRow = { ...newRow, isNew: false };
+        // Tự động tính thành tiền khi cập nhật row
+        const quantity = parseFloat(newRow.quantity) || 0;
+        const unitPrice = parseFloat(newRow.unit_price) || 0;
+        const totalPrice = quantity * unitPrice;
+        
+        const updatedRow = { 
+            ...newRow, 
+            total_price: totalPrice,
+            isNew: false 
+        };
+        
         setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
         return updatedRow;
     };
@@ -121,9 +134,11 @@ export default function OfficeEquipmentRequestForm() {
         setRowModesModel(newRowModesModel);
     };
 
-    useEffect(() => {
-        // Dispatch action to update the request form data with the current rows
-    }, [rows]);
+    // Format số tiền với dấu phân cách
+    const formatCurrency = (value) => {
+        if (!value || value === 0) return '0';
+        return new Intl.NumberFormat('vi-VN').format(value);
+    };
 
     const columns = [
         {
@@ -138,7 +153,7 @@ export default function OfficeEquipmentRequestForm() {
         {
             field: 'name',
             headerName: 'Tên mặt hàng',
-            width: 211,
+            width: 240,
             align: 'start',
             headerAlign: 'center',
             editable: true,
@@ -147,10 +162,9 @@ export default function OfficeEquipmentRequestForm() {
             field: 'reason',
             headerName: 'Lý do cung ứng',
             type: 'text',
-            width: 200,
+            width: 260,
             editable: true,
         },
-
         {
             field: 'unit',
             headerName: 'Đơn vị tính',
@@ -161,9 +175,41 @@ export default function OfficeEquipmentRequestForm() {
         {
             field: 'quantity',
             headerName: 'Số lượng',
-            width: 100,
+            width: 80,
             editable: true,
             type: 'number',
+            align: 'center',
+            headerAlign: 'center',
+        },
+        {
+            field: 'unit_price',
+            headerName: `Đơn giá dự tính (đ)`,
+            width: 130,
+            editable: true,
+            type: 'number',
+            align: 'right',
+            headerAlign: 'center',
+            valueFormatter: (params) => {
+                return formatCurrency(params.value);
+            },
+        },
+        {
+            field: 'total_price',
+            headerName: 'Thành tiền (đ)',
+            width: 120,
+            editable: false,
+            type: 'number',
+            align: 'right',
+            headerAlign: 'center',
+            valueGetter: (params) => {
+                const quantity = parseFloat(params.row.quantity) || 0;
+                const unitPrice = parseFloat(params.row.unit_price) || 0;
+                return quantity * unitPrice;
+            },
+            valueFormatter: (params) => {
+                return formatCurrency(params.value);
+            },
+            cellClassName: 'total-price-cell',
         },
         {
             field: 'reference_info',
@@ -175,11 +221,10 @@ export default function OfficeEquipmentRequestForm() {
         {
             field: 'handling_old_equipment',
             headerName: 'Hướng dẫn XL TB cũ (nếu có)',
-            width: 200,
+            width: 180,
             editable: true,
             type: 'text',
         },
-
         {
             field: 'actions',
             type: 'actions',
@@ -241,6 +286,10 @@ export default function OfficeEquipmentRequestForm() {
                 '& .textPrimary': {
                     color: 'text.primary',
                 },
+                '& .total-price-cell': {
+                    backgroundColor: '#f5f5f5',
+                    fontWeight: 600,
+                },
                 '& .MuiDataGrid-cell': {
                     fontSize: '14px',
                     borderRight: '1px solid rgba(224, 224, 224, 1)',
@@ -294,7 +343,7 @@ export default function OfficeEquipmentRequestForm() {
                 slotProps={{
                     toolbar: { setRows, setRowModesModel },
                 }}
-                hideFooter // Thêm dòng này để ẩn pagination
+                hideFooter
             />
         </Box>
     );
