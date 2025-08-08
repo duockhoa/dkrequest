@@ -85,34 +85,9 @@ function Approver() {
                                 }}
                             />
                         )}
-                        {approver.note && (
-                            <Typography
-                                sx={{
-                                    fontSize: '1.2rem',
-                                    color: 'text.secondary',
-                                    fontStyle: 'italic',
-                                }}
-                            >
-                                {approver.note}
-                            </Typography>
-                        )}
                     </Stack>
                 ))}
             </Stack>
-
-            {/* Step Indicator Example */}
-            {/* <Box
-                sx={{
-                    width: 18,
-                    height: 18,
-                    borderRadius: '50%',
-                    bgcolor: status === 'rejected' ? 'error.main' : 'primary.main',
-                    display: 'inline-block',
-                    mr: 2,
-                    border: '2px solid white',
-                    boxShadow: 1,
-                }}
-            /> */}
         </Box>
     );
 }
