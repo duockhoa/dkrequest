@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import { exportsFileDocService } from '../../../../services/exportsFileService';
 import dayjs from 'dayjs';
 import { numberToVietnameseWords, formatNumberWithCommas } from '../../../../utils/numberToWords';
+import { ta } from 'date-fns/locale';
 
 function ExportFile({ onClose }) {
     const requestDetail = useSelector((state) => state.requestDetail.requestDetailvalue);
@@ -188,12 +189,13 @@ function ExportFile({ onClose }) {
                     negative_amount: ''
                 };
 
-                
-                if(totalSpendingAmount - totalVoucherAmount) {
-                    var positive = totalSpendingAmount - totalVoucherAmount;
+               const differenceValue = parseInt(Number(advanceClearanceRequest.unspent_amount)) + totalVoucherAmount - totalSpendingAmount;
+
+                if(differenceValue > 0) {
+                    var positive = differenceValue;
                     difference.positive_amount = formatNumberWithCommas(positive) + "đ" || '';
-                } else {
-                    var negative = totalVoucherAmount - totalSpendingAmount;
+                } else if(differenceValue < 0) {
+                    var negative = 0 - differenceValue;
                     difference.negative_amount = formatNumberWithCommas(negative) + "đ" || '';
                 }
                 return {
