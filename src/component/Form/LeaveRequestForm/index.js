@@ -231,7 +231,7 @@ function LeaveRequestForm() {
                 </Select>
             </Stack>
             <Stack direction="row" alignItems="center" spacing={2}>
-                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Người ban giao:</Typography>
+                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Người bàn giao:</Typography>
                 <Autocomplete
                     fullWidth
                     options={filteredUsers}

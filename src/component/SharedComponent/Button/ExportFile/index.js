@@ -7,6 +7,7 @@ import { numberToVietnameseWords, formatNumberWithCommas } from '../../../../uti
 
 function ExportFile({ onClose }) {
     const requestDetail = useSelector((state) => state.requestDetail.requestDetailvalue);
+    console.log(requestDetail)
 
     const createdAt = requestDetail?.createAt;
     const day = createdAt ? dayjs(createdAt).date() : '';
@@ -126,6 +127,96 @@ function ExportFile({ onClose }) {
                       receiving_unit: expressDeliveryRequest.receiving_unit || '',
                     },
                 };
+            case 20: 
+                const advanceClearanceRequest = requestDetail?.advanceClearanceRequest || {};
+                const vouchers = advanceClearanceRequest.vouchers || [];
+                const spendings = advanceClearanceRequest.spendings || [];
+
+                // Tính tổng số tiền đã ứng
+                const totalVoucherAmount = vouchers.reduce(
+                    (sum, v) => sum + (parseFloat(v.amount) || 0),
+                    0
+                );
+                // Tính tổng số tiền đã chi
+                const totalSpendingAmount = spendings.reduce(
+                    (sum, s) => sum + (parseFloat(s.amount) || 0),
+                    0
+                );
+
+
+
+                const vouchersdata = [
+                    {
+                        advance1: "",
+                        advanamont1: ""
+                    },
+                     {
+                        advance2: "",
+                        advanamont2: ""
+                    },
+                    {
+                        advance3: "",
+                        advanamont3: ""
+                    },
+
+                ]
+                const vouchersLength = vouchers.length;
+                for (let i = 0; i < vouchersLength; i++) {
+                    vouchersdata[i][`advance${i + 1}`] = `Số phiếu chi ${vouchers[i].voucher_number} Ngày: ${formatDate(vouchers[i].voucher_date)}` || '';
+                    vouchersdata[i][`advanamont${i + 1}`] = formatNumberWithCommas(parseInt(Number(vouchers[i].amount))) + "đ" || '';
+                }
+
+                const spendingsData = [
+                    {
+                        pay1: "",
+                        payamont1: ""
+                    },
+                    {
+                        pay2: '',
+                        payamont2: ''
+                    }
+                ]
+
+               const payLength = spendings.length;
+                for (let i = 0; i < payLength; i++) {
+                    spendingsData[i][`pay${i + 1}`] = `Số phiếu chi ${spendings[i].document_number} Ngày: ${formatDate(spendings[i].spending_date)}` || '';
+                    spendingsData[i][`payamont${i + 1}`] = formatNumberWithCommas(parseInt(Number(spendings[i].amount))) + "đ" || '';
+                }
+
+                const difference = {
+                    positive_amount: '',
+                    negative_amount: ''
+                };
+
+                
+                if(totalSpendingAmount - totalVoucherAmount) {
+                    var positive = totalSpendingAmount - totalVoucherAmount;
+                    difference.positive_amount = formatNumberWithCommas(positive) + "đ" || '';
+                } else {
+                    var negative = totalVoucherAmount - totalSpendingAmount;
+                    difference.negative_amount = formatNumberWithCommas(negative) + "đ" || '';
+                }
+                return {
+                    template: 'advance_clearance/Mau04TT.docx',
+                    data: Object.assign(
+                        {
+                            name: userName,
+                            department: department, 
+                            day: day,
+                            month: month,
+                            year: year,
+                            unspent_amount: formatNumberWithCommas(parseInt(Number(advanceClearanceRequest.unspent_amount))) + "đ" || '',
+                            total_voucher_amount: formatNumberWithCommas(totalVoucherAmount) + "đ" || '',
+                            total_spending_amount: formatNumberWithCommas(totalSpendingAmount) + "đ" || '',
+                            negative_amount: difference.negative_amount || '',
+                            positive_amount: difference.positive_amount || '',
+                            department_head: departmentHead
+                        },
+                        ...vouchersdata,
+                        ...spendingsData
+                    ),
+                };
+             
             default:
                 return {
                     template: 'default_template',
@@ -168,6 +259,12 @@ function ExportFile({ onClose }) {
             />
         </MenuItem>
     );
+}
+
+// Hàm formatDate: chuyển yyyy-mm-dd thành dd/mm/yyyy
+function formatDate(dateStr) {
+    if (!dateStr) return '';
+    return dayjs(dateStr).format('DD/MM/YYYY');
 }
 
 export default ExportFile;
