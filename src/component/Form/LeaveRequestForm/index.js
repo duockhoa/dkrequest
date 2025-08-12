@@ -107,13 +107,21 @@ function LeaveRequestForm() {
         'Nghỉ khám thai',
     ];
 
-    // Generate hour options based on selected start and end times
+
+    // Generate hour/month options based on selected start and end times
     const hourOptions = useMemo(() => {
         const start = requestFormData?.leave_registration?.start_time;
         const end = requestFormData?.leave_registration?.end_time;
-
         if (!start || !end) return [];
-
+        const startDate = dayjs(start);
+        const endDate = dayjs(end);
+        const diffMonth = endDate.diff(startDate, 'month', true); // true: float
+        if (diffMonth > 1) {
+            // Nếu lớn hơn 1 tháng, tạo option theo tháng
+            const months = Math.floor(diffMonth);
+            return Array.from({ length: months }, (_, i) => `${i + 1} tháng`);
+        }
+        // Ngược lại, option theo giờ/ngày như cũ
         return generateHourOptions(new Date(start), new Date(end));
     }, [requestFormData?.leave_registration?.start_time, requestFormData?.leave_registration?.end_time]);
 

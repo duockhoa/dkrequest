@@ -29,15 +29,20 @@ export default function LeaveDetail() {
     const leaveStart = requestDetail?.leaveRegistration?.start_time;
     const leaveEnd = requestDetail?.leaveRegistration?.end_time;
     const leaveHours = requestDetail?.leaveRegistration?.hours || 0;
+    const leaverHoursText = requestDetail?.leaveRegistration?.hours_text || "_";
     const leaveReason = requestDetail?.leaveRegistration?.reason || '-';
     const handoverUserName = requestDetail?.leaveRegistration?.handoverUser?.name || '-';
+    console.log(leaverHoursText)
 
     return (
         <>
             <DetailItem label="Lý do xin nghỉ" value={leaveReason} />
             <DetailItem label="Thời gian bắt đầu" value={formatDate(leaveStart)} />
             <DetailItem label="Thời gian kết thúc" value={formatDate(leaveEnd)} />
-            <DetailItem label="Số giờ nghỉ" value={formatWorkingTime(leaveHours)} />
+            {
+                leaveHours === 0 ? <DetailItem label="Số giờ nghỉ" value={leaverHoursText} /> : <DetailItem label="Số giờ nghỉ" value={formatWorkingTime(leaveHours)} />
+            }
+            
             <DetailItem label="Người ban giao" value={handoverUserName} />
         </>
     );

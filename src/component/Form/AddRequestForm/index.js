@@ -129,7 +129,7 @@ function AddRequestForm({ onClose }) {
             requiredFields.push('reason', 'address', 'amount');
         }
         if (requestTypeId === 3) {
-            requiredFields.push('reason', 'start_time', 'end_time', 'hours', 'hoursText');
+            requiredFields.push('reason', 'start_time', 'end_time', 'hoursText');
         }
         if (requestTypeId === 7) {
             requiredFields.push('start_time', 'end_time', 'hours', 'reason', 'hoursText');
