@@ -148,11 +148,8 @@ export default function SupplyStationeryForm() {
         const updatedRow = {
             ...newRow,
             product_code: matchedItem ? matchedItem.product_code : '',
-            // Chỉ cập nhật unit nếu chưa có giá trị
-            unit: newRow.unit && newRow.unit.trim() !== ''
-                ? newRow.unit
-                : (matchedItem ? matchedItem.unit?.replace(/\r/g, '').trim() : ''),
-            isNew: false, // Đánh dấu là đã được lưu
+            // Không cập nhật unit ở đây nữa!
+            isNew: false,
         };
         setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
         return updatedRow;
