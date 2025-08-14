@@ -24,7 +24,7 @@ import OfficeDocumentForm from '../OfficeDocumentForm';
 import OfficeEquipmentRequestForm from '../OficceEquimentReuquestForm';
 import DocumentEditRequestForm from '../DocumentEditRequestForm';
 import AdvanceClearanceForm from '../AdvanceClearanceForm';
-
+import InvoiceRequestForm from '../InvoiceRequestForm';
 function AddRequestForm({ onClose }) {
     const requestTypeId = useSelector((state) => state.requestId.requestTypeId);
     const requestFormData = useSelector((state) => state.requestFormData.value);
@@ -242,6 +242,22 @@ function AddRequestForm({ onClose }) {
         if (requestTypeId === 19) {
             requiredFields.push('type', 'document_name', 'reason');
         }
+        if (requestTypeId === 21) {
+            requiredFields.push('invoice_request');
+            // Kiểm tra xem có dòng nào đang chỉnh sửa chưa lưu không
+            if (requestFormData.invoice_request && requestFormData.invoice_request.length > 0) {
+                const hasEditingItems = requestFormData.invoice_request.some((item) => item.isNew === true);
+                if (hasEditingItems) {
+                    dispatch(
+                        setFieldError({
+                            field: 'invoice_request_editing',
+                            message: 'Vui lòng lưu tất cả các dòng hóa đơn trước khi gửi đề xuất!',
+                        }),
+                    );
+                    return false;
+                }
+            }
+        }
         const flattenedData = flattenObject(requestFormData);
         let isValid = true;
         let errors = {};
@@ -335,6 +351,7 @@ function AddRequestForm({ onClose }) {
             {requestTypeId === 18 ? <OfficeEquipmentRequestForm /> : ''}
             {requestTypeId === 19 ? <DocumentEditRequestForm /> : ''}
             {requestTypeId === 20 ? <AdvanceClearanceForm /> : ''}
+            {requestTypeId === 21 ? <InvoiceRequestForm /> : ''}
             {/* Hiển thị lỗi chung cho supply_stationery */}
             {errors?.supply_stationery_editing && (
                 <Box
@@ -366,6 +383,22 @@ function AddRequestForm({ onClose }) {
                     }}
                 >
                     {errors.office_equipment_request_editing}
+                </Box>
+            )}
+            {errors?.invoice_request_editing && (
+                <Box
+                    sx={{
+                        p: 2,
+                        mb: 2,
+                        border: '1px solid #f44336',
+                        borderRadius: 1,
+                        backgroundColor: '#ffebee',
+                        color: '#d32f2f',
+                        fontSize: '14px',
+                        textAlign: 'center',
+                    }}
+                >
+                    {errors.invoice_request_editing}
                 </Box>
             )}
             <Stack direction="row" alignItems="flex-start" spacing={2}>

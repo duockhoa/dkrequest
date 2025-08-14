@@ -96,6 +96,11 @@ const publicRoutes = [
         path: 'document-edit-request',
         component: Request,
     },
+        {
+        path: 'invoice-request',
+        component: Request,
+    },
+    
     {
         path: '*',
         component: Error,
