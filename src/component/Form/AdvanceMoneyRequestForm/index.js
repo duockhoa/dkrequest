@@ -276,6 +276,7 @@ function AdvanceMoneyRequestForm() {
                     name="beneficiary_name"
                     value={requestFormData?.advance_request?.beneficiary_name || ''}
                     onChange={handleChange}
+                    disabled={true} 
                     size="medium"
                     inputProps={{
                         style: { fontSize: '1.4rem' },
