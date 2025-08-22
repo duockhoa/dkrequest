@@ -1,3 +1,3 @@
-import logo from './logo-2024.png';
+import logo from './vietnamFlag.webp';
 import error from './ErrorImages/error image.webp';
 export { logo, error };
