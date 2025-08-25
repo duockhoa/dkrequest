@@ -58,8 +58,7 @@ export default function InvoiceRequestForm() {
         return items.reduce((sum, item) => {
             const quantity = parseFloat(item.quantity) || 0;
             const unitPrice = parseFloat(item.unit_price) || 0;
-            const taxRate = parseFloat(item.tax_rate) || 0;
-            const total = quantity * unitPrice + quantity * unitPrice * (taxRate / 100);
+            const total = quantity * unitPrice;
             return sum + total;
         }, 0);
     };

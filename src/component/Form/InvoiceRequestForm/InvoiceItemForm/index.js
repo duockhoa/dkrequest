@@ -161,17 +161,11 @@ export default function InvoiceItemForm() {
         {
             field: 'product_name',
             headerName: 'Tên hàng',
-            width: 280,
+            width: 320,
             editable: true,
             renderEditCell: (params) => (
                 <ItemAutoCompleteEditCell {...params} items={items} field="product_name" />
             ),
-        },
-        {
-            field: 'batch_number',
-            headerName: 'Số lô',
-            width: 150,
-            editable: true,
         },
         {
             field: 'unit',
@@ -191,7 +185,7 @@ export default function InvoiceItemForm() {
         },
         {
             field: 'unit_price',
-            headerName: 'Đơn giá (đ)',
+            headerName: 'Đơn giá (cả VAT) (đ)',
             width: 150,
             type: 'number',
             editable: true,
@@ -214,8 +208,7 @@ export default function InvoiceItemForm() {
             valueGetter: (params) => {
                 const quantity = parseFloat(params.row.quantity) || 0;
                 const unitPrice = parseFloat(params.row.unit_price) || 0;
-                const taxRate = parseFloat(params.row.tax_rate || params.row.vat_rate) || 0;
-                const total = quantity * unitPrice + quantity * unitPrice * (taxRate / 100);
+                const total = quantity * unitPrice;
                 return total;
             },
             valueFormatter: (params) => {
@@ -399,12 +392,11 @@ function ItemAutoCompleteEditCell({ id, value, field, api, items, setRows }) {
             id: createRandomId(),
             product_code: cols[0] || '',
             product_name: cols[1] || '',
-            batch_number: cols[2] || '',
+            unit: cols[2] || '',
             quantity: cols[3] || '',
             unit_price: cols[4] || '',
-            unit: cols[5] || '',
-            tax_rate: cols[6] || '',
-            note: cols[7] || '',
+            tax_rate: cols[5] || '',
+            note: cols[6] || '',
             isNew: true,
         }));
         // Push vào items (rows)
