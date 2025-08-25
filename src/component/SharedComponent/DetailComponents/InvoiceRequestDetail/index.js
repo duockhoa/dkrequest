@@ -15,12 +15,39 @@ import OpenInFullIcon from '@mui/icons-material/OpenInFull';
 import { useSelector } from 'react-redux';
 import { useState } from 'react';
 import InvoiceRequestDetailExpand from '../InvoiceRequestDetailExpand';
+const DetailItem = ({ label, value }) => (
+    <Stack direction="row" spacing={2} sx={{ py: 1 }}>
+        <Typography
+            sx={{
+                minWidth: 120,
+                maxWidth: 120,
+                color: 'text.secondary',
+                fontSize: '1.4rem',
+                wordWrap: 'break-word',
+                whiteSpace: 'normal',
+                flexShrink: 1,
+            }}
+        >
+            {label}:
+        </Typography>
+        <Typography
+            sx={{
+                fontSize: '1.4rem',
+                flex: 1,
+                wordWrap: 'break-word',
+            }}
+        >
+            {value}
+        </Typography>
+    </Stack>
+);
+
 
 export default function InvoiceRequestDetail() {
     const requestDetail = useSelector((state) => state.requestDetail.requestDetailvalue);
     const [openExpand, setOpenExpand] = useState(false);
 
-    // Lấy danh sách văn phòng phẩm
+
     const invoiceRequest = requestDetail?.invoiceRequest;
 
     if (!invoiceRequest || invoiceRequest.length === 0) {
@@ -41,6 +68,9 @@ export default function InvoiceRequestDetail() {
 
     return (
         <Stack sx={{ position: 'relative', mt: 2 }}>
+            <DetailItem label="Tên khách hàng" value={invoiceRequest.customer_name || '-'} />
+            <DetailItem label="Địa chỉ" value={invoiceRequest.customer_address || '-'} />
+            <DetailItem label="Mã số thuế" value={invoiceRequest.customer_tax_code || '-'} />
             <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1, fontSize: '1.4rem' }}>
                 DANH SÁCH HÀNG HÓA XUẤT HÓA ĐƠN
             </Typography>
@@ -70,7 +100,7 @@ export default function InvoiceRequestDetail() {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {invoiceRequest.map((item) => (
+                        {invoiceRequest.items.map((item) => (
                             <TableRow key={item.id}>
                                 <TableCell sx={{ fontSize: '14px' }}>{item.product_name}</TableCell>
                                 <TableCell sx={{ fontSize: '14px' }}>{item.quantity}</TableCell>

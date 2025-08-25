@@ -43,7 +43,7 @@ export default function LeaveDetail() {
                 leaveHours === 0 ? <DetailItem label="Số giờ nghỉ" value={leaverHoursText} /> : <DetailItem label="Số giờ nghỉ" value={formatWorkingTime(leaveHours)} />
             }
             
-            <DetailItem label="Người ban giao" value={handoverUserName} />
+            <DetailItem label="Người bàn giao" value={handoverUserName} />
         </>
     );
 }

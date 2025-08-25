@@ -15,7 +15,7 @@ export default function InvoiceRequestDetailExpand() {
     const requestDetail = useSelector((state) => state.requestDetail.requestDetailvalue);
 
     // Lấy danh sách văn phòng phẩm
-    const invoiceRequest = requestDetail?.invoiceRequest;
+    const invoiceRequest = requestDetail?.invoiceRequest?.items;
 
     if (!invoiceRequest || invoiceRequest.length === 0) {
         return (
@@ -24,6 +24,17 @@ export default function InvoiceRequestDetailExpand() {
             </Typography>
         );
     }
+
+    // Hàm tính thành tiền cho từng dòng
+    const calcAmount = (item) => {
+        const quantity = Number(item.quantity) || 0;
+        const unit_price = Number(item.unit_price) || 0;
+        const tax_rate = Number(item.tax_rate) || 0;
+        return quantity * unit_price * (1 + tax_rate / 100);
+    };
+
+    // Tổng giá trị
+    const totalAmount = invoiceRequest.reduce((sum, item) => sum + calcAmount(item), 0);
 
     return (
         <Stack sx={{ position: 'relative', mt: 2, p: 3, minHeight: '300px' }}>
@@ -50,13 +61,14 @@ export default function InvoiceRequestDetailExpand() {
                     <TableHead>
                         <TableRow>
                             <TableCell sx={{ fontWeight: 'bold', fontSize: '14px' }}>STT</TableCell>
-                            <TableCell sx={{ fontWeight: 'bold', fontSize: '14px' }}>Tên khách hàng</TableCell>
-                            <TableCell sx={{ fontWeight: 'bold', fontSize: '14px' }}>Mặt hàng</TableCell>
-                            <TableCell sx={{ fontWeight: 'bold', fontSize: '14px' }}>Địa chỉ</TableCell>
-                            <TableCell sx={{ fontWeight: 'bold', fontSize: '14px' }}>Mã số thuế</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', fontSize: '14px' }}>Mã hàng</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', fontSize: '14px' }}>Tên hàng</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', fontSize: '14px' }}>Số lô</TableCell>
                             <TableCell sx={{ fontWeight: 'bold', fontSize: '14px' }}>Số lượng</TableCell>
-                            <TableCell sx={{ fontWeight: 'bold', fontSize: '14px' }}>Đơn giá(Chưa VAT)</TableCell>
-                             <TableCell sx={{ fontWeight: 'bold', fontSize: '14px' }}>Thuế suất thuế VAT</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', fontSize: '14px' }}>Đơn vị tính</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', fontSize: '14px' }}>Đơn giá</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', fontSize: '14px' }}>Thuế suất(%)</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', fontSize: '14px' }}>Thành tiền</TableCell>
                             <TableCell sx={{ fontWeight: 'bold', fontSize: '14px' }}>Ghi chú</TableCell>
                         </TableRow>
                     </TableHead>
@@ -64,17 +76,30 @@ export default function InvoiceRequestDetailExpand() {
                         {invoiceRequest.map((item, idx) => (
                             <TableRow key={item.id}>
                                 <TableCell sx={{ fontSize: '14px' }}>{idx + 1}</TableCell>
-                                <TableCell sx={{ fontSize: '14px' }}>{item.customer_name}</TableCell>
+                                <TableCell sx={{ fontSize: '14px' }}>{item.product_code}</TableCell>
                                 <TableCell sx={{ fontSize: '14px' }}>{item.product_name}</TableCell>
-                                <TableCell sx={{ fontSize: '14px' }}>{item.address}</TableCell>
-                                <TableCell sx={{ fontSize: '14px' }}>{item.tax_code}</TableCell>
+                                <TableCell sx={{ fontSize: '14px' }}>{item.batch_number}</TableCell>
                                 <TableCell sx={{ fontSize: '14px' }}>{item.quantity}</TableCell>
+                                <TableCell sx={{ fontSize: '14px' }}>{item.unit}</TableCell>
                                 <TableCell sx={{ fontSize: '14px' }}>{item.unit_price}</TableCell>
-                                <TableCell sx={{ fontSize: '14px' }}>{item.vat_rate}</TableCell>
+                                <TableCell sx={{ fontSize: '14px' }}>{item.tax_rate}</TableCell>
+                                <TableCell sx={{ fontSize: '14px' }}>{calcAmount(item).toLocaleString()}</TableCell>
                                 <TableCell sx={{ fontSize: '14px' }}>{item.note}</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
+                    {/* Tổng giá trị */}
+                    <tfoot>
+                        <TableRow>
+                            <TableCell colSpan={8} sx={{ fontWeight: 'bold', fontSize: '14px', textAlign: 'right' }}>
+                                Tổng giá trị
+                            </TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', fontSize: '14px', color: 'red' }}>
+                                {totalAmount.toLocaleString()}
+                            </TableCell>
+                            <TableCell />
+                        </TableRow>
+                    </tfoot>
                 </Table>
             </TableContainer>
         </Stack>

@@ -243,10 +243,10 @@ function AddRequestForm({ onClose }) {
             requiredFields.push('type', 'document_name', 'reason');
         }
         if (requestTypeId === 21) {
-            requiredFields.push('invoice_request');
+            requiredFields.push('customer_name', 'customer_address', 'customer_tax_code');
             // Kiểm tra xem có dòng nào đang chỉnh sửa chưa lưu không
-            if (requestFormData.invoice_request && requestFormData.invoice_request.length > 0) {
-                const hasEditingItems = requestFormData.invoice_request.some((item) => item.isNew === true);
+            if (requestFormData.invoice_request && requestFormData.invoice_request.items.length > 0) {
+                const hasEditingItems = requestFormData.invoice_request.items.some((item) => item.isNew === true);
                 if (hasEditingItems) {
                     dispatch(
                         setFieldError({

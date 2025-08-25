@@ -1,309 +1,139 @@
-import { useEffect, useState } from 'react';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
-import AddIcon from '@mui/icons-material/Add';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/DeleteOutlined';
-import SaveIcon from '@mui/icons-material/Save';
-import CancelIcon from '@mui/icons-material/Close';
+import { Stack, Typography, TextField, Autocomplete } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
 import { setRequestFormData, clearErrors } from '../../../redux/slice/requestFormDataSlice';
-import {
-    GridRowModes,
-    DataGrid,
-    GridActionsCellItem,
-    GridRowEditStopReasons,
-    GridToolbarContainer,
-} from '@mui/x-data-grid';
-import TextField from '@mui/material/TextField';
-
-const createRandomId = () => Math.floor(Math.random() * 100000);
-
-const initialRows = [
-    {
-        id: createRandomId(),
-        customer_name: '',
-        product_name: '',
-        address: '',
-        tax_code: '',
-        quantity: "",
-        unit_price: '',
-        vat_rate: '',
-        note: '',
-    },
-];
-
-function EditToolbar(props) {
-    const { setRows, setRowModesModel } = props;
-    const handleClick = () => {
-        const id = createRandomId();
-        setRows((oldRows) => [
-            ...oldRows,
-            {
-                id,
-                customer_name: '',
-                product_name: '',
-                address: '',
-                tax_code: '',
-                quantity: "",
-                unit_price: '',
-                vat_rate: '',
-                note: '',
-                isNew: true,
-            },
-        ]);
-        setRowModesModel((oldModel) => ({
-            ...oldModel,
-            [id]: { mode: GridRowModes.Edit, fieldToFocus: 'customer_name' },
-        }));
-    };
-
-    return (
-        <GridToolbarContainer>
-            <Tooltip title="Thêm dòng mới">
-                <Button
-                    color="primary"
-                    startIcon={<AddIcon sx={{ fontSize: 20 }} />}
-                    onClick={handleClick}
-                    size="medium"
-                    sx={{
-                        textTransform: 'none',
-                        fontSize: '14px',
-                        padding: '8px 16px',
-                        minHeight: '40px',
-                    }}
-                >
-                    Thêm dòng
-                </Button>
-            </Tooltip>
-        </GridToolbarContainer>
-    );
-}
+import { useEffect, useState } from 'react';
+import InvoiceItemForm from "./InvoiceItemForm";
+import { getBusinessPartners } from '../../../services/businessPartnerService';
 
 export default function InvoiceRequestForm() {
     const dispatch = useDispatch();
     const requestFormData = useSelector((state) => state.requestFormData.value);
-
-    const [rows, setRows] = useState(initialRows);
-    const [rowModesModel, setRowModesModel] = useState({});
+    const user = useSelector((state) => state.user.userInfo);
+    const errors = useSelector((state) => state.requestFormData.errors);
+    const [customers, setCustomers] = useState([]);
 
     useEffect(() => {
-        dispatch(setRequestFormData({ ...requestFormData, invoice_request: rows }));
-        dispatch(clearErrors());
-    }, [rows]);
-
-    const handleRowEditStop = (params, event) => {
-        if (params.reason === GridRowEditStopReasons.rowFocusOut) {
-            event.defaultMuiPrevented = true;
-        }
-    };
-
-    const handleEditClick = (id) => () => {
-        setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
-    };
-
-    const handleSaveClick = (id) => () => {
-        setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
-    };
-
-    const handleDeleteClick = (id) => () => {
-        setRows(rows.filter((row) => row.id !== id));
-    };
-
-    const handleCancelClick = (id) => () => {
-        setRowModesModel({
-            ...rowModesModel,
-            [id]: { mode: GridRowModes.View, ignoreModifications: true },
-        });
-
-        const editedRow = rows.find((row) => row.id === id);
-        if (editedRow.isNew) {
-            setRows(rows.filter((row) => row.id !== id));
-        }
-    };
-
-    const processRowUpdate = (newRow) => {
-        // Đảm bảo luôn set isNew về false khi lưu
-        const updatedRow = {
-            ...newRow,
-            isNew: false,
+        const fetchCustomers = async () => {
+            const response = await getBusinessPartners();
+            setCustomers(response);
         };
-        setRows((prevRows) => prevRows.map((row) => (row.id === newRow.id ? updatedRow : row)));
-        return updatedRow;
+        fetchCustomers();
+    }, []);
+
+    // Khi chọn khách hàng, tự động điền địa chỉ
+    const handleCustomerChange = (event, value) => {
+        dispatch(clearErrors());
+        dispatch(
+            setRequestFormData({
+                ...requestFormData,
+                requestName: value
+                    ? `${user.name} đề nghị xuất hoá đơn cho ${value.CardName}`
+                    : '',
+                invoice_request: {
+                    ...requestFormData.invoice_request,
+                    customer_name: value ? value.CardName : '',
+                    customer_address: value ? value.U_Diachi : '',
+                },
+            }),
+        );
     };
 
-    const handleRowModesModelChange = (newRowModesModel) => {
-        setRowModesModel(newRowModesModel);
+    // Khi sửa địa chỉ hoặc mã số thuế thủ công
+    const handleChange = (e) => {
+        dispatch(clearErrors());
+        const { name, value } = e.target;
+        dispatch(
+            setRequestFormData({
+                ...requestFormData,
+                invoice_request: {
+                    ...requestFormData.invoice_request,
+                    [name]: value,
+                },
+            }),
+        );
     };
 
-    const columns = [
-        {
-            field: 'customer_name',
-            headerName: 'Tên khách hàng',
-            width: 180,
-            editable: true,
-        },
-        {
-            field: 'product_name',
-            headerName: 'Mặt hàng',
-            width: 200,
-            editable: true,
-        },
-        {
-            field: 'address',
-            headerName: 'Địa chỉ',
-            width: 240,
-            editable: true,
-        },
-        {
-            field: 'tax_code',
-            headerName: 'Mã số thuế',
-            width: 150,
-            editable: true,
-        },
-        {
-            field: 'quantity',
-            headerName: 'Số lượng',
-            width: 120,
-            type: 'text',
-            editable: true,
-        },
-        {
-            field: 'unit_price',
-            headerName: 'Đơn giá (chưa VAT)',
-            width: 150,
-            type: 'text',
-            editable: true,
-        },
-        {
-            field: 'vat_rate',
-            headerName: 'Thuế suất VAT',
-            width: 140,
-            editable: true,
-        },
-        {
-            field: 'note',
-            headerName: 'Ghi chú',
-            width: 180,
-            editable: true,
-        },
-        {
-            field: 'actions',
-            type: 'actions',
-            headerName: 'Hành động',
-            width: 130,
-            cellClassName: 'actions',
-            getActions: ({ id }) => {
-                const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
-
-                if (isInEditMode) {
-                    return [
-                        <GridActionsCellItem
-                            key="save"
-                            icon={<SaveIcon sx={{ fontSize: 20 }} />}
-                            label="Lưu"
-                            sx={{ color: 'primary.main' }}
-                            onClick={handleSaveClick(id)}
-                        />,
-                        <GridActionsCellItem
-                            key="cancel"
-                            icon={<CancelIcon sx={{ fontSize: 20 }} />}
-                            label="Hủy"
-                            className="textPrimary"
-                            onClick={handleCancelClick(id)}
-                            color="inherit"
-                        />,
-                    ];
-                }
-
-                return [
-                    <GridActionsCellItem
-                        key="edit"
-                        icon={<EditIcon sx={{ fontSize: 20 }} />}
-                        label="Sửa"
-                        className="textPrimary"
-                        onClick={handleEditClick(id)}
-                        color="inherit"
-                    />,
-                    <GridActionsCellItem
-                        key="delete"
-                        icon={<DeleteIcon sx={{ fontSize: 20 }} />}
-                        label="Xóa"
-                        onClick={handleDeleteClick(id)}
-                        color="inherit"
-                    />,
-                ];
-            },
-        },
-    ];
+    const getTotalInvoiceAmount = () => {
+        const items = requestFormData.invoice_request?.items || [];
+        return items.reduce((sum, item) => {
+            const quantity = parseFloat(item.quantity) || 0;
+            const unitPrice = parseFloat(item.unit_price) || 0;
+            const taxRate = parseFloat(item.tax_rate) || 0;
+            const total = quantity * unitPrice + quantity * unitPrice * (taxRate / 100);
+            return sum + total;
+        }, 0);
+    };
 
     return (
-        <Box
-            sx={{
-                height: 500,
-                width: '100%',
-                '& .actions': {
-                    color: 'text.secondary',
-                },
-                '& .textPrimary': {
-                    color: 'text.primary',
-                },
-                '& .MuiDataGrid-cell': {
-                    fontSize: '14px',
-                    borderRight: '1px solid rgba(224, 224, 224, 1)',
-                    borderBottom: '1px solid rgba(224, 224, 224, 1)',
-                },
-                '& .MuiDataGrid-columnHeader': {
-                    fontSize: '14px',
-                    fontWeight: 600,
-                    borderRight: '1px solid rgba(224, 224, 224, 1)',
-                    borderBottom: '1px solid rgba(224, 224, 224, 1)',
-                    borderTop: '1px solid rgba(224, 224, 224, 1)',
-                },
-                '& .MuiDataGrid-columnHeaders': {
-                    borderTop: '1px solid rgba(224, 224, 224, 1)',
-                },
-                '& .MuiDataGrid-cell--editing': {
-                    fontSize: '14px',
-                },
-                '& .MuiDataGrid-cell--editing .MuiInputBase-root': {
-                    fontSize: '14px',
-                },
-                '& .MuiDataGrid-cell--editing .MuiInputBase-input': {
-                    fontSize: '14px',
-                },
-                '& .MuiDataGrid-cell--editing .MuiSelect-select': {
-                    fontSize: '14px',
-                },
-                '& .MuiDataGrid-root': {
-                    border: '1px solid rgba(224, 224, 224, 1)',
-                },
-                '& .MuiDataGrid-row': {
-                    borderBottom: '1px solid rgba(224, 224, 224, 1)',
-                },
-                '& .MuiDataGrid-cell:last-child': {
-                    borderRight: 'none',
-                },
-                '& .MuiDataGrid-columnHeader:last-child': {
-                    borderRight: 'none',
-                },
-            }}
-        >
-            <DataGrid
-                rows={rows}
-                columns={columns}
-                editMode="row"
-                rowModesModel={rowModesModel}
-                onRowModesModelChange={handleRowModesModelChange}
-                onRowEditStop={handleRowEditStop}
-                processRowUpdate={processRowUpdate}
-                slots={{ toolbar: EditToolbar }}
-                slotProps={{
-                    toolbar: { setRows, setRowModesModel },
-                }}
-                hideFooter
-            />
-        </Box>
+        <Stack spacing={1}>
+            <Stack direction="row" alignItems="center" spacing={2}>
+                <Typography sx={{ width: 130, fontSize: '1.4rem' }}>Tên khách hàng(*)</Typography>
+                <Autocomplete
+                    fullWidth
+                    freeSolo // Cho phép nhập ngoài danh sách
+                    options={customers}
+                    getOptionLabel={(option) => option.CardName || ''}
+                    renderOption={(props, option) => (
+                        <li {...props} key={option.CardCode}>
+                            {option.CardName}
+                        </li>
+                    )}
+                    value={
+                        customers.find(
+                            (c) => c.CardName === requestFormData.invoice_request?.customer_name
+                        ) || null
+                    }
+                    onChange={handleCustomerChange}
+                    renderInput={(params) => (
+                        <TextField
+                            {...params}
+                            name="customer_name"
+                            size="medium"
+                            inputProps={{
+                                ...params.inputProps,
+                                style: { fontSize: '1.4rem' },
+                            }}
+                            error={!!errors?.customer_name}
+                            helperText={errors?.customer_name || ''}
+                        />
+                    )}
+                />
+            </Stack>
+            <Stack direction="row" alignItems="center" spacing={2}>
+                <Typography sx={{ width: 130, fontSize: '1.4rem' }}>Địa chỉ(*)</Typography>
+                <TextField
+                    fullWidth
+                    name="customer_address"
+                    value={requestFormData.invoice_request?.customer_address || ''}
+                    onChange={handleChange}
+                    size="medium"
+                    inputProps={{ style: { fontSize: '1.4rem' } }}
+                    error={!!errors?.customer_address}
+                    helperText={errors?.customer_address || ''}
+                />
+            </Stack>
+            <Stack direction="row" alignItems="center" spacing={2}>
+                <Typography sx={{ width: 130, fontSize: '1.4rem' }}>Mã số thuế(*)</Typography>
+                <TextField
+                    fullWidth
+                    name="customer_tax_code"
+                    value={requestFormData.invoice_request?.customer_tax_code || ''}
+                    onChange={handleChange}
+                    size="medium"
+                    inputProps={{ style: { fontSize: '1.4rem' } }}
+                    error={!!errors?.customer_tax_code}
+                    helperText={errors?.customer_tax_code || ''}
+                />
+            </Stack>
+            <InvoiceItemForm />
+            <Stack direction="row" alignItems="center" spacing={2}>
+                <Typography sx={{ width: 180, fontSize: '1.4rem' }}>Tổng giá trị hoá đơn:</Typography>
+                <Typography sx={{ fontWeight: 600, fontSize: '1.4rem', color: 'primary.main' }}>
+                    {getTotalInvoiceAmount().toLocaleString('vi-VN')} đ
+                </Typography>
+            </Stack>
+
+        </Stack>
     );
 }
+
