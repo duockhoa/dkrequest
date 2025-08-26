@@ -32,6 +32,16 @@ export default function InvoiceRequestDetailExpand() {
     // Tổng giá trị
     const totalAmount = invoiceRequest.reduce((sum, item) => sum + calcAmount(item), 0);
 
+
+        // Hàm tính thành tiền cho từng dòng
+    const calcAmountWithoutTax = (item) => {
+        const quantity = Number(item.quantity) || 0;
+        const unit_price = Number(item.unit_price) || 0;
+        const tax_rate = Number(item.tax_rate) || 0;
+        return quantity * unit_price;
+    };
+    const totalAmountWithoutTax = invoiceRequest.reduce((sum, item) => sum + calcAmountWithoutTax(item), 0);
+
     return (
         <Stack sx={{ position: 'relative', mt: 2, p: 3, minHeight: '300px' }}>
             <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1, fontSize: '1.4rem', textAlign: 'center' }}>
@@ -86,10 +96,17 @@ export default function InvoiceRequestDetailExpand() {
                     <tfoot>
                         <TableRow>
                             <TableCell colSpan={8} sx={{ fontWeight: 'bold', fontSize: '14px', textAlign: 'right' }}>
-                                Tổng giá trị
+                                Tổng giá trị (Chưa VAT)
                             </TableCell>
                             <TableCell sx={{ fontWeight: 'bold', fontSize: '14px', color: 'red' }}>
-                                {totalAmount.toLocaleString()}
+                                {totalAmountWithoutTax.toLocaleString() + "đ"}
+                            </TableCell>
+
+                            <TableCell colSpan={8} sx={{ fontWeight: 'bold', fontSize: '14px', textAlign: 'right' }}>
+                                Tổng giá trị (cả VAT)
+                            </TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', fontSize: '14px', color: 'red' }}>
+                                {totalAmount.toLocaleString() + "đ"}
                             </TableCell>
                             <TableCell />
                         </TableRow>
