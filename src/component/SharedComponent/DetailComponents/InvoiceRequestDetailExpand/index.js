@@ -18,11 +18,7 @@ export default function InvoiceRequestDetailExpand() {
     const invoiceRequest = requestDetail?.invoiceRequest?.items;
 
     if (!invoiceRequest || invoiceRequest.length === 0) {
-        return (
-            <Typography sx={{ fontSize: '1.4rem', color: 'text.secondary' }}>
-                Thông tin xuất hóa đơn
-            </Typography>
-        );
+        return <Typography sx={{ fontSize: '1.4rem', color: 'text.secondary' }}>Thông tin xuất hóa đơn</Typography>;
     }
 
     // Hàm tính thành tiền cho từng dòng
@@ -63,7 +59,6 @@ export default function InvoiceRequestDetailExpand() {
                             <TableCell sx={{ fontWeight: 'bold', fontSize: '14px' }}>STT</TableCell>
                             <TableCell sx={{ fontWeight: 'bold', fontSize: '14px' }}>Mã hàng</TableCell>
                             <TableCell sx={{ fontWeight: 'bold', fontSize: '14px' }}>Tên hàng</TableCell>
-                            <TableCell sx={{ fontWeight: 'bold', fontSize: '14px' }}>Số lô</TableCell>
                             <TableCell sx={{ fontWeight: 'bold', fontSize: '14px' }}>Số lượng</TableCell>
                             <TableCell sx={{ fontWeight: 'bold', fontSize: '14px' }}>Đơn vị tính</TableCell>
                             <TableCell sx={{ fontWeight: 'bold', fontSize: '14px' }}>Đơn giá</TableCell>
@@ -78,7 +73,6 @@ export default function InvoiceRequestDetailExpand() {
                                 <TableCell sx={{ fontSize: '14px' }}>{idx + 1}</TableCell>
                                 <TableCell sx={{ fontSize: '14px' }}>{item.product_code}</TableCell>
                                 <TableCell sx={{ fontSize: '14px' }}>{item.product_name}</TableCell>
-                                <TableCell sx={{ fontSize: '14px' }}>{item.batch_number}</TableCell>
                                 <TableCell sx={{ fontSize: '14px' }}>{item.quantity}</TableCell>
                                 <TableCell sx={{ fontSize: '14px' }}>{item.unit}</TableCell>
                                 <TableCell sx={{ fontSize: '14px' }}>{item.unit_price}</TableCell>

@@ -28,7 +28,7 @@ const initialRows = [
         product_code: '',
         product_name: '',
         batch_number: '',
-        quantity: "",
+        quantity: '',
         unit_price: '',
         unit: '',
         tax_rate: '',
@@ -48,7 +48,7 @@ function EditToolbar(props) {
                 product_code: '',
                 product_name: '',
                 batch_number: '',
-                quantity: "",
+                quantity: '',
                 unit_price: '',
                 unit: '',
                 tax_rate: '',
@@ -101,7 +101,12 @@ export default function InvoiceItemForm() {
     }, []);
 
     useEffect(() => {
-        dispatch(setRequestFormData({ ...requestFormData, invoice_request: { ...requestFormData.invoice_request, items: rows } }));
+        dispatch(
+            setRequestFormData({
+                ...requestFormData,
+                invoice_request: { ...requestFormData.invoice_request, items: rows },
+            }),
+        );
         dispatch(clearErrors());
     }, [rows]);
 
@@ -163,15 +168,7 @@ export default function InvoiceItemForm() {
             headerName: 'Tên hàng',
             width: 280,
             editable: true,
-            renderEditCell: (params) => (
-                <ItemAutoCompleteEditCell {...params} items={items} field="product_name" />
-            ),
-        },
-        {
-            field: 'batch_number',
-            headerName: 'Số lô',
-            width: 150,
-            editable: true,
+            renderEditCell: (params) => <ItemAutoCompleteEditCell {...params} items={items} field="product_name" />,
         },
         {
             field: 'unit',
@@ -352,7 +349,6 @@ export default function InvoiceItemForm() {
                     toolbar: { setRows, setRowModesModel },
                 }}
                 hideFooter
-             
             />
         </Box>
     );
@@ -361,14 +357,14 @@ export default function InvoiceItemForm() {
 // Custom cell editor for Autocomplete fields
 function ItemAutoCompleteEditCell({ id, value, field, api, items, setRows }) {
     let options = [];
-    if (field === 'product_code') options = Array.from(new Set(items.map(i => i.ItemCode))).filter(Boolean);
-    if (field === 'product_name') options = Array.from(new Set(items.map(i => i.ItemName))).filter(Boolean);
-    if (field === 'unit') options = Array.from(new Set(items.map(i => i.SalesUnit))).filter(Boolean);
+    if (field === 'product_code') options = Array.from(new Set(items.map((i) => i.ItemCode))).filter(Boolean);
+    if (field === 'product_name') options = Array.from(new Set(items.map((i) => i.ItemName))).filter(Boolean);
+    if (field === 'unit') options = Array.from(new Set(items.map((i) => i.SalesUnit))).filter(Boolean);
 
     const handleChange = (event, newValue) => {
         let matchedItem = null;
-        if (field === 'product_code') matchedItem = items.find(i => i.ItemCode === newValue);
-        if (field === 'product_name') matchedItem = items.find(i => i.ItemName === newValue);
+        if (field === 'product_code') matchedItem = items.find((i) => i.ItemCode === newValue);
+        if (field === 'product_name') matchedItem = items.find((i) => i.ItemName === newValue);
 
         if (matchedItem) {
             api.setEditCellValue({ id, field: 'product_code', value: matchedItem.ItemCode }, event);
@@ -379,8 +375,8 @@ function ItemAutoCompleteEditCell({ id, value, field, api, items, setRows }) {
             api.setEditCellValue({ id, field, value: newValue }, event);
         }
     };
-        const handlePaste = (event) => {
-        const pasteData = (event.clipboardData || window.clipboardData).getData("text");
+    const handlePaste = (event) => {
+        const pasteData = (event.clipboardData || window.clipboardData).getData('text');
         // Kiểm tra có phải bảng không (có tab hoặc nhiều dòng)
         const isTable = pasteData.includes('\t') || pasteData.includes('\n');
         if (!isTable) {
@@ -393,24 +389,23 @@ function ItemAutoCompleteEditCell({ id, value, field, api, items, setRows }) {
         const rowsData = pasteData
             .trim()
             .split('\n')
-            .map(row => row.split('\t'));
+            .map((row) => row.split('\t'));
         // Giả sử columns: [product_code, product_name, batch_number, quantity, unit_price, unit, tax_rate, note]
-        const newRows = rowsData.map(cols => ({
+        const newRows = rowsData.map((cols) => ({
             id: createRandomId(),
             product_code: cols[0] || '',
             product_name: cols[1] || '',
-            batch_number: cols[2] || '',
+            unit: cols[2] || '',
             quantity: cols[3] || '',
             unit_price: cols[4] || '',
-            unit: cols[5] || '',
-            tax_rate: cols[6] || '',
-            note: cols[7] || '',
+            tax_rate: cols[5] || '',
+            note: cols[6] || '',
             isNew: true,
         }));
         // Push vào items (rows)
-        setRows(prev => [...prev, ...newRows]);
+        setRows((prev) => [...prev, ...newRows]);
         event.preventDefault();
-    }
+    };
 
     return (
         <Autocomplete
@@ -419,13 +414,13 @@ function ItemAutoCompleteEditCell({ id, value, field, api, items, setRows }) {
             value={value || ''}
             getOptionLabel={(option) => (typeof option === 'string' ? option : '')}
             renderOption={(props, option, { index }) => (
-                <li {...props} key={option + '-' + index}>{option}</li>
+                <li {...props} key={option + '-' + index}>
+                    {option}
+                </li>
             )}
             onInputChange={(event, newInputValue) => handleChange(event, newInputValue)}
             onChange={(event, newValue) => handleChange(event, newValue)}
-            renderInput={(params) => (
-                <TextField {...params} autoFocus fullWidth sx={{ width: '100%' }} />
-            )}
+            renderInput={(params) => <TextField {...params} autoFocus fullWidth sx={{ width: '100%' }} />}
             size="small"
             fullWidth
             sx={{ width: '100%' }}
