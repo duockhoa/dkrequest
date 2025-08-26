@@ -95,20 +95,21 @@ export default function InvoiceRequestDetailExpand() {
                     {/* Tổng giá trị */}
                     <tfoot>
                         <TableRow>
-                            <TableCell colSpan={8} sx={{ fontWeight: 'bold', fontSize: '14px', textAlign: 'right' }}>
+                            <TableCell colSpan={3} sx={{ fontWeight: 'bold', fontSize: '14px', textAlign: 'right' }}>
                                 Tổng giá trị (Chưa VAT)
                             </TableCell>
                             <TableCell sx={{ fontWeight: 'bold', fontSize: '14px', color: 'red' }}>
                                 {totalAmountWithoutTax.toLocaleString() + "đ"}
                             </TableCell>
+                            <TableCell />
 
-                            <TableCell colSpan={8} sx={{ fontWeight: 'bold', fontSize: '14px', textAlign: 'right' }}>
+                            <TableCell colSpan={3} sx={{ fontWeight: 'bold', fontSize: '14px', textAlign: 'right' }}>
                                 Tổng giá trị (cả VAT)
                             </TableCell>
                             <TableCell sx={{ fontWeight: 'bold', fontSize: '14px', color: 'red' }}>
                                 {totalAmount.toLocaleString() + "đ"}
                             </TableCell>
-                            <TableCell />
+                    
                         </TableRow>
                     </tfoot>
                 </Table>
