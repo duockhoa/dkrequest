@@ -61,7 +61,7 @@ export default function InvoiceRequestDetailExpand() {
                             <TableCell sx={{ fontWeight: 'bold', fontSize: '14px' }}>Tên hàng</TableCell>
                             <TableCell sx={{ fontWeight: 'bold', fontSize: '14px' }}>Số lượng</TableCell>
                             <TableCell sx={{ fontWeight: 'bold', fontSize: '14px' }}>Đơn vị tính</TableCell>
-                            <TableCell sx={{ fontWeight: 'bold', fontSize: '14px' }}>Đơn giá</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', fontSize: '14px' }}>Đơn giá(Chưa VAT)</TableCell>
                             <TableCell sx={{ fontWeight: 'bold', fontSize: '14px' }}>Thuế suất(%)</TableCell>
                             <TableCell sx={{ fontWeight: 'bold', fontSize: '14px' }}>Thành tiền</TableCell>
                             <TableCell sx={{ fontWeight: 'bold', fontSize: '14px' }}>Ghi chú</TableCell>

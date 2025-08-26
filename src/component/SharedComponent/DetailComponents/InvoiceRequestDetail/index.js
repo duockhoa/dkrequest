@@ -42,20 +42,14 @@ const DetailItem = ({ label, value }) => (
     </Stack>
 );
 
-
 export default function InvoiceRequestDetail() {
     const requestDetail = useSelector((state) => state.requestDetail.requestDetailvalue);
     const [openExpand, setOpenExpand] = useState(false);
 
-
     const invoiceRequest = requestDetail?.invoiceRequest;
 
     if (!invoiceRequest || invoiceRequest.length === 0) {
-        return (
-            <Typography sx={{ fontSize: '1.4rem', color: 'text.secondary' }}>
-                Thông tin xuất hóa đơn
-            </Typography>
-        );
+        return <Typography sx={{ fontSize: '1.4rem', color: 'text.secondary' }}>Thông tin xuất hóa đơn</Typography>;
     }
 
     const handleExpand = () => {
@@ -95,7 +89,7 @@ export default function InvoiceRequestDetail() {
                         <TableRow>
                             <TableCell sx={{ fontWeight: 'bold', fontSize: '14px' }}>Mặt hàng</TableCell>
                             <TableCell sx={{ fontWeight: 'bold', fontSize: '14px' }}>Số lượng</TableCell>
-                            <TableCell sx={{ fontWeight: 'bold', fontSize: '14px' }}>Đơn giá</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', fontSize: '14px' }}>Đơn giá(Chưa VAT)</TableCell>
                             <TableCell sx={{ fontWeight: 'bold', fontSize: '14px' }}>Ghi chú</TableCell>
                         </TableRow>
                     </TableHead>

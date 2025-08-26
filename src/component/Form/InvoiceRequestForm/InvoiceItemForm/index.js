@@ -166,7 +166,7 @@ export default function InvoiceItemForm() {
         {
             field: 'product_name',
             headerName: 'Tên hàng',
-            width: 280,
+            width: 340,
             editable: true,
             renderEditCell: (params) => <ItemAutoCompleteEditCell {...params} items={items} field="product_name" />,
         },
@@ -188,7 +188,7 @@ export default function InvoiceItemForm() {
         },
         {
             field: 'unit_price',
-            headerName: 'Đơn giá (đ)',
+            headerName: 'Đơn giá(Chưa VAT) (đ)',
             width: 150,
             type: 'number',
             editable: true,
