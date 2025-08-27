@@ -214,7 +214,7 @@ function MeetingRoomRequestForm() {
                 </Stack>
 
                 <Stack direction="row" alignItems="center" spacing={2}>
-                    <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Tên phòng:</Typography>
+                    <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Tên phòng(*):</Typography>
                     <Autocomplete
                         freeSolo
                         options={roomNames}

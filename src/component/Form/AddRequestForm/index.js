@@ -159,7 +159,7 @@ function AddRequestForm({ onClose }) {
         }
 
         if (requestTypeId === 14) {
-            requiredFields.push('usage_date', 'start_time', 'end_time', 'location', 'purpose', "participant_count");
+            requiredFields.push('usage_date', 'start_time', 'end_time', 'location', "room_name", 'purpose', "participant_count");
         }
         if (requestTypeId === 4) {
             requiredFields.push('supply_stationery');
