@@ -271,6 +271,20 @@ export default function Sidebar() {
             </List>
 
             <Box flexGrow={1}></Box>
+
+            <Box
+                sx={{
+                    textAlign: 'center',
+                    fontSize: '1.1rem',
+                    color: '#888',
+                    py: 1,
+                    borderTop: '1px solid #eee',
+                    background: '#fafbfc',
+                    letterSpacing: 1,
+                }}
+            >
+                version: 1.0.103
+            </Box>
         </Stack>
     );
 }
