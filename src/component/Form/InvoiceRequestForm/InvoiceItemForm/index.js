@@ -400,7 +400,7 @@ function ItemAutoCompleteEditCell({ id, value, field, api, items, setRows }) {
             unit_price: cols[4] || '',
             tax_rate: cols[5] || '',
             note: cols[6] || '',
-            isNew: true,
+            isNew: false,
         }));
         // Push vào items (rows)
         setRows((prev) => [...prev, ...newRows]);
