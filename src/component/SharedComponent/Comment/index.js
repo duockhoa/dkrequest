@@ -86,10 +86,11 @@ function Comment() {
     const error = useSelector((state) => state.comment.error);
 
     useEffect(() => {
+        console.log('Fetching comments for requestId:', requestId);
         if (requestId) {
             dispatch(fetchComments(requestId));
         }
-    }, [dispatch, requestId]);
+    }, [requestId]);
 
     if (loading) {
         return <LoadingPage />;
