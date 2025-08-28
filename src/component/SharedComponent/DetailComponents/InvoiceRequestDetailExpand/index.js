@@ -83,11 +83,19 @@ export default function InvoiceRequestDetailExpand() {
                                 <TableCell sx={{ fontSize: '14px' }}>{idx + 1}</TableCell>
                                 <TableCell sx={{ fontSize: '14px' }}>{item.product_code}</TableCell>
                                 <TableCell sx={{ fontSize: '14px' }}>{item.product_name}</TableCell>
-                                <TableCell sx={{ fontSize: '14px' }}>{item.quantity}</TableCell>
+                                <TableCell sx={{ fontSize: '14px' }}>
+                                    {Number(item.quantity).toLocaleString('vi-VN', { minimumFractionDigits: 0, maximumFractionDigits: 3 })}
+                                </TableCell>
                                 <TableCell sx={{ fontSize: '14px' }}>{item.unit}</TableCell>
-                                <TableCell sx={{ fontSize: '14px' }}>{item.unit_price}</TableCell>
-                                <TableCell sx={{ fontSize: '14px' }}>{item.tax_rate}</TableCell>
-                                <TableCell sx={{ fontSize: '14px' }}>{calcAmount(item).toLocaleString()}</TableCell>
+                                <TableCell sx={{ fontSize: '14px' }}>
+                                    {Number(item.unit_price).toLocaleString('vi-VN', { minimumFractionDigits: 0, maximumFractionDigits: 3 })}
+                                </TableCell>
+                                <TableCell sx={{ fontSize: '14px' }}>
+                                    {Number(item.tax_rate).toLocaleString('vi-VN', { minimumFractionDigits: 0, maximumFractionDigits: 3 })}
+                                </TableCell>
+                                <TableCell sx={{ fontSize: '14px' }}>
+                                    {calcAmount(item).toLocaleString('vi-VN', { minimumFractionDigits: 0, maximumFractionDigits: 3 })}
+                                </TableCell>
                                 <TableCell sx={{ fontSize: '14px' }}>{item.note}</TableCell>
                             </TableRow>
                         ))}
@@ -99,7 +107,7 @@ export default function InvoiceRequestDetailExpand() {
                                 Tổng giá trị (Chưa VAT)
                             </TableCell>
                             <TableCell sx={{ fontWeight: 'bold', fontSize: '14px', color: 'red' }}>
-                                {totalAmountWithoutTax.toLocaleString() + "đ"}
+                                {totalAmountWithoutTax.toLocaleString('vi-VN', { minimumFractionDigits: 0, maximumFractionDigits: 3 }) + " đ"}
                             </TableCell>
                             <TableCell />
 
@@ -107,9 +115,8 @@ export default function InvoiceRequestDetailExpand() {
                                 Tổng giá trị (cả VAT)
                             </TableCell>
                             <TableCell sx={{ fontWeight: 'bold', fontSize: '14px', color: 'red' }}>
-                                {totalAmount.toLocaleString() + "đ"}
+                                {totalAmount.toLocaleString('vi-VN', { minimumFractionDigits: 0, maximumFractionDigits: 3 }) + " đ"}
                             </TableCell>
-                    
                         </TableRow>
                     </tfoot>
                 </Table>

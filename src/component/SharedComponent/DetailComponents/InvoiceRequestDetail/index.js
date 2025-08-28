@@ -97,8 +97,12 @@ export default function InvoiceRequestDetail() {
                         {invoiceRequest.items.map((item) => (
                             <TableRow key={item.id}>
                                 <TableCell sx={{ fontSize: '14px' }}>{item.product_name}</TableCell>
-                                <TableCell sx={{ fontSize: '14px' }}>{item.quantity}</TableCell>
-                                <TableCell sx={{ fontSize: '14px' }}>{item.unit_price}</TableCell>
+                                <TableCell sx={{ fontSize: '14px' }}>
+                                    {Number(item.quantity).toLocaleString('vi-VN', { minimumFractionDigits: 0, maximumFractionDigits: 3 })}
+                                </TableCell>
+                                <TableCell sx={{ fontSize: '14px' }}>
+                                    {Number(item.unit_price).toLocaleString('vi-VN', { minimumFractionDigits: 0, maximumFractionDigits: 3 })}
+                                </TableCell>
                                 <TableCell sx={{ fontSize: '14px' }}>{item.note}</TableCell>
                             </TableRow>
                         ))}
