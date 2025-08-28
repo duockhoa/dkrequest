@@ -70,20 +70,74 @@ export default function InvoiceRequestForm() {
                 <Typography sx={{ width: 130, fontSize: '1.4rem' }}>Tên khách hàng(*)</Typography>
                 <Autocomplete
                     fullWidth
-                    freeSolo // Cho phép nhập ngoài danh sách
+                    freeSolo
                     options={customers}
-                    getOptionLabel={(option) => option.CardName || ''}
+                    getOptionLabel={(option) => typeof option === 'string' ? option : option.CardName || ''}
                     renderOption={(props, option) => (
-                        <li {...props} key={option.CardCode}>
-                            {option.CardName}
+                        <li {...props} key={option.CardCode || option}>
+                            {typeof option === 'string' ? option : option.CardName}
                         </li>
                     )}
                     value={
+                        // Nếu customer_name trùng với CardName thì lấy object, còn lại là string
                         customers.find(
                             (c) => c.CardName === requestFormData.invoice_request?.customer_name
-                        ) || null
+                        ) || requestFormData.invoice_request?.customer_name || ''
                     }
-                    onChange={handleCustomerChange}
+                    inputValue={requestFormData.invoice_request?.customer_name || ''}
+                    onInputChange={(event, newInputValue, reason) => {
+                        // Cập nhật Redux khi nhập tay
+                        dispatch(clearErrors());
+                        dispatch(
+                            setRequestFormData({
+                                ...requestFormData,
+                                invoice_request: {
+                                    ...requestFormData.invoice_request,
+                                    customer_name: newInputValue,
+                                    // Nếu muốn xóa địa chỉ khi nhập tay, thêm dòng dưới:
+                                    // customer_address: '',
+                                },
+                            })
+                        );
+                    }}
+                    onChange={(event, value) => {
+                        dispatch(clearErrors());
+                        if (typeof value === 'string') {
+                            dispatch(
+                                setRequestFormData({
+                                    ...requestFormData,
+                                    invoice_request: {
+                                        ...requestFormData.invoice_request,
+                                        customer_name: value,
+                                        customer_address: '',
+                                    },
+                                })
+                            );
+                        } else if (value && value.CardName) {
+                            dispatch(
+                                setRequestFormData({
+                                    ...requestFormData,
+                                    requestName: `${user.name} đề nghị xuất hoá đơn cho ${value.CardName}`,
+                                    invoice_request: {
+                                        ...requestFormData.invoice_request,
+                                        customer_name: value.CardName,
+                                        customer_address: value.U_Diachi,
+                                    },
+                                })
+                            );
+                        } else {
+                            dispatch(
+                                setRequestFormData({
+                                    ...requestFormData,
+                                    invoice_request: {
+                                        ...requestFormData.invoice_request,
+                                        customer_name: '',
+                                        customer_address: '',
+                                    },
+                                })
+                            );
+                        }
+                    }}
                     renderInput={(params) => (
                         <TextField
                             {...params}
