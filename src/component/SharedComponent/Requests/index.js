@@ -281,6 +281,43 @@ export default function Requests() {
     const showId = containerWidth > 1100;
     const showExportButton = containerWidth > 600; // Ngưỡng cho nút xuất báo cáo
 
+    // Đếm số lượng cho từng tab
+    const tabCounts = {
+        'Tất cả': originalData.length,
+        'Đang chờ duyệt': originalData.filter((r) => r.status === 'pending').length,
+        'Đã chấp nhận': originalData.filter((r) => r.status === 'approved').length,
+        'Đã từ chối': originalData.filter((r) => r.status === 'rejected').length,
+        'Đến lượt duyệt': originalData.filter((request) => {
+            if (request.status !== 'pending') return false;
+            const pendingApprovers = request.approvers.filter((approver) => approver.status === 'pending');
+            if (pendingApprovers.length === 0) return false;
+            const nextStep = Math.min(...pendingApprovers.map((approver) => approver.step));
+            const nextApprover = pendingApprovers.find((approver) => approver.step === nextStep);
+            return nextApprover && nextApprover.user_id === user.id;
+        }).length,
+        'Quá hạn': originalData.filter((request) => {
+            if (request.status !== 'pending') return false;
+            const pendingApprovers = request.approvers.filter((a) => a.status === 'pending');
+            if (pendingApprovers.length === 0) return false;
+            const nextStep = Math.min(...pendingApprovers.map((a) => a.step));
+            const nextApprover = pendingApprovers.find((a) => a.step === nextStep);
+            const now = new Date();
+            if (nextApprover && nextApprover.user_id === user.id) {
+                if (nextApprover.deadline && new Date(nextApprover.deadline) < now) {
+                    return true;
+                }
+                return false;
+            } else {
+                const lastStep = Math.max(...pendingApprovers.map((a) => a.step));
+                const lastApprover = pendingApprovers.find((a) => a.step === lastStep);
+                if (lastApprover && lastApprover.deadline && new Date(lastApprover.deadline) < now) {
+                    return true;
+                }
+                return false;
+            }
+        }).length,
+    };
+
     return (
         <Stack
             ref={containerRef}
@@ -315,7 +352,24 @@ export default function Requests() {
                         allowScrollButtonsMobile
                     >
                         {tabList.map((label, index) => (
-                            <Tab key={index} sx={{ fontWeight: 600, fontSize: 11 }} label={label} />
+                            <Tab
+                                key={index}
+                                sx={{ fontWeight: 600, fontSize: 11 }}
+                                label={
+                                    <span>
+                                        {label}
+                                        <span
+                                            style={{
+                                                fontSize: '12px',
+                                                marginLeft: 4,
+                                                fontWeight: 500,
+                                            }}
+                                        >
+                                            ({tabCounts[label] || 0})
+                                        </span>
+                                    </span>
+                                }
+                            />
                         ))}
                     </Tabs>
                 </Box>
@@ -361,7 +415,7 @@ export default function Requests() {
                 sx={{
                     '& .MuiDialog-paper': {
                         borderRadius: 2,
-                        maxWidth: requestTypeId === 4  ? 'lg' : requestTypeId === 18 || requestTypeId === 21 ? 'xl' : 'sm',
+                        maxWidth: requestTypeId === 4 ? 'lg' : requestTypeId === 18 || requestTypeId === 21 ? 'xl' : 'sm',
 
                         width: '100%',
                     },
