@@ -27,6 +27,8 @@ export default function Requests() {
     const navigate = useNavigate();
     const [tab, setTab] = useState(0);
     const [openForm, setOpenForm] = useState(false);
+    const [page, setPage] = useState(1);
+    const [hasMore, setHasMore] = useState(true);
     const dispatch = useDispatch();
     const requests = useSelector((state) => state.request.requestData);
     const originalData = useSelector((state) => state.request.originalData);
@@ -318,6 +320,31 @@ export default function Requests() {
         }).length,
     };
 
+    const loadMoreRequests = async () => {
+        // Gọi API lấy thêm dữ liệu, ví dụ:
+        const moreData = await dispatch(fetchRequests({ requestTypeId, user_id: user.id, page: page + 1 }));
+        if (!moreData || moreData.length === 0) {
+            setHasMore(false);
+        } else {
+            setPage((prev) => prev + 1);
+        }
+    };
+
+    useEffect(() => {
+        const handleScroll = () => {
+            const el = containerRef.current;
+            if (!el || !hasMore) return;
+            if (el.scrollHeight - el.scrollTop <= el.clientHeight + 100) {
+                loadMoreRequests();
+            }
+        };
+        const el = containerRef.current;
+        if (el) el.addEventListener('scroll', handleScroll);
+        return () => {
+            if (el) el.removeEventListener('scroll', handleScroll);
+        };
+    }, [hasMore, page, requestTypeId, user.id]);
+
     return (
         <Stack
             ref={containerRef}
@@ -325,6 +352,7 @@ export default function Requests() {
                 height: '100%',
                 border: '1px solid #ccc',
                 padding: 1,
+                overflow: 'auto', // Đảm bảo có scroll
             }}
             spacing={0}
         >

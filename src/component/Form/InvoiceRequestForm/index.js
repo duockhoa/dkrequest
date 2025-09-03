@@ -23,19 +23,47 @@ export default function InvoiceRequestForm() {
     // Khi chọn khách hàng, tự động điền địa chỉ
     const handleCustomerChange = (event, value) => {
         dispatch(clearErrors());
-        dispatch(
-            setRequestFormData({
-                ...requestFormData,
-                requestName: value
-                    ? `${user.name} đề nghị xuất hoá đơn cho ${value.CardName}`
-                    : '',
-                invoice_request: {
-                    ...requestFormData.invoice_request,
-                    customer_name: value ? value.CardName : '',
-                    customer_address: value ? value.U_Diachi : '',
-                },
-            }),
-        );
+        if (typeof value === 'string') {
+            // Nhập tay: chỉ điền tên, địa chỉ và mã số thuế để trống
+            dispatch(
+                setRequestFormData({
+                    ...requestFormData,
+                    invoice_request: {
+                        ...requestFormData.invoice_request,
+                        customer_name: value,
+                        customer_address: '',
+                        customer_tax_code: '',
+                    },
+                })
+            );
+        } else if (value && value.CardName) {
+            // Chọn từ danh sách: điền đầy đủ
+            dispatch(
+                setRequestFormData({
+                    ...requestFormData,
+                    requestName: `${user.name} đề nghị xuất hoá đơn cho ${value.CardName}`,
+                    invoice_request: {
+                        ...requestFormData.invoice_request,
+                        customer_name: value.CardName,
+                        customer_address: value.U_Diachi || '',
+                        customer_tax_code: value.FederalTaxID || '',
+                    },
+                })
+            );
+        } else {
+            // Không chọn gì
+            dispatch(
+                setRequestFormData({
+                    ...requestFormData,
+                    invoice_request: {
+                        ...requestFormData.invoice_request,
+                        customer_name: '',
+                        customer_address: '',
+                        customer_tax_code: '',
+                    },
+                })
+            );
+        }
     };
 
     // Khi sửa địa chỉ hoặc mã số thuế thủ công
@@ -86,7 +114,6 @@ export default function InvoiceRequestForm() {
                     }
                     inputValue={requestFormData.invoice_request?.customer_name || ''}
                     onInputChange={(event, newInputValue, reason) => {
-                        // Cập nhật Redux khi nhập tay
                         dispatch(clearErrors());
                         dispatch(
                             setRequestFormData({
@@ -94,50 +121,13 @@ export default function InvoiceRequestForm() {
                                 invoice_request: {
                                     ...requestFormData.invoice_request,
                                     customer_name: newInputValue,
-                                    // Nếu muốn xóa địa chỉ khi nhập tay, thêm dòng dưới:
-                                    // customer_address: '',
+                                    customer_address: '',
+                                    customer_tax_code: '',
                                 },
                             })
                         );
                     }}
-                    onChange={(event, value) => {
-                        dispatch(clearErrors());
-                        if (typeof value === 'string') {
-                            dispatch(
-                                setRequestFormData({
-                                    ...requestFormData,
-                                    invoice_request: {
-                                        ...requestFormData.invoice_request,
-                                        customer_name: value,
-                                        customer_address: '',
-                                    },
-                                })
-                            );
-                        } else if (value && value.CardName) {
-                            dispatch(
-                                setRequestFormData({
-                                    ...requestFormData,
-                                    requestName: `${user.name} đề nghị xuất hoá đơn cho ${value.CardName}`,
-                                    invoice_request: {
-                                        ...requestFormData.invoice_request,
-                                        customer_name: value.CardName,
-                                        customer_address: value.U_Diachi,
-                                    },
-                                })
-                            );
-                        } else {
-                            dispatch(
-                                setRequestFormData({
-                                    ...requestFormData,
-                                    invoice_request: {
-                                        ...requestFormData.invoice_request,
-                                        customer_name: '',
-                                        customer_address: '',
-                                    },
-                                })
-                            );
-                        }
-                    }}
+                    onChange={handleCustomerChange}
                     renderInput={(params) => (
                         <TextField
                             {...params}
