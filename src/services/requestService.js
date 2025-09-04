@@ -1,7 +1,7 @@
 import axios from './customize-axios';
 async function getAllRequestService(requestTypeId, user_id, page) {
     try {
-        const response = await axios.get('/request/getall?requesttypeid=' + requestTypeId + '&userid=' + user_id + '&page=' + page + '&pageSize=350');
+        const response = await axios.get('/request/getall?requesttypeid=' + requestTypeId + '&userid=' + user_id + '&page=' + page + '&pageSize=1000');
         if (response.status === 200) {
             return response.data.result;
         } else {
