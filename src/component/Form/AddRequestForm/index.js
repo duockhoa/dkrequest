@@ -25,6 +25,7 @@ import OfficeEquipmentRequestForm from '../OficceEquimentReuquestForm';
 import DocumentEditRequestForm from '../DocumentEditRequestForm';
 import AdvanceClearanceForm from '../AdvanceClearanceForm';
 import InvoiceRequestForm from '../InvoiceRequestForm';
+import UnionPaymentRequestForm from '../UnionPaymentRequestForm';
 function AddRequestForm({ onClose }) {
     const requestTypeId = useSelector((state) => state.requestId.requestTypeId);
     const requestFormData = useSelector((state) => state.requestFormData.value);
@@ -258,6 +259,10 @@ function AddRequestForm({ onClose }) {
                 }
             }
         }
+        
+        if (requestTypeId === 22) {
+            requiredFields.push('payment_type', 'payment_content', 'pay_to', 'amount');
+        }
         const flattenedData = flattenObject(requestFormData);
         let isValid = true;
         let errors = {};
@@ -352,6 +357,7 @@ function AddRequestForm({ onClose }) {
             {requestTypeId === 19 ? <DocumentEditRequestForm /> : ''}
             {requestTypeId === 20 ? <AdvanceClearanceForm /> : ''}
             {requestTypeId === 21 ? <InvoiceRequestForm /> : ''}
+            {requestTypeId === 22 ? <UnionPaymentRequestForm /> : ''}
             {/* Hiển thị lỗi chung cho supply_stationery */}
             {errors?.supply_stationery_editing && (
                 <Box

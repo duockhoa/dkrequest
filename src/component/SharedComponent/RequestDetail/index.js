@@ -22,6 +22,7 @@ import OfficeEquipmentRequestDetail from '../DetailComponents/SupplyOfficeEquipm
 import DocumentEditDetail from '../DetailComponents/DocumentEditDetail';
 import AdvanceClearanceDetail from '../DetailComponents/AdvanceClearanceDetail';
 import InvoiceRequestDetail from '../DetailComponents/InvoiceRequestDetail';
+import UnionPaymentDetail from '../DetailComponents/UnionPaymentDetail';
 const DetailItem = ({ label, value }) => (
     <Stack direction="row" spacing={2} sx={{ py: 1 }}>
         <Typography
@@ -241,6 +242,7 @@ function RequestDetail() {
                 {requestTypeId === 19 ? <DocumentEditDetail /> : ''}
                 {requestTypeId === 20 ? <AdvanceClearanceDetail /> : ''}
                 {requestTypeId === 21 ? <InvoiceRequestDetail /> : ''}
+                {requestTypeId === 22 ? <UnionPaymentDetail /> : ''}
 
                 <DetailItem label="Mô tả" value={description} />
                 <AttachmentsDetail />

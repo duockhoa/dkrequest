@@ -15,7 +15,6 @@ import Follower from '../../component/SharedComponent/Follower';
 import Progress from '../../component/SharedComponent/Progress';
 import { useElementWidth } from '../../hooks/useElementWidth';
 import { Divider } from '@mui/material';
-import { id } from 'date-fns/locale';
 
 export default function Request() {
     const requestId = useSelector((state) => state.requestId.requestId);

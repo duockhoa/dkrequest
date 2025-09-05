@@ -102,6 +102,11 @@ const publicRoutes = [
     },
     
     {
+        path: 'union-payment-request',
+        component: Request,
+    },
+    
+    {
         path: '*',
         component: Error,
         layout: ErrorLayout,
