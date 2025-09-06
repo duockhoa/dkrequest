@@ -18,6 +18,8 @@ import LoadingPage from '../LoadingPage';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import ExportReport from '../Button/ExportReport';
 import StationeryItems from '../Button/StationeryItems';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 
 const tabList = ['Tất cả', 'Đến lượt duyệt', 'Quá hạn', 'Đang chờ duyệt', 'Đã chấp nhận', 'Đã từ chối'];
 
@@ -28,20 +30,24 @@ export default function Requests() {
     const [tab, setTab] = useState(0);
     const [openForm, setOpenForm] = useState(false);
     const [page, setPage] = useState(1);
-    const [hasMore, setHasMore] = useState(true);
     const dispatch = useDispatch();
     const requests = useSelector((state) => state.request.requestData);
     const originalData = useSelector((state) => state.request.originalData);
+    const totalPages = useSelector((state) => state.request.totalPages);
+    const total = useSelector((state) => state.request.total);
     const loading = useSelector((state) => state.request.loading);
-    const requestTypeId = useSelector((state) => state.requestId.requestTypeId);
+    const requestTypeId = useSelector((state) => state.requestId.requestTypeId);    
     const requestId = useSelector((state) => state.requestId.requestId);
     const user = useSelector((state) => state.user.userInfo);
+    const pageSize = useSelector((state) => state.request.pageSize);
+    
+
 
     useLayoutEffect(() => {
         if (requestTypeId) {
-            dispatch(fetchRequests({ requestTypeId, user_id: user.id }));
+            dispatch(fetchRequests({ requestTypeId, user_id: user.id , page: page , pageSize: pageSize}));
         }
-    }, [dispatch, requestTypeId]);
+    }, [dispatch, requestTypeId , page]);
 
     // Thêm useEffect để filter theo tab
     useEffect(() => {
@@ -320,30 +326,8 @@ export default function Requests() {
         }).length,
     };
 
-    const loadMoreRequests = async () => {
-        // Gọi API lấy thêm dữ liệu, ví dụ:
-        const moreData = await dispatch(fetchRequests({ requestTypeId, user_id: user.id, page: page + 1 }));
-        if (!moreData || moreData.length === 0) {
-            setHasMore(false);
-        } else {
-            setPage((prev) => prev + 1);
-        }
-    };
 
-    useEffect(() => {
-        const handleScroll = () => {
-            const el = containerRef.current;
-            if (!el || !hasMore) return;
-            if (el.scrollHeight - el.scrollTop <= el.clientHeight + 100) {
-                loadMoreRequests();
-            }
-        };
-        const el = containerRef.current;
-        if (el) el.addEventListener('scroll', handleScroll);
-        return () => {
-            if (el) el.removeEventListener('scroll', handleScroll);
-        };
-    }, [hasMore, page, requestTypeId, user.id]);
+
 
     return (
         <Stack
@@ -370,6 +354,8 @@ export default function Requests() {
                         flex: 1,
                         minWidth: 0,
                         overflow: 'hidden',
+                        display: 'flex',
+                        justifyContent: 'space-between',
                     }}
                 >
                     <Tabs
@@ -400,6 +386,32 @@ export default function Requests() {
                             />
                         ))}
                     </Tabs>
+                        {/* Phân trang bên phải */}
+                    <Box sx={{ ml: 2, display: 'flex', alignItems: 'center', minWidth: 180 }}>
+                        <Typography sx={{ fontSize: 13, mr: 1 }}>
+        {total > 0
+            ? `${(page - 1) * pageSize + 1}-${Math.min(page * pageSize, total)} / ${total.toLocaleString('vi-VN')}`
+            : 'Không có dữ liệu'}
+    </Typography>
+    <Button
+        size="large"
+        disabled={page <= 1}
+        onClick={() => setPage(page - 1)}
+        sx={{ minWidth: 40 }}
+    >
+        <ChevronLeftIcon sx={{ fontSize: 28 }} />
+    </Button>
+    <Button
+        size="large"
+        disabled={page >= totalPages || total === 0}
+        onClick={() => setPage(page + 1)}
+        sx={{
+            minWidth: 40,
+        }}
+    >
+        <ChevronRightIcon sx={{ fontSize: 28 }} />
+    </Button>
+                    </Box>
                 </Box>
 
                 <Stack

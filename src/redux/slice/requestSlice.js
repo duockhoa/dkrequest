@@ -2,13 +2,10 @@ import { createSlice } from '@reduxjs/toolkit';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { getAllRequestService } from '../../services/requestService';
 
-const fetchRequests = createAsyncThunk('request/fetchRequests', async ({ requestTypeId, user_id , page}) => {
-    const response = await getAllRequestService(requestTypeId, user_id, page);
+const fetchRequests = createAsyncThunk('request/fetchRequests', async ({ requestTypeId, user_id , page , pageSize}) => {
+    const response = await getAllRequestService(requestTypeId, user_id, page , pageSize);
     if (response) {
-        const sortedResponse = [...response].sort((a, b) => {
-            return new Date(b.createAt) - new Date(a.createAt);
-        });
-        return sortedResponse;
+        return response;
     } else {
         throw new Error('Không thể lấy danh sách yêu cầu');
     }
@@ -26,7 +23,11 @@ const requestSlice = createSlice({
     name: 'request',
     initialState: {
         requestData: [],
-        originalData: [], // Add this to store original unfiltered data
+        originalData: [], 
+        page: 1,
+        totalPages: 1,
+        total: 0,
+        pageSize: 100,
         loading: false,
         error: null,
     },
@@ -58,8 +59,12 @@ const requestSlice = createSlice({
                 state.error = null;
             })
             .addCase(fetchRequests.fulfilled, (state, action) => {
-                state.requestData = action.payload;
-                state.originalData = action.payload; // Store original data
+                state.requestData = action.payload.result;
+                state.originalData = action.payload.result;
+                state.page = action.payload.pagination.page;
+                state.totalPages = action.payload.pagination.totalPages;
+                state.total = action.payload.pagination.total;
+
                 state.loading = false;
             })
             .addCase(fetchRequests.rejected, (state, action) => {

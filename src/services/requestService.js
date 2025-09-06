@@ -1,9 +1,9 @@
 import axios from './customize-axios';
-async function getAllRequestService(requestTypeId, user_id, page) {
+async function getAllRequestService(requestTypeId, user_id, page, pageSize) {
     try {
-        const response = await axios.get('/request/getall?requesttypeid=' + requestTypeId + '&userid=' + user_id + '&page=' + page + '&pageSize=100');
+        const response = await axios.get('/request/getall?requesttypeid=' + requestTypeId + '&userid=' + user_id + '&page=' + page + '&pageSize=' + pageSize);
         if (response.status === 200) {
-            return response.data.result;
+            return response.data;
         } else {
             throw new Error('Không thể lấy danh sách yêu cầu');
         }
