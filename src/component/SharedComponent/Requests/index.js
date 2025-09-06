@@ -43,16 +43,19 @@ export default function Requests() {
     const pageSize = useSelector((state) => state.request.pageSize);
     
 
-    
-    useLayoutEffect(() => {
-        if (requestTypeId) {
-            dispatch(fetchRequests({ requestTypeId, user_id: user.id , page: page , pageSize: pageSize}));
-        }
-    }, [dispatch, requestTypeId , page]);
+
+
 
     useEffect(() => {
-        setPage(1); 
+        setPage(1);
     }, [requestTypeId]);
+
+    useEffect(() => {
+        if (requestTypeId && user.id) {
+            dispatch(fetchRequests({ requestTypeId, user_id: user.id, page, pageSize }));
+        }
+    }, [dispatch, requestTypeId, page, pageSize, user.id]);
+
 
 
     // Thêm useEffect để filter theo tab
