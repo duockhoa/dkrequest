@@ -6,7 +6,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import MarkAsUnreadIcon from '@mui/icons-material/MarkAsUnread';
 import Button from '@mui/material/Button';
-import { format, isSameDay } from 'date-fns';
+import { format, isSameDay, set } from 'date-fns';
 import AddRequestForm from '../../Form/AddRequestForm';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchRequests } from '../../../redux/slice/requestSlice';
@@ -20,6 +20,7 @@ import ExportReport from '../Button/ExportReport';
 import StationeryItems from '../Button/StationeryItems';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import { use } from 'react';
 
 const tabList = ['Tất cả', 'Đến lượt duyệt', 'Quá hạn', 'Đang chờ duyệt', 'Đã chấp nhận', 'Đã từ chối'];
 
@@ -42,12 +43,17 @@ export default function Requests() {
     const pageSize = useSelector((state) => state.request.pageSize);
     
 
-
+    
     useLayoutEffect(() => {
         if (requestTypeId) {
             dispatch(fetchRequests({ requestTypeId, user_id: user.id , page: page , pageSize: pageSize}));
         }
     }, [dispatch, requestTypeId , page]);
+
+    useEffect(() => {
+        setPage(1); 
+    }, [requestTypeId]);
+
 
     // Thêm useEffect để filter theo tab
     useEffect(() => {
