@@ -43,6 +43,8 @@ function MarkReceived({ onClose }) {
                 fetchRequests({
                     requestTypeId: requestDetail.requestType_id,
                     user_id: user.id,
+                    page,
+                    pageSize,
                 }),
             );
             handleClose();

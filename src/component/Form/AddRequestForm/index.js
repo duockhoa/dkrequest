@@ -26,6 +26,7 @@ import DocumentEditRequestForm from '../DocumentEditRequestForm';
 import AdvanceClearanceForm from '../AdvanceClearanceForm';
 import InvoiceRequestForm from '../InvoiceRequestForm';
 import UnionPaymentRequestForm from '../UnionPaymentRequestForm';
+import NotarizationRequetsForm from '../NotarizationRequestForm';
 function AddRequestForm({ onClose }) {
     const requestTypeId = useSelector((state) => state.requestId.requestTypeId);
     const requestFormData = useSelector((state) => state.requestFormData.value);
@@ -101,6 +102,8 @@ function AddRequestForm({ onClose }) {
                     return `${user.name} ${user.department} Đề nghị hỗ trợ công tác văn thư`;
                 case 20:
                     return `${user.name} ${user.department} Đề nghị quyết toán tiền tạm ứng`;
+                case 23:
+                    return `${user.name} ${user.department} Đề nghị công chứng, sao y`;
                 default:
                     return '';
             }
@@ -263,6 +266,16 @@ function AddRequestForm({ onClose }) {
         if (requestTypeId === 22) {
             requiredFields.push('payment_type', 'payment_content', 'pay_to', 'amount');
         }
+        if (requestTypeId === 23) {
+            requiredFields.push(
+                'document_type',
+                'document_name',
+                'copies',
+                'required_time',
+                'purpose'
+            );
+        }
+
         const flattenedData = flattenObject(requestFormData);
         let isValid = true;
         let errors = {};
@@ -358,6 +371,7 @@ function AddRequestForm({ onClose }) {
             {requestTypeId === 20 ? <AdvanceClearanceForm /> : ''}
             {requestTypeId === 21 ? <InvoiceRequestForm /> : ''}
             {requestTypeId === 22 ? <UnionPaymentRequestForm /> : ''}
+            {requestTypeId === 23 ? <NotarizationRequetsForm /> : ''}
             {/* Hiển thị lỗi chung cho supply_stationery */}
             {errors?.supply_stationery_editing && (
                 <Box

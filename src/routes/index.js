@@ -105,6 +105,10 @@ const publicRoutes = [
         path: 'union-payment-request',
         component: Request,
     },
+    {
+        path: "notarization-request",
+        component: Request,
+    },
     
     {
         path: '*',
