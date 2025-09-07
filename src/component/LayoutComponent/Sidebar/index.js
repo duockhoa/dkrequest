@@ -283,7 +283,7 @@ export default function Sidebar() {
                     letterSpacing: 1,
                 }}
             >
-                version: 1.0.107
+                version: 1.0.120
             </Box>
         </Stack>
     );

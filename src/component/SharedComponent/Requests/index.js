@@ -1,12 +1,12 @@
 import { Tabs, Tab, Box, Typography, Stack, Avatar, Chip, AvatarGroup, Dialog, Divider, Badge } from '@mui/material';
-import { useState, useEffect, useLayoutEffect, useRef } from 'react';
+import { useState, useEffect,  useRef } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import MarkAsUnreadIcon from '@mui/icons-material/MarkAsUnread';
 import Button from '@mui/material/Button';
-import { format, isSameDay, set } from 'date-fns';
+import { format, isSameDay } from 'date-fns';
 import AddRequestForm from '../../Form/AddRequestForm';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchRequests } from '../../../redux/slice/requestSlice';
@@ -20,7 +20,7 @@ import ExportReport from '../Button/ExportReport';
 import StationeryItems from '../Button/StationeryItems';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import { use } from 'react';
+import{ setPage }from '../../../redux/slice/requestSlice';
 
 const tabList = ['Tất cả', 'Đến lượt duyệt', 'Quá hạn', 'Đang chờ duyệt', 'Đã chấp nhận', 'Đã từ chối'];
 
@@ -30,33 +30,23 @@ export default function Requests() {
     const navigate = useNavigate();
     const [tab, setTab] = useState(0);
     const [openForm, setOpenForm] = useState(false);
-    const [page, setPage] = useState(1);
     const dispatch = useDispatch();
     const requests = useSelector((state) => state.request.requestData);
     const originalData = useSelector((state) => state.request.originalData);
     const totalPages = useSelector((state) => state.request.totalPages);
     const total = useSelector((state) => state.request.total);
+    const page = useSelector((state) => state.request.page);
     const loading = useSelector((state) => state.request.loading);
     const requestTypeId = useSelector((state) => state.requestId.requestTypeId);    
     const requestId = useSelector((state) => state.requestId.requestId);
     const user = useSelector((state) => state.user.userInfo);
     const pageSize = useSelector((state) => state.request.pageSize);
     
-
-
-
-
-    useEffect(() => {
-        setPage(1);
-    }, [requestTypeId]);
-
     useEffect(() => {
         if (requestTypeId && user.id) {
             dispatch(fetchRequests({ requestTypeId, user_id: user.id, page, pageSize }));
         }
-    }, [dispatch, requestTypeId, page, pageSize, user.id]);
-
-
+    }, [dispatch, requestTypeId, user.id, page, pageSize]);
 
     // Thêm useEffect để filter theo tab
     useEffect(() => {
@@ -397,28 +387,28 @@ export default function Requests() {
                     </Tabs>
                         {/* Phân trang bên phải */}
                     <Box sx={{ ml: 2, display: 'flex', alignItems: 'center', minWidth: 180 }}>
-                        <Typography sx={{ fontSize: 13, mr: 1 }}>
+                        <Typography sx={{ fontSize: 12, mr: 1 }}>
         {total > 0
             ? `${(page - 1) * pageSize + 1}-${Math.min(page * pageSize, total)} / ${total.toLocaleString('vi-VN')}`
             : 'Không có dữ liệu'}
     </Typography>
     <Button
-        size="large"
+        size="medium"
         disabled={page <= 1}
-        onClick={() => setPage(page - 1)}
+        onClick={() => dispatch(setPage(page - 1))}
         sx={{ minWidth: 40 }}
     >
-        <ChevronLeftIcon sx={{ fontSize: 28 }} />
+        <ChevronLeftIcon sx={{ fontSize: 22 }} />
     </Button>
     <Button
-        size="large"
+        size="medium"
         disabled={page >= totalPages || total === 0}
-        onClick={() => setPage(page + 1)}
+        onClick={() => dispatch(setPage(page + 1))}
         sx={{
             minWidth: 40,
         }}
     >
-        <ChevronRightIcon sx={{ fontSize: 28 }} />
+        <ChevronRightIcon sx={{ fontSize: 22 }} />
     </Button>
                     </Box>
                 </Box>

@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { getAllRequestService } from '../../services/requestService';
+import { set } from 'date-fns';
 
 const fetchRequests = createAsyncThunk('request/fetchRequests', async ({ requestTypeId, user_id , page , pageSize}) => {
     const response = await getAllRequestService(requestTypeId, user_id, page , pageSize);
@@ -34,6 +35,9 @@ const requestSlice = createSlice({
     reducers: {
         setRequestData: (state, action) => {
             state.requestData = action.payload;
+        },
+        setPage: (state, action) => {
+            state.page = action.payload;
         },
         filterRequests: (state, action) => {
             const searchValue = removeDiacritics(action.payload);
@@ -75,5 +79,5 @@ const requestSlice = createSlice({
 });
 
 export { fetchRequests };
-export const { setRequestData, filterRequests } = requestSlice.actions;
+export const { setRequestData, filterRequests , setPage } = requestSlice.actions;
 export default requestSlice.reducer;

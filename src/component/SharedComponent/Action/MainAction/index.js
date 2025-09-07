@@ -19,6 +19,8 @@ function Action() {
     const requestId = useSelector((state) => state.requestId.requestId);
     const requestDetail = useSelector((state) => state.requestDetail.requestDetailvalue);
     const requestTypeId = useSelector((state) => state.requestId.requestTypeId);
+    const page = useSelector((state) => state.request.page);
+    const pageSize = useSelector((state) => state.request.pageSize);
 
     // Logic kiểm tra quyền hiển thị Action
     const canShowAction = (() => {
@@ -67,6 +69,9 @@ function Action() {
                 fetchRequests({
                     requestTypeId: requestTypeId,
                     user_id: userId,
+                    page,
+                    pageSize,
+                    
                 }),
             );
             handleClose();
@@ -89,6 +94,8 @@ function Action() {
                 fetchRequests({
                     requestTypeId: requestTypeId,
                     user_id: userId,
+                    page,
+                    pageSize,
                 }),
             );
 

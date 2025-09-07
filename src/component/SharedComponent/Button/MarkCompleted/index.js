@@ -13,6 +13,8 @@ function MarkCompleted({ onClose }) {
     const user = useSelector((state) => state.user.userInfo);
     const requestId = useSelector((state) => state.requestId.requestId);
     const requestDetail = useSelector((state) => state.requestDetail.requestDetailvalue);
+    const page = useSelector((state) => state.request.page);
+    const pageSize = useSelector((state) => state.request.pageSize);
 
     // Check if request is completed
     const isCompleted = requestDetail?.isCompleted;
@@ -41,6 +43,8 @@ function MarkCompleted({ onClose }) {
                 fetchRequests({
                     requestTypeId: requestDetail.requestType_id,
                     user_id: user.id,
+                    page,
+                    pageSize,
                 }),
             );
             handleClose();
