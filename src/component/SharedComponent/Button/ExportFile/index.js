@@ -8,7 +8,6 @@ import { ta } from 'date-fns/locale';
 
 function ExportFile({ onClose }) {
     const requestDetail = useSelector((state) => state.requestDetail.requestDetailvalue);
-    console.log(requestDetail)
 
     const createdAt = requestDetail?.createAt;
     const day = createdAt ? dayjs(createdAt).date() : '';
@@ -71,6 +70,33 @@ function ExportFile({ onClose }) {
                         bank_account_number: advance.bank_account_number || '',
                         beneficiary_name: advance.beneficiary_name || '',
                         department_head: departmentHead,
+                    },
+                };
+            case 4: 
+                const supplyStationery = requestDetail?.supplyStationery || [];
+                const stationeryData = {};
+
+         
+                for (let idx = 0; idx < 20; idx++) {
+                    const item = supplyStationery[idx] || {};
+                    stationeryData[`sst${idx + 1}`] = item.product_code || '';
+                    stationeryData[`productName${idx + 1}`] = item.product_name || '';
+                    stationeryData[`unit${idx + 1}`] = item.unit || '';
+                    stationeryData[`ql${idx + 1}`] = item.quantity || '';
+                    stationeryData[`reason${idx + 1}`] = item.usage_purpose || '';
+                    stationeryData[`note${idx + 1}`] = item.note || '';
+                }
+
+
+                return {
+                    template: 'supply_stationery/BMNS003.01.docx',
+                    data: {
+                        department: department,
+                        day: day,
+                        month: month,
+                        year: year,
+                        userName: userName,
+                        ...stationeryData,
                     },
                 };
             case 9:
