@@ -21,6 +21,7 @@ import StationeryItems from '../Button/StationeryItems';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import{ setPage }from '../../../redux/slice/requestSlice';
+import FilterListTwoToneIcon from '@mui/icons-material/FilterListTwoTone';
 
 const tabList = ['Tất cả', 'Đến lượt duyệt', 'Quá hạn', 'Đang chờ duyệt', 'Đã chấp nhận', 'Đã từ chối'];
 
@@ -442,6 +443,11 @@ export default function Requests() {
                             {isMobile ? 'Thêm' : 'Thêm mới'}
                         </Button>
                     )}
+                    <Button 
+                        sx={{ minWidth: 'auto', padding: 1 }}
+                    > 
+                        <FilterListTwoToneIcon sx={{ color: 'action.active', m:0  }} />
+                    </Button>           
                 </Stack>
             </Box>
 
