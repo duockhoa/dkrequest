@@ -33,7 +33,7 @@ export default function Requests() {
     const navigate = useNavigate();
     const [tab, setTab] = useState(0);
     const [openForm, setOpenForm] = useState(false);
-    const [openFilter, setOpenFilter] = useState(true);
+    const [openFilter, setOpenFilter] = useState(false);
     const dispatch = useDispatch();
     const requests = useSelector((state) => state.request.requestData);
     const originalData = useSelector((state) => state.request.originalData);
