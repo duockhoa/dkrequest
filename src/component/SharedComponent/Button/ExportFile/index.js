@@ -172,42 +172,22 @@ function ExportFile({ onClose }) {
 
 
 
-                const vouchersdata = [
-                    {
-                        advance1: "",
-                        advanamont1: ""
-                    },
-                     {
-                        advance2: "",
-                        advanamont2: ""
-                    },
-                    {
-                        advance3: "",
-                        advanamont3: ""
-                    },
-
-                ]
+                var advance1 = ""
+                var advanamont = ""
                 const vouchersLength = vouchers.length;
                 for (let i = 0; i < vouchersLength; i++) {
-                    vouchersdata[i][`advance${i + 1}`] = `Số phiếu chi ${vouchers[i].voucher_number} Ngày: ${formatDate(vouchers[i].voucher_date)}` || '';
-                    vouchersdata[i][`advanamont${i + 1}`] = formatNumberWithCommas(parseInt(Number(vouchers[i].amount))) + "đ" || '';
+                    advance1 = advance1 + (i + 1) + ". " + `Số phiếu chi ${vouchers[i].voucher_number || '---'} Ngày: ${formatDate(vouchers[i].voucher_date)}` + "\n"
+                    advanamont = advanamont + formatNumberWithCommas(parseInt(Number(vouchers[i].amount || "---"))) + "đ" + "\n"
                 }
 
-                const spendingsData = [
-                    {
-                        pay1: "",
-                        payamont1: ""
-                    },
-                    {
-                        pay2: '',
-                        payamont2: ''
-                    }
-                ]
+                console.log("advance1", advance1)
+                var pay = ''
+                var payamont = ''
 
                const payLength = spendings.length;
                 for (let i = 0; i < payLength; i++) {
-                    spendingsData[i][`pay${i + 1}`] = `Số phiếu chi ${spendings[i].document_number} Ngày: ${formatDate(spendings[i].spending_date)}` || '';
-                    spendingsData[i][`payamont${i + 1}`] = formatNumberWithCommas(parseInt(Number(spendings[i].amount))) + "đ" || '';
+                    pay = pay + (i + 1) + ". " + `Số phiếu chi ${spendings[i].document_number || '---'} Ngày: ${formatDate(spendings[i].spending_date)}` + "\n"
+                    payamont = payamont + formatNumberWithCommas(parseInt(Number(spendings[i].amount || "---"))) + "đ" + "\n"
                 }
 
                 const difference = {
@@ -233,15 +213,18 @@ function ExportFile({ onClose }) {
                             day: day,
                             month: month,
                             year: year,
-                            unspent_amount: formatNumberWithCommas(parseInt(Number(advanceClearanceRequest.unspent_amount))) + "đ" || '',
+                            unspent_amount: formatNumberWithCommas(parseInt(Number(advanceClearanceRequest.unspent_amount || 0))) + "đ" || '',
                             total_voucher_amount: formatNumberWithCommas(totalVoucherAmount) + "đ" || '',
                             total_spending_amount: formatNumberWithCommas(totalSpendingAmount) + "đ" || '',
                             negative_amount: difference.negative_amount || '',
                             positive_amount: difference.positive_amount || '',
-                            department_head: departmentHead
+                            department_head: departmentHead,
+                            advance: advance1 || '',
+                            advanamont: advanamont || '',
+                            pay: pay || '',
+                            payamont: payamont || '',
                         },
-                        ...vouchersdata,
-                        ...spendingsData
+              
                     ),
                 };
              
