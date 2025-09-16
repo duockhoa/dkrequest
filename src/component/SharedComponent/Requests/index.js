@@ -22,6 +22,8 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import{ setPage }from '../../../redux/slice/requestSlice';
 import FilterListTwoToneIcon from '@mui/icons-material/FilterListTwoTone';
+import Drawer from '@mui/material/Drawer';
+import Filter from '../Filter';
 
 const tabList = ['Tất cả', 'Đến lượt duyệt', 'Quá hạn', 'Đang chờ duyệt', 'Đã chấp nhận', 'Đã từ chối'];
 
@@ -31,6 +33,7 @@ export default function Requests() {
     const navigate = useNavigate();
     const [tab, setTab] = useState(0);
     const [openForm, setOpenForm] = useState(false);
+    const [openFilter, setOpenFilter] = useState(true);
     const dispatch = useDispatch();
     const requests = useSelector((state) => state.request.requestData);
     const originalData = useSelector((state) => state.request.originalData);
@@ -130,6 +133,11 @@ export default function Requests() {
             dispatch(clearRequestFormData());
             dispatch(clearErrors());
         }
+    };
+
+    // đóng mở bộ lọc
+    const handleToggleFilter = () => {
+        setOpenFilter(!openFilter);
     };
 
     // Thêm hàm getStatusConfig để xử lý style và label theo requestStatus
@@ -445,6 +453,7 @@ export default function Requests() {
                     )}
                     <Button 
                         sx={{ minWidth: 'auto', padding: 1 }}
+                        onClick={handleToggleFilter}
                     > 
                         <FilterListTwoToneIcon sx={{ color: 'action.active', m:0  }} />
                     </Button>           
@@ -477,6 +486,19 @@ export default function Requests() {
             >
                 <AddRequestForm onClose={handleToggleForm} />
             </Dialog>
+
+            <Drawer
+                anchor="right"
+                open={openFilter}
+                onClose={handleToggleFilter}
+            >
+                <Box
+                    sx={{ width: isMobile ? 250 : 300, p: 2 }}  
+                    role="presentation"
+                >
+                    <Filter />
+                </Box>
+            </Drawer>
 
             {loading ? (
                 <LoadingPage />
