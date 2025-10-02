@@ -24,6 +24,7 @@ import AdvanceClearanceDetail from '../DetailComponents/AdvanceClearanceDetail';
 import InvoiceRequestDetail from '../DetailComponents/InvoiceRequestDetail';
 import UnionPaymentDetail from '../DetailComponents/UnionPaymentDetail';
 import NotarizationRequestDetail from '../DetailComponents/NotarizationRequestDetail';
+import TrainingRequestDetail from '../DetailComponents/TrainingRequestDetail';
 const DetailItem = ({ label, value }) => (
     <Stack direction="row" spacing={2} sx={{ py: 1 }}>
         <Typography
@@ -245,6 +246,7 @@ function RequestDetail() {
                 {requestTypeId === 21 ? <InvoiceRequestDetail /> : ''}
                 {requestTypeId === 22 ? <UnionPaymentDetail /> : ''}
                 {requestTypeId === 23 ? <NotarizationRequestDetail /> : ''}
+                {requestTypeId === 24 ? <TrainingRequestDetail /> : ''}
 
                 <DetailItem label="Mô tả" value={description} />
                 <AttachmentsDetail />
