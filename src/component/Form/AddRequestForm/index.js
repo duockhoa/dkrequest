@@ -1,9 +1,9 @@
-import { Box, TextField, Typography, Stack, Button } from '@mui/material';
+import { Box, TextField, Typography, Stack, Button, Snackbar, Alert } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
 import { setRequestFormData } from '../../../redux/slice/requestFormDataSlice';
 import RequestFollowers from '../RequestFollowers';
 import LeaveRequestForm from '../LeaveRequestForm';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import RequestApprovers from '../RequestApprovers';
 import { setRequestData } from '../../../redux/slice/requestSlice';
 import { setFieldError, clearErrors } from '../../../redux/slice/requestFormDataSlice';
@@ -27,6 +27,7 @@ import AdvanceClearanceForm from '../AdvanceClearanceForm';
 import InvoiceRequestForm from '../InvoiceRequestForm';
 import UnionPaymentRequestForm from '../UnionPaymentRequestForm';
 import NotarizationRequetsForm from '../NotarizationRequestForm';
+import TrainingRequestForm from '../TrainingRequestForm';
 function AddRequestForm({ onClose }) {
     const requestTypeId = useSelector((state) => state.requestId.requestTypeId);
     const requestFormData = useSelector((state) => state.requestFormData.value);
@@ -36,6 +37,7 @@ function AddRequestForm({ onClose }) {
     const error = useSelector((state) => state.requestFormData.error);
     const errors = useSelector((state) => state.requestFormData.errors);
     const dispatch = useDispatch();
+    const [openErrorAlert, setOpenErrorAlert] = useState(false);
 
     // Handle change for input fields
     const handleChange = (e) => {
@@ -104,6 +106,8 @@ function AddRequestForm({ onClose }) {
                     return `${user.name} ${user.department} Đề nghị quyết toán tiền tạm ứng`;
                 case 23:
                     return `${user.name} ${user.department} Đề nghị công chứng, sao y`;
+                case 24: 
+                    return `${user.name} ${user.department} Đề nghị đào tạo`;
                 default:
                     return '';
             }
@@ -304,19 +308,40 @@ function AddRequestForm({ onClose }) {
         if (!validateForm()) {
             return;
         }
+        
         // Convert requestFormData to FormData
         const formData = objectToFormData(requestFormData);
 
         try {
             const response = await dispatch(fetchCreateRequest(formData));
+            
+            // Kiểm tra nếu response có lỗi
+            if (response.meta.requestStatus === 'rejected') {
+                // Lỗi sẽ được hiển thị ở phần render dưới
+                return;
+            }
+            
             dispatch(setRequestData([response.payload, ...requestData])); // Update request data in the store
             dispatch(setRequestFormData({})); // Clear form data in the store
-
             onClose();
         } catch (error) {
             console.error('Error creating request:', error);
         }
-        // Reset form data after submission
+    };
+
+    // Mở alert khi có lỗi từ API
+    useEffect(() => {
+        if (error) {
+            setOpenErrorAlert(true);
+        }
+    }, [error]);
+
+    // Đóng alert
+    const handleCloseAlert = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setOpenErrorAlert(false);
     };
 
     return (
@@ -338,6 +363,23 @@ function AddRequestForm({ onClose }) {
             <Typography variant="h4" textAlign={'center'} sx={{ fontSize: '2.5rem' }} color="primary.main">
                 THÊM ĐỀ XUẤT MỚI
             </Typography>
+
+            {/* Alert hiển thị lỗi API ở góc phải trên, tự biến mất sau 3s */}
+            <Snackbar
+                open={openErrorAlert}
+                autoHideDuration={3000}
+                onClose={handleCloseAlert}
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                sx={{ mt: 2, minWidth: '300px' }}
+            >
+                <Alert 
+                    onClose={handleCloseAlert} 
+                    severity="error" 
+                    sx={{ width: '100%', fontSize: '14px' }}
+                >
+                    Lỗi: {error}
+                </Alert>
+            </Snackbar>
 
             <Stack direction="row" alignItems="center" spacing={2}>
                 <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Tên đề xuất (*)</Typography>
@@ -372,7 +414,8 @@ function AddRequestForm({ onClose }) {
             {requestTypeId === 21 ? <InvoiceRequestForm /> : ''}
             {requestTypeId === 22 ? <UnionPaymentRequestForm /> : ''}
             {requestTypeId === 23 ? <NotarizationRequetsForm /> : ''}
-            {/* Hiển thị lỗi chung cho supply_stationery */}
+            {requestTypeId === 24 ? <TrainingRequestForm /> : ''}
+            {/* Giữ lại các lỗi validation khác (editing items) */}
             {errors?.supply_stationery_editing && (
                 <Box
                     sx={{
