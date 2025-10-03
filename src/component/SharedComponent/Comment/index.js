@@ -1,12 +1,13 @@
 import { Box, Stack, Typography, Paper } from '@mui/material';
 import TextSnippetIcon from '@mui/icons-material/TextSnippet';
 import CommentForm from '../../Form/CommentForm';
+import PreviewFile from '../PreviewFile';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchComments } from '../../../redux/slice/commentSlice';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import LoadingPage from '../../SharedComponent/LoadingPage';
 
-function CommentItem({ comment }) {
+function CommentItem({ comment, onFileClick }) {
     return (
         <Box sx={{ mb: 3 }}>
             <Stack direction="row" alignItems="center" spacing={2}>
@@ -59,14 +60,7 @@ function CommentItem({ comment }) {
                                     textDecoration: 'underline',
                                 }}
                                 title={file.file_name}
-                                onClick={() =>
-                                    window.open(
-                                        `${process.env.REACT_APP_BACKEND_URL}/api/v1/file/get?filepath=${encodeURIComponent(
-                                            file.file_path,
-                                        )}`,
-                                        '_blank',
-                                    )
-                                }
+                                onClick={() => onFileClick(file)}
                             >
                                 {file.file_name}
                             </Typography>
@@ -84,6 +78,10 @@ function Comment() {
     const comments = useSelector((state) => state.comment.comments);
     const loading = useSelector((state) => state.comment.loading);
     const error = useSelector((state) => state.comment.error);
+    
+    // State cho preview file
+    const [previewFile, setPreviewFile] = useState(null);
+    const [openPreview, setOpenPreview] = useState(false);
 
     useEffect(() => {
         console.log('Fetching comments for requestId:', requestId);
@@ -91,6 +89,18 @@ function Comment() {
             dispatch(fetchComments(requestId));
         }
     }, [requestId]);
+
+    // Xử lý click vào file
+    const handleFileClick = (file) => {
+        setPreviewFile(file);
+        setOpenPreview(true);
+    };
+
+    // Đóng preview
+    const handleClosePreview = () => {
+        setOpenPreview(false);
+        setPreviewFile(null);
+    };
 
     if (loading) {
         return <LoadingPage />;
@@ -113,8 +123,17 @@ function Comment() {
             <Stack spacing={2}>
                 {error && <Typography color="error">{error}</Typography>}
                 {comments &&
-                    [...comments].reverse().map((comment) => <CommentItem key={comment.id} comment={comment} />)}
+                    [...comments].reverse().map((comment) => (
+                        <CommentItem key={comment.id} comment={comment} onFileClick={handleFileClick} />
+                    ))}
             </Stack>
+
+            {/* Preview File Dialog */}
+            <PreviewFile
+                open={openPreview}
+                file={previewFile}
+                onClose={handleClosePreview}
+            />
         </Box>
     );
 }
