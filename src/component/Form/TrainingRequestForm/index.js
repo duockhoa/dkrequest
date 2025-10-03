@@ -1,4 +1,4 @@
-import { Stack, Typography, TextField, MenuItem } from '@mui/material';
+import { Stack, Typography, TextField, MenuItem , Checkbox } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
 import { setRequestFormData, clearErrors } from '../../../redux/slice/requestFormDataSlice';
 import FileUpload from '../FileUpload';
@@ -20,6 +20,7 @@ import {
     GridToolbarContainer,
 } from '@mui/x-data-grid';
 import Autocomplete from '@mui/material/Autocomplete';
+
 
 // Hàm bỏ dấu tiếng Việt
 function removeVietnameseTones(str) {
@@ -95,18 +96,7 @@ function UserAutoCompleteEditCell({ id, value, field, api, users }) {
 
 const createRandomId = () => Math.floor(Math.random() * 100000);
 
-const initialParticipants = [
-    {
-        id: createRandomId(),
-        employee_code: '',
-        employee_name: '',
-        department: '', // Thêm trường bộ phận
-        position: '',
-        phone_number: '',
-        email: '',
-        isNew: true,
-    },
-];
+
 
 function ParticipantToolbar(props) {
     const { setParticipants, setRowModesModel } = props;
@@ -119,7 +109,7 @@ function ParticipantToolbar(props) {
                 id,
                 employee_code: '',
                 employee_name: '',
-                department: '', // Thêm trường bộ phận
+                department: '', 
                 position: '',
                 phone_number: '',
                 email: '',
@@ -161,7 +151,7 @@ function TrainingRequestForm() {
     const users = useSelector((state) => state.users.users);
     console.log('Users from Redux:', users);
     // State cho danh sách người tham gia
-    const [participants, setParticipants] = useState(initialParticipants);
+    const [participants, setParticipants] = useState([]);
     const [rowModesModel, setRowModesModel] = useState({});
 
     // Cập nhật participants vào Redux
@@ -390,17 +380,32 @@ function TrainingRequestForm() {
             </Stack>
 
             <Stack direction="row" alignItems="center" spacing={2}>
-                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Thời gian dự kiến:</Typography>
+                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Thời gian bắt đầu:</Typography>
                 <TextField
                     fullWidth
-                    name="expected_time"
-                    value={requestFormData?.training_request?.expected_time || ''}
+                    name="start_time"
+                    type="datetime-local"
+                    value={requestFormData?.training_request?.start_time || ''}
                     onChange={handleChange}
                     size="medium"
                     inputProps={{ style: { fontSize: '1.4rem' } }}
-                    error={!!errors?.expected_time}
-                    helperText={errors?.expected_time || ''}
-                    placeholder="Từ ngày - đến ngày"
+                    error={!!errors?.start_time}
+                    helperText={errors?.start_time || ''}
+                />
+            </Stack>
+
+            <Stack direction="row" alignItems="center" spacing={2}>
+                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Thời gian kết thúc:</Typography>
+                <TextField
+                    fullWidth
+                    name="end_time"
+                    type="datetime-local"
+                    value={requestFormData?.training_request?.end_time || ''}
+                    onChange={handleChange}
+                    size="medium"
+                    inputProps={{ style: { fontSize: '1.4rem' } }}
+                    error={!!errors?.end_time}
+                    helperText={errors?.end_time || ''}
                 />
             </Stack>
 
@@ -517,7 +522,7 @@ function TrainingRequestForm() {
             {/* Thay thế FileUpload bằng DataGrid */}
             <Stack spacing={1}>
                 <Typography sx={{ fontSize: '1.4rem', fontWeight: 600 }}>
-                    Danh sách người tham gia đào tạo (*)
+                    Danh sách người tham gia đào tạo (bỏ qua và đính kèm file excel nếu nhiều người tham gia)
                 </Typography>
                 <Box
                     sx={{
@@ -563,6 +568,20 @@ function TrainingRequestForm() {
                     />
                 </Box>
             </Stack>
+            <Stack direction="row" alignItems="flex-start" spacing={2} sx={{ p: 1 }}>
+                <Typography sx={{ fontSize: '1.4rem', mt: 1 }}>
+                    <Checkbox sx={{ '& .MuiSvgIcon-root': { fontSize: 22 } }}  defaultChecked></Checkbox>
+                    <strong>Tôi và nhân sự tham gia đồng ý với các cam kết sau:</strong>
+                    <br/>1. <strong>Tài liệu đào tạo:</strong> Gửi lại tài liệu đào tạo cho Phòng Tổ chức sau khi hoàn thành khóa học, 
+                    dưới dạng bản mềm (ưu tiên) hoặc bản cứng để phục vụ lưu trữ và chia sẻ nội bộ.
+                    <br/>2. <strong>Video chia sẻ kiến thức:</strong> Áp dụng đối với các khóa học có học phí niêm yết từ 2.000.000 VNĐ/người trở lên.
+                    Học viên gửi video tự quay hoặc ghi hình buổi chia sẻ với đồng nghiệp về nội dung đã học hoặc các hình thức phù hợp khác 
+                    nhằm lan tỏa và ứng dụng kiến thức sau đào tạo về Phòng Tổ chức.
+                    <br/>3. <strong>Kế hoạch áp dụng kiến thức:</strong> Sau khi hoàn thành khóa học, học viên gửi đề xuất 
+                    hoặc kế hoạch áp dụng kiến thức vào thực tế công việc đến Quản lý bộ phận và Phòng Tổ chức để theo dõi, hỗ trợ triển khai.
+                </Typography>
+            </Stack>
+
         </Stack>
     );
 }

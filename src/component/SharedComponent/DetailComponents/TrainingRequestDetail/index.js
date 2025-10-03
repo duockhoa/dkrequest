@@ -10,8 +10,6 @@ import {
     Paper,
     IconButton,
     Dialog,
-    Chip,
-    Box,
 } from '@mui/material';
 import OpenInFullIcon from '@mui/icons-material/OpenInFull';
 import { useSelector } from 'react-redux';
@@ -63,11 +61,29 @@ export default function TrainingRequestDetail() {
         setOpenExpand(false);
     };
 
+    // Hàm format datetime
+    const formatDateTime = (dateTimeString) => {
+        if (!dateTimeString) return '-';
+        try {
+            const date = new Date(dateTimeString);
+            return date.toLocaleString('vi-VN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        } catch (error) {
+            return dateTimeString;
+        }
+    };
+
     return (
         <Stack sx={{ position: 'relative', mt: 0 }}>
             <DetailItem label="Tên khóa học" value={trainingRequest.course_name || '-'} />
             <DetailItem label="Đơn vị đào tạo" value={trainingRequest.training_provider || '-'} />
-            <DetailItem label="Thời gian dự kiến" value={trainingRequest.expected_time || '-'} />
+            <DetailItem label="Thời gian bắt đầu" value={formatDateTime(trainingRequest.start_time)} />
+            <DetailItem label="Thời gian kết thúc" value={formatDateTime(trainingRequest.end_time)} />
             <DetailItem 
                 label="Số buổi học" 
                 value={trainingRequest.session_count ? `${trainingRequest.session_count} buổi` : '-'} 
@@ -112,19 +128,17 @@ export default function TrainingRequestDetail() {
                 >
                     <TableHead>
                         <TableRow>
-                            <TableCell sx={{ fontWeight: 'bold', fontSize: '14px' }}>STT</TableCell>
                             <TableCell sx={{ fontWeight: 'bold', fontSize: '14px' }}>Mã NV</TableCell>
                             <TableCell sx={{ fontWeight: 'bold', fontSize: '14px' }}>Họ tên</TableCell>
-                            <TableCell sx={{ fontWeight: 'bold', fontSize: '14px' }}>Chức vụ</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', fontSize: '14px' }}>Bộ phận</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {trainingRequest.participants?.map((participant, index) => (
+                        {trainingRequest.participants?.map((participant) => (
                             <TableRow key={participant.id}>
-                                <TableCell sx={{ fontSize: '14px' }}>{index + 1}</TableCell>
                                 <TableCell sx={{ fontSize: '14px' }}>{participant.employee_code}</TableCell>
                                 <TableCell sx={{ fontSize: '14px' }}>{participant.employee_name}</TableCell>
-                                <TableCell sx={{ fontSize: '14px' }}>{participant.position}</TableCell>
+                                <TableCell sx={{ fontSize: '14px' }}>{participant.department || '-'}</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
