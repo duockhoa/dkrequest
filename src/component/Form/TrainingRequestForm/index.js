@@ -292,7 +292,7 @@ function TrainingRequestForm() {
         {
             field: 'email',
             headerName: 'Email',
-            width: 200,
+            width: 240,
             editable: true,
             renderEditCell: (params) => (
                 <UserAutoCompleteEditCell {...params} users={users} field="email" />
@@ -366,7 +366,7 @@ function TrainingRequestForm() {
             </Stack>
 
             <Stack direction="row" alignItems="center" spacing={2}>
-                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Đơn vị đào tạo:</Typography>
+                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Đơn vị đào tạo(*):</Typography>
                 <TextField
                     fullWidth
                     name="training_provider"
@@ -380,7 +380,7 @@ function TrainingRequestForm() {
             </Stack>
 
             <Stack direction="row" alignItems="center" spacing={2}>
-                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Thời gian bắt đầu:</Typography>
+                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Thời gian bắt đầu(*):</Typography>
                 <TextField
                     fullWidth
                     name="start_time"
@@ -395,7 +395,7 @@ function TrainingRequestForm() {
             </Stack>
 
             <Stack direction="row" alignItems="center" spacing={2}>
-                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Thời gian kết thúc:</Typography>
+                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Thời gian kết thúc(*):</Typography>
                 <TextField
                     fullWidth
                     name="end_time"
@@ -410,7 +410,7 @@ function TrainingRequestForm() {
             </Stack>
 
             <Stack direction="row" alignItems="center" spacing={2}>
-                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Số buổi học:</Typography>
+                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Số buổi học(*):</Typography>
                 <TextField
                     fullWidth
                     name="session_count"
@@ -425,7 +425,7 @@ function TrainingRequestForm() {
             </Stack>
 
             <Stack direction="row" alignItems="center" spacing={2}>
-                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Ngân sách dự kiến:</Typography>
+                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Ngân sách dự kiến(*):</Typography>
                 <TextField
                     fullWidth
                     name="budgetText"
@@ -442,7 +442,7 @@ function TrainingRequestForm() {
             </Stack>
 
             <Stack direction="row" alignItems="center" spacing={2}>
-                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Hình thức đào tạo:</Typography>
+                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Hình thức đào tạo(*):</Typography>
                 <TextField
                     fullWidth
                     name="training_mode"
@@ -463,7 +463,7 @@ function TrainingRequestForm() {
             </Stack>
 
             <Stack direction="row" alignItems="center" spacing={2}>
-                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Loại giảng viên:</Typography>
+                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Loại giảng viên(*):</Typography>
                 <TextField
                     fullWidth
                     name="trainer_type"
@@ -484,7 +484,7 @@ function TrainingRequestForm() {
             </Stack>
 
             <Stack direction="row" alignItems="flex-start" spacing={2}>
-                <Typography sx={{ minWidth: 120, fontSize: '1.4rem', mt: 1 }}>Tính cấp thiết:</Typography>
+                <Typography sx={{ minWidth: 120, fontSize: '1.4rem', mt: 1 }}>Tính cấp thiết(*):</Typography>
                 <TextField
                     fullWidth
                     name="necessity"
@@ -502,7 +502,7 @@ function TrainingRequestForm() {
             </Stack>
 
             <Stack direction="row" alignItems="flex-start" spacing={2}>
-                <Typography sx={{ minWidth: 120, fontSize: '1.4rem', mt: 1 }}>Mục tiêu đào tạo:</Typography>
+                <Typography sx={{ minWidth: 120, fontSize: '1.4rem', mt: 1 }}>Mục tiêu đào tạo(*):</Typography>
                 <TextField
                     fullWidth
                     name="training_goal"
@@ -570,7 +570,7 @@ function TrainingRequestForm() {
             </Stack>
             <Stack direction="row" alignItems="flex-start" spacing={2} sx={{ p: 1 }}>
                 <Typography sx={{ fontSize: '1.4rem', mt: 1 }}>
-                    <Checkbox sx={{ '& .MuiSvgIcon-root': { fontSize: 22 } }}  defaultChecked></Checkbox>
+                    <Checkbox sx={{ '& .MuiSvgIcon-root': { fontSize: 22 } }} name='agreement'   defaultChecked></Checkbox>
                     <strong>Tôi và nhân sự tham gia đồng ý với các cam kết sau:</strong>
                     <br/>1. <strong>Tài liệu đào tạo:</strong> Gửi lại tài liệu đào tạo cho Phòng Tổ chức sau khi hoàn thành khóa học, 
                     dưới dạng bản mềm (ưu tiên) hoặc bản cứng để phục vụ lưu trữ và chia sẻ nội bộ.

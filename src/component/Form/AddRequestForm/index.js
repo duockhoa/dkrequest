@@ -279,6 +279,21 @@ function AddRequestForm({ onClose }) {
                 'purpose'
             );
         }
+        if (requestTypeId === 24) {
+            const trainingRequiredFields = [
+                'course_name',
+                'training_provider',
+                'start_time',
+                'end_time',
+                'session_count',
+                'budgetText',
+                'training_mode',
+                'trainer_type',
+                'necessity',
+                'training_goal'
+            ];
+            requiredFields.push(...trainingRequiredFields);
+        }
 
         const flattenedData = flattenObject(requestFormData);
         let isValid = true;
