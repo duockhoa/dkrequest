@@ -512,7 +512,7 @@ function Profile() {
                                                     fontSize: { xs: '14px', sm: '16px' }
                                                 }}
                                             >
-                                                {user.birthDate || 'Chưa cập nhật'}
+                                                {user.birthday || 'Chưa cập nhật'}
                                             </Typography>
                                         </Stack>
                                     </Stack>
