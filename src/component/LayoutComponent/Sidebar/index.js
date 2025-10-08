@@ -11,7 +11,7 @@ import { Box } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
 import { setActiveCollapse } from '../../../redux/slice/sibarSlice';
 import { fetchDepartments } from '../../../redux/slice/departmentSlice';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PaymentIcon from '@mui/icons-material/Payment';
 import TimeToLeaveIcon from '@mui/icons-material/TimeToLeave';
@@ -104,7 +104,13 @@ export default function Sidebar() {
     const dispatch = useDispatch();
     const navigator = useNavigate();
     const activeSidebar = useSelector((state) => state.sidebar.activeSidebar);
-    const activeCollapse = useSelector((state) => state.sidebar.activeCollapse);
+    
+    // Thay thế Redux bằng localStorage cho activeCollapse
+    const [activeCollapse, setActiveCollapse] = useState(() => {
+        const saved = localStorage.getItem('activeCollapse');
+        return saved ? JSON.parse(saved) : [];
+    });
+    
     const departments = useSelector((state) => state.department.departments);
     const isOpen = useSelector((state) => state.sidebar.isOpen);
 
@@ -138,7 +144,21 @@ export default function Sidebar() {
 
     const handleClick = (event) => {
         const buttonId = event.currentTarget.id;
-        dispatch(setActiveCollapse(buttonId));
+        
+        setActiveCollapse(prevCollapse => {
+            let newCollapse;
+            if (prevCollapse.includes(buttonId)) {
+                // Nếu đã mở thì đóng lại
+                newCollapse = prevCollapse.filter(item => item !== buttonId);
+            } else {
+                // Nếu chưa mở thì thêm vào
+                newCollapse = [...prevCollapse, buttonId];
+            }
+            
+            // Lưu vào localStorage
+            localStorage.setItem('activeCollapse', JSON.stringify(newCollapse));
+            return newCollapse;
+        });
     };
 
     const commonIconStyle = {
@@ -256,7 +276,7 @@ export default function Sidebar() {
                         },
                         py: 0.7,
                         borderRadius: '800px',
-                        backgroundColor: 'inherit', // Không highlight vì không phải internal route
+                        backgroundColor: 'inherit',
                     }}
                     onClick={handleFeedbackClick}
                 >
