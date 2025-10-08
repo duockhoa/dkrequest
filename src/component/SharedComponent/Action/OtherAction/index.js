@@ -3,7 +3,6 @@ import ExportFile from '../../Button/ExportFile';
 import MarkCompleted from '../../Button/MarkCompleted';
 import MarkReceived from '../../Button/MarkReceived';
 import MarkCancel from '../../Button/MarkCancel';
-import MakeACopy from '../../Button/MakeACopy';
 function OtherAction({ onClose }) {
     return (
         <Box sx={{ minWidth: 200 }}>
@@ -17,7 +16,6 @@ function OtherAction({ onClose }) {
                 {/* Export File Component */}
                 <ExportFile onClose={onClose} />
                 {/* Make A Copy Component */}
-                <MakeACopy onClose={onClose} />
             </Stack>
         </Box>
     );
