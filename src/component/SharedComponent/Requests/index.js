@@ -1,5 +1,5 @@
 import { Tabs, Tab, Box, Typography, Stack, Avatar, Chip, AvatarGroup, Dialog, Divider, Badge } from '@mui/material';
-import { useState, useEffect,  useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -20,7 +20,7 @@ import ExportReport from '../Button/ExportReport';
 import StationeryItems from '../Button/StationeryItems';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import{ setPage }from '../../../redux/slice/requestSlice';
+import { setPage } from '../../../redux/slice/requestSlice';
 import FilterListTwoToneIcon from '@mui/icons-material/FilterListTwoTone';
 import Drawer from '@mui/material/Drawer';
 import Filter from '../Filter';
@@ -41,11 +41,11 @@ export default function Requests() {
     const total = useSelector((state) => state.request.total);
     const page = useSelector((state) => state.request.page);
     const loading = useSelector((state) => state.request.loading);
-    const requestTypeId = useSelector((state) => state.requestId.requestTypeId);    
+    const requestTypeId = useSelector((state) => state.requestId.requestTypeId);
     const requestId = useSelector((state) => state.requestId.requestId);
     const user = useSelector((state) => state.user.userInfo);
     const pageSize = useSelector((state) => state.request.pageSize);
-    
+
     useEffect(() => {
         if (requestTypeId && user.id) {
             dispatch(fetchRequests({ requestTypeId, user_id: user.id, page, pageSize }));
@@ -334,9 +334,6 @@ export default function Requests() {
         }).length,
     };
 
-
-
-
     return (
         <Stack
             ref={containerRef}
@@ -394,31 +391,34 @@ export default function Requests() {
                             />
                         ))}
                     </Tabs>
-                        {/* Phân trang bên phải */}
+                    {/* Phân trang bên phải */}
                     <Box sx={{ ml: 2, display: 'flex', alignItems: 'center', minWidth: 180 }}>
                         <Typography sx={{ fontSize: 12, mr: 1 }}>
-        {total > 0
-            ? `${(page - 1) * pageSize + 1}-${Math.min(page * pageSize, total)} / ${total.toLocaleString('vi-VN')}`
-            : 'Không có dữ liệu'}
-    </Typography>
-    <Button
-        size="medium"
-        disabled={page <= 1}
-        onClick={() => dispatch(setPage(page - 1))}
-        sx={{ minWidth: 40 }}
-    >
-        <ChevronLeftIcon sx={{ fontSize: 22 }} />
-    </Button>
-    <Button
-        size="medium"
-        disabled={page >= totalPages || total === 0}
-        onClick={() => dispatch(setPage(page + 1))}
-        sx={{
-            minWidth: 40,
-        }}
-    >
-        <ChevronRightIcon sx={{ fontSize: 22 }} />
-    </Button>
+                            {total > 0
+                                ? `${(page - 1) * pageSize + 1}-${Math.min(
+                                      page * pageSize,
+                                      total,
+                                  )} / ${total.toLocaleString('vi-VN')}`
+                                : 'Không có dữ liệu'}
+                        </Typography>
+                        <Button
+                            size="medium"
+                            disabled={page <= 1}
+                            onClick={() => dispatch(setPage(page - 1))}
+                            sx={{ minWidth: 40 }}
+                        >
+                            <ChevronLeftIcon sx={{ fontSize: 22 }} />
+                        </Button>
+                        <Button
+                            size="medium"
+                            disabled={page >= totalPages || total === 0}
+                            onClick={() => dispatch(setPage(page + 1))}
+                            sx={{
+                                minWidth: 40,
+                            }}
+                        >
+                            <ChevronRightIcon sx={{ fontSize: 22 }} />
+                        </Button>
                     </Box>
                 </Box>
 
@@ -451,12 +451,9 @@ export default function Requests() {
                             {isMobile ? 'Thêm' : 'Thêm mới'}
                         </Button>
                     )}
-                    <Button 
-                        sx={{ minWidth: 'auto', padding: 1 }}
-                        onClick={handleToggleFilter}
-                    > 
-                        <FilterListTwoToneIcon sx={{ color: 'action.active', m:0  }} />
-                    </Button>           
+                    <Button sx={{ minWidth: 'auto', padding: 1 }} onClick={handleToggleFilter}>
+                        <FilterListTwoToneIcon sx={{ color: 'action.active', m: 0 }} />
+                    </Button>
                 </Stack>
             </Box>
 
@@ -469,7 +466,14 @@ export default function Requests() {
                 sx={{
                     '& .MuiDialog-paper': {
                         borderRadius: 2,
-                        maxWidth: requestTypeId === 4 || requestTypeId === 24 ? 'lg' : requestTypeId === 18 || requestTypeId === 21 ? 'xl' : 'sm',
+                        maxWidth:
+                            requestTypeId === 25
+                                ? 'md'
+                                : requestTypeId === 4 || requestTypeId === 24
+                                ? 'lg'
+                                : requestTypeId === 18 || requestTypeId === 21
+                                ? 'xl'
+                                : 'sm',
 
                         width: '100%',
                     },
@@ -487,15 +491,8 @@ export default function Requests() {
                 <AddRequestForm onClose={handleToggleForm} />
             </Dialog>
 
-            <Drawer
-                anchor="right"
-                open={openFilter}
-                onClose={handleToggleFilter}
-            >
-                <Box
-                    sx={{ width: isMobile ? 250 : 300, p: 2 }}  
-                    role="presentation"
-                >
+            <Drawer anchor="right" open={openFilter} onClose={handleToggleFilter}>
+                <Box sx={{ width: isMobile ? 250 : 300, p: 2 }} role="presentation">
                     <Filter />
                 </Box>
             </Drawer>
@@ -583,10 +580,12 @@ export default function Requests() {
                                         </Stack>
                                     </Box>
                                     {/* Hạn thanh toán dưới tên đề xuất */}
-                                    {showCreator && (request.paymentRequest?.due_date || request.advanceMoneyRequest?.due_date) && (
+                                    {showCreator &&
+                                        (request.paymentRequest?.due_date || request.advanceMoneyRequest?.due_date) &&
                                         (() => {
                                             const dueDate = new Date(
-                                                request.paymentRequest?.due_date || request.advanceMoneyRequest?.due_date
+                                                request.paymentRequest?.due_date ||
+                                                    request.advanceMoneyRequest?.due_date,
                                             );
                                             let color = 'primary.main';
                                             if (request.requestStatus?.isCanceled || request.status === 'canceled') {
@@ -608,8 +607,7 @@ export default function Requests() {
                                                     {format(dueDate, 'dd/MM/yyyy')}
                                                 </Typography>
                                             );
-                                        })()
-                                    )}
+                                        })()}
 
                                     {/* Người tạo - Ẩn khi màn hình nhỏ */}
                                     {showCreator && (

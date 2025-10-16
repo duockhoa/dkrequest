@@ -96,20 +96,24 @@ const publicRoutes = [
         path: 'document-edit-request',
         component: Request,
     },
-        {
+    {
         path: 'invoice-request',
         component: Request,
     },
-    
+
     {
         path: 'union-payment-request',
         component: Request,
     },
     {
-        path: "notarization-request",
+        path: 'notarization-request',
         component: Request,
     },
-    
+    {
+        path: 'vehicle-request',
+        component: Request,
+    },
+
     {
         path: '*',
         component: Error,

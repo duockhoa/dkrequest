@@ -28,6 +28,7 @@ import InvoiceRequestForm from '../InvoiceRequestForm';
 import UnionPaymentRequestForm from '../UnionPaymentRequestForm';
 import NotarizationRequetsForm from '../NotarizationRequestForm';
 import TrainingRequestForm from '../TrainingRequestForm';
+import VehicleRequestForm from '../VehicleRequestForm';
 function AddRequestForm({ onClose }) {
     const requestTypeId = useSelector((state) => state.requestId.requestTypeId);
     const requestFormData = useSelector((state) => state.requestFormData.value);
@@ -106,8 +107,10 @@ function AddRequestForm({ onClose }) {
                     return `${user.name} ${user.department} Đề nghị quyết toán tiền tạm ứng`;
                 case 23:
                     return `${user.name} ${user.department} Đề nghị công chứng, sao y`;
-                case 24: 
+                case 24:
                     return `${user.name} ${user.department} Đề nghị đào tạo`;
+                case 25:
+                    return `${user.name} ${user.department} Đề nghị đặt xe`;
                 default:
                     return '';
             }
@@ -167,7 +170,15 @@ function AddRequestForm({ onClose }) {
         }
 
         if (requestTypeId === 14) {
-            requiredFields.push('usage_date', 'start_time', 'end_time', 'location', "room_name", 'purpose', "participant_count");
+            requiredFields.push(
+                'usage_date',
+                'start_time',
+                'end_time',
+                'location',
+                'room_name',
+                'purpose',
+                'participant_count',
+            );
         }
         if (requestTypeId === 4) {
             requiredFields.push('supply_stationery');
@@ -266,18 +277,12 @@ function AddRequestForm({ onClose }) {
                 }
             }
         }
-        
+
         if (requestTypeId === 22) {
             requiredFields.push('payment_type', 'payment_content', 'pay_to', 'amount');
         }
         if (requestTypeId === 23) {
-            requiredFields.push(
-                'document_type',
-                'document_name',
-                'copies',
-                'required_time',
-                'purpose'
-            );
+            requiredFields.push('document_type', 'document_name', 'copies', 'required_time', 'purpose');
         }
         if (requestTypeId === 24) {
             const trainingRequiredFields = [
@@ -290,9 +295,13 @@ function AddRequestForm({ onClose }) {
                 'training_mode',
                 'trainer_type',
                 'necessity',
-                'training_goal'
+                'training_goal',
             ];
             requiredFields.push(...trainingRequiredFields);
+        }
+
+        if (requestTypeId === 25) {
+            requiredFields.push('reason', 'route', 'pickup_location', 'dropoff_location', 'departure_time');
         }
 
         const flattenedData = flattenObject(requestFormData);
@@ -323,19 +332,19 @@ function AddRequestForm({ onClose }) {
         if (!validateForm()) {
             return;
         }
-        
+
         // Convert requestFormData to FormData
         const formData = objectToFormData(requestFormData);
 
         try {
             const response = await dispatch(fetchCreateRequest(formData));
-            
+
             // Kiểm tra nếu response có lỗi
             if (response.meta.requestStatus === 'rejected') {
                 // Lỗi sẽ được hiển thị ở phần render dưới
                 return;
             }
-            
+
             dispatch(setRequestData([response.payload, ...requestData])); // Update request data in the store
             dispatch(setRequestFormData({})); // Clear form data in the store
             onClose();
@@ -387,11 +396,7 @@ function AddRequestForm({ onClose }) {
                 anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
                 sx={{ mt: 2, minWidth: '300px' }}
             >
-                <Alert 
-                    onClose={handleCloseAlert} 
-                    severity="error" 
-                    sx={{ width: '100%', fontSize: '14px' }}
-                >
+                <Alert onClose={handleCloseAlert} severity="error" sx={{ width: '100%', fontSize: '14px' }}>
                     Lỗi: {error}
                 </Alert>
             </Snackbar>
@@ -430,6 +435,7 @@ function AddRequestForm({ onClose }) {
             {requestTypeId === 22 ? <UnionPaymentRequestForm /> : ''}
             {requestTypeId === 23 ? <NotarizationRequetsForm /> : ''}
             {requestTypeId === 24 ? <TrainingRequestForm /> : ''}
+            {requestTypeId === 25 ? <VehicleRequestForm /> : ''}
             {/* Giữ lại các lỗi validation khác (editing items) */}
             {errors?.supply_stationery_editing && (
                 <Box
