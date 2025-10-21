@@ -322,7 +322,7 @@ function VehicleRequestForm() {
                     inputProps={{ style: { fontSize: '1.4rem' } }}
                     error={!!errors?.reason}
                     helperText={errors?.reason || ''}
-                    placeholder="Làm việc tại Bắc Ninh"
+                    placeholder="VD: Làm việc tại Bắc Ninh"
                 />
             </Stack>
 
@@ -337,7 +337,7 @@ function VehicleRequestForm() {
                     inputProps={{ style: { fontSize: '1.4rem' } }}
                     error={!!errors?.route}
                     helperText={errors?.route || ''}
-                    placeholder="HN - Bắc Ninh - HN"
+                    placeholder="VD: HN - Bắc Ninh - HN"
                 />
             </Stack>
 
@@ -367,7 +367,7 @@ function VehicleRequestForm() {
                     inputProps={{ style: { fontSize: '1.4rem' } }}
                     error={!!errors?.pickup_location}
                     helperText={errors?.pickup_location || ''}
-                    placeholder="ĐH Dược , AEON, Cầu Lim , ..."
+                    placeholder="VD: ĐH Dược , AEON, Cầu Lim , ..."
                 />
             </Stack>
 
@@ -382,7 +382,7 @@ function VehicleRequestForm() {
                     inputProps={{ style: { fontSize: '1.4rem' } }}
                     error={!!errors?.dropoff_location}
                     helperText={errors?.dropoff_location || ''}
-                    placeholder="Cầu Lim, AEON, ĐH Dược , ..."
+                    placeholder="VD: Cầu Lim, AEON, ĐH Dược , ..."
                 />
             </Stack>
 
