@@ -433,7 +433,25 @@ function VehicleRequestForm() {
                     <MenuItem value="Thuê người lái" sx={{ fontSize: 14 }}>
                         Cty thuê tài xế
                     </MenuItem>
+                    <MenuItem value="Thuê xe + tài xế" sx={{ fontSize: 14 }}>
+                        Thuê xe + Tài xế
+                    </MenuItem>
                 </Select>
+            </Stack>
+
+            <Stack direction="row" alignItems="center" spacing={2}>
+                <Typography sx={{ width: 150, fontSize: '1.4rem' }}>Số người đi xe:</Typography>
+                <TextField
+                    fullWidth
+                    type="number"
+                    name="participant_count"
+                    value={requestFormData?.vehicle_request?.participant_count || ''}
+                    onChange={(e) => handleAutoChange('participant_count')(null, e.target.value)}
+                    size="medium"
+                    inputProps={{ style: { fontSize: '1.4rem' } }}
+                    error={!!errors?.participant_count}
+                    helperText={errors?.participant_count || ''}
+                />
             </Stack>
 
             {/* Danh sách người tham gia */}

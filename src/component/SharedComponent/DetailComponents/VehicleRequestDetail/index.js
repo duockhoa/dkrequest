@@ -88,6 +88,7 @@ export default function VehicleRequestDetail() {
             <DetailItem label="Thời gian khởi hành" value={formatDateTime(vehicleRequest.departure_time)} />
             <DetailItem label="Thời gian về" value={formatDateTime(vehicleRequest.return_time)} />
             <DetailItem label="Loại tài xế" value={vehicleRequest.driver_option || '-'} />
+            <DetailItem label="Số người tham gia" value={vehicleRequest.participant_count || '-'} />
 
             {/* Danh sách di chuyển */}
             <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1, mt: 3, fontSize: '1.4rem' }}>
