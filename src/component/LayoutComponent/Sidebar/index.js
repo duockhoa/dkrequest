@@ -104,13 +104,13 @@ export default function Sidebar() {
     const dispatch = useDispatch();
     const navigator = useNavigate();
     const activeSidebar = useSelector((state) => state.sidebar.activeSidebar);
-    
+
     // Thay thế Redux bằng localStorage cho activeCollapse
     const [activeCollapse, setActiveCollapse] = useState(() => {
         const saved = localStorage.getItem('activeCollapse');
         return saved ? JSON.parse(saved) : [];
     });
-    
+
     const departments = useSelector((state) => state.department.departments);
     const isOpen = useSelector((state) => state.sidebar.isOpen);
 
@@ -144,17 +144,17 @@ export default function Sidebar() {
 
     const handleClick = (event) => {
         const buttonId = event.currentTarget.id;
-        
-        setActiveCollapse(prevCollapse => {
+
+        setActiveCollapse((prevCollapse) => {
             let newCollapse;
             if (prevCollapse.includes(buttonId)) {
                 // Nếu đã mở thì đóng lại
-                newCollapse = prevCollapse.filter(item => item !== buttonId);
+                newCollapse = prevCollapse.filter((item) => item !== buttonId);
             } else {
                 // Nếu chưa mở thì thêm vào
                 newCollapse = [...prevCollapse, buttonId];
             }
-            
+
             // Lưu vào localStorage
             localStorage.setItem('activeCollapse', JSON.stringify(newCollapse));
             return newCollapse;
@@ -303,7 +303,7 @@ export default function Sidebar() {
                     letterSpacing: 1,
                 }}
             >
-                version: 1.0.127
+                version: 1.0.140
             </Box>
         </Stack>
     );

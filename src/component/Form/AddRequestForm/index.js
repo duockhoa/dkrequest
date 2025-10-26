@@ -29,6 +29,7 @@ import UnionPaymentRequestForm from '../UnionPaymentRequestForm';
 import NotarizationRequetsForm from '../NotarizationRequestForm';
 import TrainingRequestForm from '../TrainingRequestForm';
 import VehicleRequestForm from '../VehicleRequestForm';
+import AdministrativeForm from '../AdministrativeForm';
 function AddRequestForm({ onClose }) {
     const requestTypeId = useSelector((state) => state.requestId.requestTypeId);
     const requestFormData = useSelector((state) => state.requestFormData.value);
@@ -436,6 +437,7 @@ function AddRequestForm({ onClose }) {
             {requestTypeId === 23 ? <NotarizationRequetsForm /> : ''}
             {requestTypeId === 24 ? <TrainingRequestForm /> : ''}
             {requestTypeId === 25 ? <VehicleRequestForm /> : ''}
+            {requestTypeId === 26 ? <AdministrativeForm /> : ''}
             {/* Giữ lại các lỗi validation khác (editing items) */}
             {errors?.supply_stationery_editing && (
                 <Box

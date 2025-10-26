@@ -113,6 +113,10 @@ const publicRoutes = [
         path: 'vehicle-request',
         component: Request,
     },
+    {
+        path: 'administrative-request',
+        component: Request,
+    },
 
     {
         path: '*',
