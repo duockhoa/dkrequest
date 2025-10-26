@@ -88,7 +88,8 @@ export default function SupplyStationeryDetailExpand() {
             </TableContainer>
 
             {/* Floating Action Button ở góc phải dưới của component */}
-            {userInfo?.department === 'HC' ? (
+            {userInfo?.department === 'HC' ||
+            (requestDetail?.status === 'pending' && userInfo?.id === requestDetail.requestor_id) ? (
                 <Fab
                     color="primary"
                     onClick={handleOpenDialog}
