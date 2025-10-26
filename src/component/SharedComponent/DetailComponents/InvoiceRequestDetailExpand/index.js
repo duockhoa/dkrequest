@@ -8,13 +8,25 @@ import {
     TableHead,
     TableRow,
     Paper,
+    Fab,
+    Dialog,
 } from '@mui/material';
 import { useSelector } from 'react-redux';
+import EditInvoice from '../../../Form/EditInvoice';
+import { useState } from 'react';
+import { Edit } from '@mui/icons-material';
 
 export default function InvoiceRequestDetailExpand() {
+    const [openDialog, setOpenDialog] = useState(false);
+    const handleOpenDialog = () => {
+        setOpenDialog(true);
+    };
+    const handleCloseDialog = () => {
+        setOpenDialog(false);
+    };
     const requestDetail = useSelector((state) => state.requestDetail.requestDetailvalue);
 
-    // Lấy danh sách văn phòng phẩm
+    // Lấy danh sách hàng hóa hóa đơn
     const invoiceRequest = requestDetail?.invoiceRequest?.items;
 
     if (!invoiceRequest || invoiceRequest.length === 0) {
@@ -32,8 +44,7 @@ export default function InvoiceRequestDetailExpand() {
     // Tổng giá trị
     const totalAmount = invoiceRequest.reduce((sum, item) => sum + calcAmount(item), 0);
 
-
-        // Hàm tính thành tiền cho từng dòng
+    // Hàm tính thành tiền cho từng dòng
     const calcAmountWithoutTax = (item) => {
         const quantity = Number(item.quantity) || 0;
         const unit_price = Number(item.unit_price) || 0;
@@ -84,17 +95,29 @@ export default function InvoiceRequestDetailExpand() {
                                 <TableCell sx={{ fontSize: '14px' }}>{item.product_code}</TableCell>
                                 <TableCell sx={{ fontSize: '14px' }}>{item.product_name}</TableCell>
                                 <TableCell sx={{ fontSize: '14px' }}>
-                                    {Number(item.quantity).toLocaleString('vi-VN', { minimumFractionDigits: 0, maximumFractionDigits: 3 })}
+                                    {Number(item.quantity).toLocaleString('vi-VN', {
+                                        minimumFractionDigits: 0,
+                                        maximumFractionDigits: 3,
+                                    })}
                                 </TableCell>
                                 <TableCell sx={{ fontSize: '14px' }}>{item.unit}</TableCell>
                                 <TableCell sx={{ fontSize: '14px' }}>
-                                    {Number(item.unit_price).toLocaleString('vi-VN', { minimumFractionDigits: 0, maximumFractionDigits: 3 })}
+                                    {Number(item.unit_price).toLocaleString('vi-VN', {
+                                        minimumFractionDigits: 0,
+                                        maximumFractionDigits: 3,
+                                    })}
                                 </TableCell>
                                 <TableCell sx={{ fontSize: '14px' }}>
-                                    {Number(item.tax_rate).toLocaleString('vi-VN', { minimumFractionDigits: 0, maximumFractionDigits: 3 })}
+                                    {Number(item.tax_rate).toLocaleString('vi-VN', {
+                                        minimumFractionDigits: 0,
+                                        maximumFractionDigits: 3,
+                                    })}
                                 </TableCell>
                                 <TableCell sx={{ fontSize: '14px' }}>
-                                    {calcAmount(item).toLocaleString('vi-VN', { minimumFractionDigits: 0, maximumFractionDigits: 3 })}
+                                    {calcAmount(item).toLocaleString('vi-VN', {
+                                        minimumFractionDigits: 0,
+                                        maximumFractionDigits: 3,
+                                    })}
                                 </TableCell>
                                 <TableCell sx={{ fontSize: '14px' }}>{item.note}</TableCell>
                             </TableRow>
@@ -107,7 +130,10 @@ export default function InvoiceRequestDetailExpand() {
                                 Tổng giá trị (Chưa VAT)
                             </TableCell>
                             <TableCell sx={{ fontWeight: 'bold', fontSize: '14px', color: 'red' }}>
-                                {totalAmountWithoutTax.toLocaleString('vi-VN', { minimumFractionDigits: 0, maximumFractionDigits: 3 }) + " đ"}
+                                {totalAmountWithoutTax.toLocaleString('vi-VN', {
+                                    minimumFractionDigits: 0,
+                                    maximumFractionDigits: 3,
+                                }) + ' đ'}
                             </TableCell>
                             <TableCell />
 
@@ -115,12 +141,39 @@ export default function InvoiceRequestDetailExpand() {
                                 Tổng giá trị (cả VAT)
                             </TableCell>
                             <TableCell sx={{ fontWeight: 'bold', fontSize: '14px', color: 'red' }}>
-                                {totalAmount.toLocaleString('vi-VN', { minimumFractionDigits: 0, maximumFractionDigits: 3 }) + " đ"}
+                                {totalAmount.toLocaleString('vi-VN', {
+                                    minimumFractionDigits: 0,
+                                    maximumFractionDigits: 3,
+                                }) + ' đ'}
                             </TableCell>
                         </TableRow>
                     </tfoot>
                 </Table>
             </TableContainer>
+
+            {/* Floating Action Button ở góc phải dưới của component */}
+            <Fab
+                color="primary"
+                onClick={handleOpenDialog}
+                sx={{
+                    position: 'absolute',
+                    bottom: 16,
+                    right: 16,
+                    zIndex: 10,
+                    boxShadow: '0 6px 16px rgba(25, 118, 210, 0.4)',
+                    '&:hover': {
+                        boxShadow: '0 8px 20px rgba(25, 118, 210, 0.6)',
+                        transform: 'scale(1.1)',
+                    },
+                    transition: 'all 0.3s ease-in-out',
+                }}
+            >
+                <Edit />
+            </Fab>
+
+            <Dialog open={openDialog} maxWidth="xl" fullWidth onClose={handleCloseDialog}>
+                <EditInvoice onClose={handleCloseDialog} />
+            </Dialog>
         </Stack>
     );
 }

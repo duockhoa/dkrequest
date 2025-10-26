@@ -8,11 +8,24 @@ import {
     TableHead,
     TableRow,
     Paper,
+    Fab,
+    Dialog,
 } from '@mui/material';
 import { useSelector } from 'react-redux';
+import EditSupplyStationery from '../../../Form/EditSupplyStationery';
+import { useState } from 'react';
+import { Edit } from '@mui/icons-material';
 
 export default function SupplyStationeryDetailExpand() {
+    const [openDialog, setOpenDialog] = useState(false);
+    const handleOpenDialog = () => {
+        setOpenDialog(true);
+    };
+    const handleCloseDialog = () => {
+        setOpenDialog(false);
+    };
     const requestDetail = useSelector((state) => state.requestDetail.requestDetailvalue);
+    const userInfo = useSelector((state) => state.user.userInfo);
 
     // Lấy danh sách văn phòng phẩm
     const supplyStationery = requestDetail?.supplyStationery;
@@ -73,6 +86,32 @@ export default function SupplyStationeryDetailExpand() {
                     </TableBody>
                 </Table>
             </TableContainer>
+
+            {/* Floating Action Button ở góc phải dưới của component */}
+            {userInfo?.department === 'HC' ? (
+                <Fab
+                    color="primary"
+                    onClick={handleOpenDialog}
+                    sx={{
+                        position: 'absolute',
+                        bottom: 32,
+                        right: 32,
+                        zIndex: 10,
+                        boxShadow: '0 6px 16px rgba(25, 118, 210, 0.4)',
+                        '&:hover': {
+                            boxShadow: '0 8px 20px rgba(25, 118, 210, 0.6)',
+                            transform: 'scale(1.1)',
+                        },
+                        transition: 'all 0.3s ease-in-out',
+                    }}
+                >
+                    <Edit />
+                </Fab>
+            ) : null}
+
+            <Dialog open={openDialog} maxWidth="lg" fullWidth onClose={handleCloseDialog}>
+                <EditSupplyStationery onClose={handleCloseDialog} />
+            </Dialog>
         </Stack>
     );
 }

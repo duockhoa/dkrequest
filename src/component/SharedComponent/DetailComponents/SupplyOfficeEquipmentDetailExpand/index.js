@@ -27,7 +27,7 @@ export default function SupplyOfficeEquipmentDetailExpand() {
     const calculateTotal = () => {
         if (!officeEquipmentRequest) return 0;
         return officeEquipmentRequest.reduce((total, item) => {
-            return total + (item.quantity * item.unit_price);
+            return total + item.quantity * item.unit_price;
         }, 0);
     };
 
@@ -70,8 +70,12 @@ export default function SupplyOfficeEquipmentDetailExpand() {
                             <TableCell sx={{ fontWeight: 'bold', fontSize: '14px' }}>Lý do cung ứng</TableCell>
                             <TableCell sx={{ fontWeight: 'bold', fontSize: '14px' }}>Số lượng</TableCell>
                             <TableCell sx={{ fontWeight: 'bold', fontSize: '14px' }}>Đơn vị</TableCell>
-                            <TableCell sx={{ fontWeight: 'bold', fontSize: '14px', textAlign: 'right' }}>Đơn giá(đ)</TableCell>
-                            <TableCell sx={{ fontWeight: 'bold', fontSize: '14px', textAlign: 'right' }}>Thành tiền(đ)</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', fontSize: '14px', textAlign: 'right' }}>
+                                Đơn giá(đ)
+                            </TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', fontSize: '14px', textAlign: 'right' }}>
+                                Thành tiền(đ)
+                            </TableCell>
                             <TableCell sx={{ fontWeight: 'bold', fontSize: '14px' }}>Thông tin tham khảo</TableCell>
                             <TableCell sx={{ fontWeight: 'bold', fontSize: '14px' }}>Hướng dẫn XL TB cũ</TableCell>
                         </TableRow>
@@ -94,35 +98,32 @@ export default function SupplyOfficeEquipmentDetailExpand() {
                                 <TableCell sx={{ fontSize: '14px' }}>{item.handling_old_equipment}</TableCell>
                             </TableRow>
                         ))}
-                        
+
                         {/* Dòng tổng cộng */}
                         <TableRow>
-                            <TableCell 
-                                colSpan={6} 
-                                sx={{ 
-                                    fontWeight: 'bold', 
-                                    fontSize: '14px', 
+                            <TableCell
+                                colSpan={6}
+                                sx={{
+                                    fontWeight: 'bold',
+                                    fontSize: '14px',
                                     textAlign: 'right',
-                                    backgroundColor: '#f5f5f5'
+                                    backgroundColor: '#f5f5f5',
                                 }}
                             >
                                 TỔNG CỘNG:
                             </TableCell>
-                            <TableCell 
-                                sx={{ 
-                                    fontWeight: 'bold', 
-                                    fontSize: '16px', 
+                            <TableCell
+                                sx={{
+                                    fontWeight: 'bold',
+                                    fontSize: '16px',
                                     textAlign: 'right',
                                     backgroundColor: '#f5f5f5',
-                                    color: '#d32f2f'
+                                    color: '#d32f2f',
                                 }}
                             >
                                 {formatNumber(totalAmount)}
                             </TableCell>
-                            <TableCell 
-                                colSpan={2} 
-                                sx={{ backgroundColor: '#f5f5f5' }}
-                            />
+                            <TableCell colSpan={2} sx={{ backgroundColor: '#f5f5f5' }} />
                         </TableRow>
                     </TableBody>
                 </Table>
