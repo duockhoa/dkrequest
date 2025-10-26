@@ -102,7 +102,7 @@ export default function SupplyStationeryForm() {
     const [rows, setRows] = useState(initialRows);
     const [rowModesModel, setRowModesModel] = useState({});
     useEffect(() => {
-        dispatch(setRequestFormData({ ...requestFormData, supply_stationery: rows  }));
+        dispatch(setRequestFormData({ ...requestFormData, supply_stationery: rows }));
         dispatch(clearErrors());
     }, [rows]);
 
@@ -148,7 +148,7 @@ export default function SupplyStationeryForm() {
         const updatedRow = {
             ...newRow,
             product_code: matchedItem ? matchedItem.product_code : '',
-            // Không cập nhật unit ở đây nữa!
+            unit: matchedItem ? matchedItem.unit?.replace(/\r/g, '').trim() : newRow.unit, // Thêm dòng này
             isNew: false,
         };
         setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
@@ -235,6 +235,37 @@ export default function SupplyStationeryForm() {
             headerName: 'Đơn vị tính',
             width: 100,
             editable: true,
+            // Thêm validation để ngăn chỉnh sửa khi có product_code
+            renderEditCell: (params) => {
+                const currentRow = rows.find((row) => row.id === params.id);
+                const isReadOnly = currentRow?.product_code && currentRow.product_code.trim() !== '';
+
+                return (
+                    <TextField
+                        value={params.value || ''}
+                        onChange={(e) => {
+                            if (!isReadOnly) {
+                                params.api.setEditCellValue({
+                                    id: params.id,
+                                    field: 'unit',
+                                    value: e.target.value,
+                                });
+                            }
+                        }}
+                        variant="outlined"
+                        size="small"
+                        fullWidth
+                        disabled={isReadOnly}
+                        sx={{
+                            '& .MuiInputBase-input': {
+                                fontSize: '14px',
+                                backgroundColor: isReadOnly ? '#f5f5f5' : 'transparent',
+                                cursor: isReadOnly ? 'not-allowed' : 'text',
+                            },
+                        }}
+                    />
+                );
+            },
         },
         {
             field: 'usage_purpose',
