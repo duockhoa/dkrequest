@@ -19,6 +19,8 @@ import {
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import { getSapItems } from '../../../services/sapitemService';
+import { updateInvoiceItems } from '../../../services/invoiceItemService';
+import { fetchRequestDetail } from '../../../redux/slice/requestDetailSlice';
 
 const createRandomId = () => Math.floor(Math.random() * 100000);
 
@@ -33,10 +35,10 @@ function EditToolbar(props) {
                 id,
                 product_code: '',
                 product_name: '',
-                quantity: 1,
-                unit_price: 0,
+                quantity: '',
+                unit_price: '',
                 unit: '',
-                tax_rate: 10,
+                tax_rate: '',
                 note: '',
                 isNew: true,
             },
@@ -71,6 +73,7 @@ function EditToolbar(props) {
 
 function EditInvoice({ onClose }) {
     const requestDetail = useSelector((state) => state.requestDetail.requestDetailvalue);
+    const dispatch = useDispatch();
 
     // State cho danh sách items và SAP items
     const [rows, setRows] = useState([]);
@@ -164,12 +167,12 @@ function EditInvoice({ onClose }) {
                 isNew: row.isNew, // Để backend biết đây là item mới hay cập nhật
             }));
 
-            console.log('Saving invoice data:', updateData);
-
             // TODO: Gọi API để cập nhật dữ liệu invoice
-            // await updateInvoiceItems(requestDetail.id, updateData);
-
-            alert('Cập nhật thành công!');
+            await updateInvoiceItems({
+                invoice_request_id: requestDetail.invoiceRequest.id,
+                invoiceItems: updateData,
+            });
+            dispatch(fetchRequestDetail(requestDetail.id));
             onClose();
         } catch (error) {
             console.error('Error saving:', error);

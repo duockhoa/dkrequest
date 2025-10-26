@@ -25,6 +25,7 @@ export default function InvoiceRequestDetailExpand() {
         setOpenDialog(false);
     };
     const requestDetail = useSelector((state) => state.requestDetail.requestDetailvalue);
+    const userInfo = useSelector((state) => state.user.userInfo);
 
     // Lấy danh sách hàng hóa hóa đơn
     const invoiceRequest = requestDetail?.invoiceRequest?.items;
@@ -54,7 +55,7 @@ export default function InvoiceRequestDetailExpand() {
     const totalAmountWithoutTax = invoiceRequest.reduce((sum, item) => sum + calcAmountWithoutTax(item), 0);
 
     return (
-        <Stack sx={{ position: 'relative', mt: 2, p: 3, minHeight: '300px' }}>
+        <Stack sx={{ position: 'relative', mt: 2, p: 1, minHeight: '300px' }}>
             <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1, fontSize: '1.4rem', textAlign: 'center' }}>
                 DANH SÁCH HÀNG HÓA XUẤT HÓA ĐƠN
             </Typography>
@@ -151,25 +152,26 @@ export default function InvoiceRequestDetailExpand() {
                 </Table>
             </TableContainer>
 
-            {/* Floating Action Button ở góc phải dưới của component */}
-            <Fab
-                color="primary"
-                onClick={handleOpenDialog}
-                sx={{
-                    position: 'absolute',
-                    bottom: 16,
-                    right: 16,
-                    zIndex: 10,
-                    boxShadow: '0 6px 16px rgba(25, 118, 210, 0.4)',
-                    '&:hover': {
-                        boxShadow: '0 8px 20px rgba(25, 118, 210, 0.6)',
-                        transform: 'scale(1.1)',
-                    },
-                    transition: 'all 0.3s ease-in-out',
-                }}
-            >
-                <Edit />
-            </Fab>
+            {requestDetail?.status === 'pending' && userInfo?.id === requestDetail.requestor_id ? (
+                <Fab
+                    color="primary"
+                    onClick={handleOpenDialog}
+                    sx={{
+                        position: 'absolute',
+                        bottom: 32,
+                        right: 32,
+                        zIndex: 10,
+                        boxShadow: '0 6px 16px rgba(25, 118, 210, 0.4)',
+                        '&:hover': {
+                            boxShadow: '0 8px 20px rgba(25, 118, 210, 0.6)',
+                            transform: 'scale(1.1)',
+                        },
+                        transition: 'all 0.3s ease-in-out',
+                    }}
+                >
+                    <Edit />
+                </Fab>
+            ) : null}
 
             <Dialog open={openDialog} maxWidth="xl" fullWidth onClose={handleCloseDialog}>
                 <EditInvoice onClose={handleCloseDialog} />
