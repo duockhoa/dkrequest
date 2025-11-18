@@ -63,19 +63,19 @@ export default function SupplyStationeryDetail() {
                 >
                     <TableHead>
                         <TableRow>
+                            <TableCell sx={{ fontWeight: 'bold', fontSize: '14px' }}>Mã hàng</TableCell>
                             <TableCell sx={{ fontWeight: 'bold', fontSize: '14px' }}>Tên hàng</TableCell>
                             <TableCell sx={{ fontWeight: 'bold', fontSize: '14px' }}>Số lượng</TableCell>
                             <TableCell sx={{ fontWeight: 'bold', fontSize: '14px' }}>Đơn vị</TableCell>
-                            <TableCell sx={{ fontWeight: 'bold', fontSize: '14px' }}>Ghi chú</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {supplyStationery.map((item) => (
                             <TableRow key={item.id}>
+                                <TableCell sx={{ fontSize: '14px' }}>{item.product_code}</TableCell>
                                 <TableCell sx={{ fontSize: '14px' }}>{item.product_name}</TableCell>
                                 <TableCell sx={{ fontSize: '14px' }}>{item.quantity}</TableCell>
                                 <TableCell sx={{ fontSize: '14px' }}>{item.unit}</TableCell>
-                                <TableCell sx={{ fontSize: '14px' }}>{item.note}</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
