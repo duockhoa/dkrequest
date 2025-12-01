@@ -135,6 +135,7 @@ function VehicleRequestForm() {
     const requestFormData = useSelector((state) => state.requestFormData.value);
     const errors = useSelector((state) => state.requestFormData.errors);
     const users = useSelector((state) => state.users.users);
+    const user = useSelector((state) => state.user.userInfo);
 
     // State cho danh sách người tham gia
     const [passengers, setPassengers] = useState([]);
@@ -173,6 +174,10 @@ function VehicleRequestForm() {
         }
         dispatch(clearErrors());
     }, [passengers, dispatch]); // BỎ requestFormData khỏi dependencies
+    // Cập nhật requestName theo cấu trúc mới
+    const requestName = `${user?.name || ''} ( ${user?.department || ''} ) đề nghị đặt xe tuyến đường: ${
+        requestFormData?.vehicle_request?.route || ''
+    } || ngày ${formatDateVN(requestFormData?.vehicle_request?.departure_time) || ''}`;
 
     // Handler cho Autocomplete
     const handleAutoChange = (field) => (event, newValue) => {
@@ -184,6 +189,7 @@ function VehicleRequestForm() {
                     ...requestFormData.vehicle_request,
                     [field]: newValue || '',
                 },
+                requestName,
             }),
         );
     };
@@ -506,3 +512,12 @@ function VehicleRequestForm() {
 }
 
 export default VehicleRequestForm;
+
+function formatDateVN(dateStr) {
+    if (!dateStr) return '';
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return '';
+    return `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1)
+        .toString()
+        .padStart(2, '0')}/${date.getFullYear()}`;
+}
