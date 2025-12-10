@@ -25,7 +25,15 @@ import FilterListTwoToneIcon from '@mui/icons-material/FilterListTwoTone';
 import Drawer from '@mui/material/Drawer';
 import Filter from '../Filter';
 
-const tabList = ['Tất cả', 'Đến lượt duyệt', 'Quá hạn', 'Đang chờ duyệt', 'Đã chấp nhận', 'Đã từ chối'];
+const tabList = [
+    'Tất cả',
+    'Đến lượt duyệt',
+    'Quá hạn',
+    'Đang chờ duyệt',
+    'Đã chấp nhận',
+    'Đã từ chối',
+    'Đến lượt tiếp nhận', // Thêm tab mới
+];
 
 export default function Requests() {
     const isMobile = useMediaQuery((theme) => theme.breakpoints.down('sm'));
@@ -117,6 +125,12 @@ export default function Requests() {
                             return false;
                         }
                     });
+                    break;
+                case 'Đến lượt tiếp nhận':
+                    // Những item chưa tiếp nhận nhưng đã được duyệt
+                    filteredRequests = originalData.filter(
+                        (request) => request.status === 'approved' && !request.isReceived,
+                    );
                     break;
                 default:
                     filteredRequests = originalData;
@@ -332,6 +346,8 @@ export default function Requests() {
                 return false;
             }
         }).length,
+        'Đến lượt tiếp nhận': originalData.filter((request) => request.status === 'approved' && !request.isReceived)
+            .length,
     };
 
     return (
