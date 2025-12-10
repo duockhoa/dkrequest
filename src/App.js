@@ -4,60 +4,74 @@ import { DefaultLayout } from './Layouts';
 import { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchUser } from './redux/slice/userSlice';
-import { io } from 'socket.io-client'; // Thêm dòng này
+import { io } from 'socket.io-client';
 import { setNotifications } from './redux/slice/notificationSlice';
 import Cookies from 'js-cookie';
+
 function App() {
     const dispatch = useDispatch();
-    const socketRef = useRef(null); // Thêm dòng này
+    const socketRef = useRef(null);
     const user = useSelector((state) => state.user.userInfo);
     const unreadCount = useSelector((state) => state.notification.unreadCount);
+
     useEffect(() => {
+        const accessToken = Cookies.get('accessToken');
+
+        // 1. Kiểm tra đăng nhập
         if (user.name === '') {
-            const accessToken = Cookies.get('accessToken');
             if (!accessToken) {
-                window.location.href = process.env.REACT_APP_FRONTEND_ROOT_URL + '/login';
-                return; // Thoát sớm nếu không có token
+                // Nên dùng window.location.replace để không lưu lịch sử back lại trang này
+                window.location.replace(process.env.REACT_APP_FRONTEND_ROOT_URL + '/login');
+                return;
             } else {
                 dispatch(fetchUser());
-                return; // Thoát sớm, chờ fetchUser hoàn thành
+                return; // Chờ fetchUser xong thì useEffect sẽ chạy lại do user.name thay đổi
             }
         }
 
-        // Chỉ tạo socket khi đã có user
-        if (user.name && !socketRef.current) {
-            socketRef.current = io(process.env.REACT_APP_BACKEND_URL);
+        // 2. Logic Socket
+        // Chỉ tạo kết nối nếu chưa có socket và đã có user
+        if (user.name && user.id && !socketRef.current) {
+            socketRef.current = io(process.env.REACT_APP_BACKEND_URL, {
+                auth: { token: accessToken }, // Lấy token mới nhất
+                autoConnect: false, // Bạn đang tắt auto connect
+            });
 
             socketRef.current.on('connect', () => {
-                console.log('Socket connected');
+                console.log('Socket connected with ID:', socketRef.current.id);
+
+                // --- SỬA LỖI ---
+                // Emit join room ngay khi kết nối thành công để đảm bảo chắc chắn
+                // (Nếu server chưa xử lý tự động qua Token)
+                socketRef.current.emit('joinRoom', user.id);
             });
 
             socketRef.current.on('receiveNotification', (message) => {
                 dispatch(setNotifications(message));
             });
+
+            socketRef.current.on('connect_error', (err) => {
+                console.error('Socket connection error:', err.message);
+            });
+
+            // --- QUAN TRỌNG: Phải gọi lệnh này vì bạn để autoConnect: false ---
+            socketRef.current.connect();
         }
 
+        // Cleanup function
         return () => {
+            // Chỉ disconnect khi component unmount hẳn (ít xảy ra ở App.js)
+            // hoặc khi user logout (user.name thay đổi về rỗng)
             if (socketRef.current) {
                 socketRef.current.disconnect();
                 socketRef.current = null;
             }
         };
-    }, [dispatch, user.name]); // Hoặc chỉ [dispatch, user.id]
+    }, [dispatch, user.name, user.id]); // Thêm user.id vào dependency cho chắc chắn
 
-    // Tham gia room khi user.id đã có
+    // 3. Logic Title
     useEffect(() => {
-        if (socketRef.current && user?.id) {
-            socketRef.current.emit('joinRoom', user.id);
-            console.log('Join room with userId:', user.id);
-        }
-    }, [user, socketRef]);
-    useEffect(() => {
-        if (unreadCount > 0) {
-            document.title = `DK REQUEST(${unreadCount})`;
-        } else {
-            document.title = 'DK REQUEST';
-        }
+        document.title = unreadCount > 0 ? `DK REQUEST(${unreadCount})` : 'DK REQUEST';
     }, [unreadCount]);
 
     return (
@@ -73,10 +87,10 @@ function App() {
                                 path={route.path}
                                 element={
                                     <Layout>
-                                        <Page></Page>
+                                        <Page />
                                     </Layout>
                                 }
-                            ></Route>
+                            />
                         );
                     })}
                 </Routes>
