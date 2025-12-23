@@ -4,11 +4,10 @@ import {
     markNotificationAsRead,
     markAllNotificationsAsRead,
 } from '../../services/notificationService';
-import { set } from 'date-fns';
 
 // Fetch notifications thunk
-export const fetchNotifications = createAsyncThunk('notifications/fetchNotifications', async (userId) => {
-    const response = await getNotificationsByUserId(userId);
+export const fetchNotifications = createAsyncThunk('notifications/fetchNotifications', async () => {
+    const response = await getNotificationsByUserId();
     if (response) {
         return response;
     } else {

@@ -1,9 +1,9 @@
 import axios from './customize-axios';
 
 // Get notifications by user ID
-async function getNotificationsByUserId(userId) {
+async function getNotificationsByUserId() {
     try {
-        const response = await axios.get(`/notification/getall/${userId}`);
+        const response = await axios.get(`/notifications`);
         if (response.status === 200) {
             return response.data.result;
         } else {
@@ -23,7 +23,7 @@ async function getNotificationsByUserId(userId) {
 // Mark single notification as read
 async function markNotificationAsRead(notificationId) {
     try {
-        const response = await axios.put(`/notification/markread/${notificationId}`);
+        const response = await axios.put(`/notifications/markread/${notificationId}`);
         if (response.status === 200) {
             return response.data.result;
         } else {
@@ -43,7 +43,7 @@ async function markNotificationAsRead(notificationId) {
 // Mark all notifications as read for a user
 async function markAllNotificationsAsRead(userId) {
     try {
-        const response = await axios.put(`/notification/markreadall/${userId}`);
+        const response = await axios.put(`/notifications/markreadall`);
         if (response.status === 200) {
             return response.data.result;
         } else {
@@ -57,7 +57,7 @@ async function markAllNotificationsAsRead(userId) {
         } else {
             throw new Error(error.message || 'Đã xảy ra lỗi khi đánh dấu tất cả thông báo đã đọc');
         }
-    } 
+    }
 }
 
 export { getNotificationsByUserId, markNotificationAsRead, markAllNotificationsAsRead };
