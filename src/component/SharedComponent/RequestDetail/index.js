@@ -27,6 +27,7 @@ import NotarizationRequestDetail from '../DetailComponents/NotarizationRequestDe
 import TrainingRequestDetail from '../DetailComponents/TrainingRequestDetail';
 import VehicleRequestDetail from '../DetailComponents/VehicleRequestDetail';
 import AdministrativeDetail from '../DetailComponents/AdministrativeDetail';
+import LunchStopDetail from '../DetailComponents/LunchStopDetail';
 const DetailItem = ({ label, value }) => (
     <Stack direction="row" spacing={2} sx={{ py: 1 }}>
         <Typography
@@ -251,6 +252,7 @@ function RequestDetail() {
                 {requestTypeId === 24 ? <TrainingRequestDetail /> : ''}
                 {requestTypeId === 25 ? <VehicleRequestDetail /> : ''}
                 {requestTypeId === 26 ? <AdministrativeDetail /> : ''}
+                {requestTypeId === 27 ? <LunchStopDetail /> : ''}
 
                 <DetailItem label="Mô tả" value={description} />
                 <AttachmentsDetail />

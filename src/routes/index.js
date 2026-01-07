@@ -117,6 +117,10 @@ const publicRoutes = [
         path: 'administrative-request',
         component: Request,
     },
+    {
+        path: 'lunch-stop-request',
+        component: Request,
+    },
 
     {
         path: '*',

@@ -30,6 +30,7 @@ import NotarizationRequetsForm from '../NotarizationRequestForm';
 import TrainingRequestForm from '../TrainingRequestForm';
 import VehicleRequestForm from '../VehicleRequestForm';
 import AdministrativeForm from '../AdministrativeForm';
+import LunchStopForm from '../LunchStopForm';
 function AddRequestForm({ onClose }) {
     const requestTypeId = useSelector((state) => state.requestId.requestTypeId);
     const requestFormData = useSelector((state) => state.requestFormData.value);
@@ -112,6 +113,8 @@ function AddRequestForm({ onClose }) {
                     return `${user.name} ${user.department} Đề nghị đào tạo`;
                 case 25:
                     return `${user.name} ${user.department} Đề nghị đặt xe`;
+                case 27:
+                    return `${user.name} ${user.department} Đề nghị dừng ăn trưa`;
                 default:
                     return '';
             }
@@ -305,6 +308,10 @@ function AddRequestForm({ onClose }) {
             requiredFields.push('reason', 'route', 'pickup_location', 'dropoff_location', 'departure_time');
         }
 
+        if (requestTypeId === 27) {
+            requiredFields.push('from_date', 'to_date' , 'reason');
+        }
+
         const flattenedData = flattenObject(requestFormData);
         let isValid = true;
         let errors = {};
@@ -438,6 +445,7 @@ function AddRequestForm({ onClose }) {
             {requestTypeId === 24 ? <TrainingRequestForm /> : ''}
             {requestTypeId === 25 ? <VehicleRequestForm /> : ''}
             {requestTypeId === 26 ? <AdministrativeForm /> : ''}
+            {requestTypeId === 27 ? <LunchStopForm /> : ''}
             {/* Giữ lại các lỗi validation khác (editing items) */}
             {errors?.supply_stationery_editing && (
                 <Box
