@@ -71,7 +71,7 @@ export default function TrainingRequestDetail() {
                 month: '2-digit',
                 day: '2-digit',
                 hour: '2-digit',
-                minute: '2-digit'
+                minute: '2-digit',
             });
         } catch (error) {
             return dateTimeString;
@@ -84,22 +84,21 @@ export default function TrainingRequestDetail() {
             <DetailItem label="Đơn vị đào tạo" value={trainingRequest.training_provider || '-'} />
             <DetailItem label="Thời gian bắt đầu" value={formatDateTime(trainingRequest.start_time)} />
             <DetailItem label="Thời gian kết thúc" value={formatDateTime(trainingRequest.end_time)} />
-            <DetailItem 
-                label="Số buổi học" 
-                value={trainingRequest.session_count ? `${trainingRequest.session_count} buổi` : '-'} 
+            <DetailItem
+                label="Số buổi học"
+                value={trainingRequest.session_count ? `${trainingRequest.session_count} buổi` : '-'}
             />
-            <DetailItem 
-                label="Ngân sách" 
-                value={trainingRequest.budget ? `${Number(trainingRequest.budget).toLocaleString('vi-VN')} VNĐ` : '-'} 
+            <DetailItem
+                label="Ngân sách"
+                value={trainingRequest.budget ? `${Number(trainingRequest.budget).toLocaleString('vi-VN')} VNĐ` : '-'}
             />
-            
+
             <DetailItem label="Hình thức đào tạo" value={trainingRequest.training_mode || '-'} />
+            <DetailItem label="Hình thức đào tạo" value={trainingRequest.training_location_type || '-'} />
             <DetailItem label="Loại giảng viên" value={trainingRequest.trainer_type || '-'} />
 
-            {trainingRequest.necessity && (
-                <DetailItem label="Tính cần thiết" value={trainingRequest.necessity} />
-            )}
-            
+            {trainingRequest.necessity && <DetailItem label="Tính cần thiết" value={trainingRequest.necessity} />}
+
             {trainingRequest.training_goal && (
                 <DetailItem label="Mục tiêu đào tạo" value={trainingRequest.training_goal} />
             )}
@@ -108,7 +107,7 @@ export default function TrainingRequestDetail() {
             <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1, mt: 3, fontSize: '1.4rem' }}>
                 DANH SÁCH NGƯỜI THAM GIA ĐÀO TẠO ({trainingRequest.participants?.length || 0} người)
             </Typography>
-            
+
             <TableContainer
                 component={Paper}
                 sx={{
@@ -143,7 +142,7 @@ export default function TrainingRequestDetail() {
                         ))}
                     </TableBody>
                 </Table>
-                
+
                 {/* Nút mở rộng ở góc dưới phải */}
                 <IconButton
                     size="small"

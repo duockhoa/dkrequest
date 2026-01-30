@@ -1,4 +1,4 @@
-import { Stack, Typography, TextField, MenuItem , Checkbox } from '@mui/material';
+import { Stack, Typography, TextField, MenuItem, Checkbox } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
 import { setRequestFormData, clearErrors } from '../../../redux/slice/requestFormDataSlice';
 import FileUpload from '../FileUpload';
@@ -21,7 +21,6 @@ import {
 } from '@mui/x-data-grid';
 import Autocomplete from '@mui/material/Autocomplete';
 
-
 // Hàm bỏ dấu tiếng Việt
 function removeVietnameseTones(str) {
     return str
@@ -34,21 +33,21 @@ function removeVietnameseTones(str) {
 function UserAutoCompleteEditCell({ id, value, field, api, users }) {
     // Tạo options duy nhất cho từng trường
     let options = [];
-    if (field === 'employee_code') options = Array.from(new Set(users.map(u => u.employee_code))).filter(Boolean);
-    if (field === 'employee_name') options = Array.from(new Set(users.map(u => u.name))).filter(Boolean);
-    if (field === 'department') options = Array.from(new Set(users.map(u => u.department))).filter(Boolean);
-    if (field === 'email') options = Array.from(new Set(users.map(u => u.email))).filter(Boolean);
+    if (field === 'employee_code') options = Array.from(new Set(users.map((u) => u.employee_code))).filter(Boolean);
+    if (field === 'employee_name') options = Array.from(new Set(users.map((u) => u.name))).filter(Boolean);
+    if (field === 'department') options = Array.from(new Set(users.map((u) => u.department))).filter(Boolean);
+    if (field === 'email') options = Array.from(new Set(users.map((u) => u.email))).filter(Boolean);
 
     const handleChange = (event, newValue) => {
         let matchedUser = null;
-        if (field === 'employee_code') matchedUser = users.find(u => u.employee_code === newValue);
-        if (field === 'employee_name') matchedUser = users.find(u => u.name === newValue);
+        if (field === 'employee_code') matchedUser = users.find((u) => u.employee_code === newValue);
+        if (field === 'employee_name') matchedUser = users.find((u) => u.name === newValue);
         if (field === 'department') {
             // Khi chọn bộ phận, chỉ cập nhật bộ phận, không fill thông tin khác
             api.setEditCellValue({ id, field, value: newValue }, event);
             return;
         }
-        if (field === 'email') matchedUser = users.find(u => u.email === newValue);
+        if (field === 'email') matchedUser = users.find((u) => u.email === newValue);
 
         if (matchedUser) {
             // Tự động fill thông tin nhân viên khi chọn mã hoặc tên hoặc email
@@ -70,13 +69,13 @@ function UserAutoCompleteEditCell({ id, value, field, api, users }) {
             value={value || ''}
             getOptionLabel={(option) => (typeof option === 'string' ? option : '')}
             renderOption={(props, option, { index }) => (
-                <li {...props} key={option + '-' + index}>{option}</li>
+                <li {...props} key={option + '-' + index}>
+                    {option}
+                </li>
             )}
             filterOptions={(options, state) => {
                 // Tìm kiếm không phân biệt dấu và hoa thường
-                const keywords = removeVietnameseTones(state.inputValue.toLowerCase())
-                    .split(' ')
-                    .filter(Boolean);
+                const keywords = removeVietnameseTones(state.inputValue.toLowerCase()).split(' ').filter(Boolean);
                 return options.filter((option) => {
                     const optionNoTone = removeVietnameseTones(option.toLowerCase());
                     return keywords.every((kw) => optionNoTone.includes(kw));
@@ -84,9 +83,7 @@ function UserAutoCompleteEditCell({ id, value, field, api, users }) {
             }}
             onInputChange={(event, newInputValue) => handleChange(event, newInputValue)}
             onChange={(event, newValue) => handleChange(event, newValue)}
-            renderInput={(params) => (
-                <TextField {...params} autoFocus fullWidth sx={{ width: '100%' }} />
-            )}
+            renderInput={(params) => <TextField {...params} autoFocus fullWidth sx={{ width: '100%' }} />}
             size="small"
             fullWidth
             sx={{ width: '100%' }}
@@ -95,8 +92,6 @@ function UserAutoCompleteEditCell({ id, value, field, api, users }) {
 }
 
 const createRandomId = () => Math.floor(Math.random() * 100000);
-
-
 
 function ParticipantToolbar(props) {
     const { setParticipants, setRowModesModel } = props;
@@ -109,7 +104,7 @@ function ParticipantToolbar(props) {
                 id,
                 employee_code: '',
                 employee_name: '',
-                department: '', 
+                department: '',
                 position: '',
                 phone_number: '',
                 email: '',
@@ -194,18 +189,11 @@ function TrainingRequestForm() {
         );
     };
 
-    const trainingModes = [
-        'Trực tiếp (Offline)',
-        'Trực tuyến (Online)',
-        'Kết hợp (Hybrid)',
-    ];
+    const trainingModes = ['Trực tiếp (Offline)', 'Trực tuyến (Online)', 'Kết hợp (Hybrid)'];
 
-    const trainerTypes = [
-        'Giảng viên nội bộ',
-        'Giảng viên bên ngoài',
-        'Chuyên gia',
-        'Tư vấn viên',
-    ];
+    const trainingLocationTypes = ['Bên trong', 'Bên ngoài', 'Tại bộ phận'];
+
+    const trainerTypes = ['Giảng viên nội bộ', 'Giảng viên bên ngoài', 'Chuyên gia', 'Tư vấn viên'];
 
     // Handlers cho DataGrid
     const handleRowEditStop = (params, event) => {
@@ -255,27 +243,21 @@ function TrainingRequestForm() {
             headerName: 'Mã nhân viên',
             width: 100,
             editable: true,
-            renderEditCell: (params) => (
-                <UserAutoCompleteEditCell {...params} users={users} field="employee_code" />
-            ),
+            renderEditCell: (params) => <UserAutoCompleteEditCell {...params} users={users} field="employee_code" />,
         },
         {
             field: 'employee_name',
             headerName: 'Họ tên (*)',
             width: 200,
             editable: true,
-            renderEditCell: (params) => (
-                <UserAutoCompleteEditCell {...params} users={users} field="employee_name" />
-            ),
+            renderEditCell: (params) => <UserAutoCompleteEditCell {...params} users={users} field="employee_name" />,
         },
         {
             field: 'department',
             headerName: 'Bộ phận',
             width: 150,
             editable: true,
-            renderEditCell: (params) => (
-                <UserAutoCompleteEditCell {...params} users={users} field="department" />
-            ),
+            renderEditCell: (params) => <UserAutoCompleteEditCell {...params} users={users} field="department" />,
         },
         {
             field: 'position',
@@ -294,9 +276,7 @@ function TrainingRequestForm() {
             headerName: 'Email',
             width: 240,
             editable: true,
-            renderEditCell: (params) => (
-                <UserAutoCompleteEditCell {...params} users={users} field="email" />
-            ),
+            renderEditCell: (params) => <UserAutoCompleteEditCell {...params} users={users} field="email" />,
         },
         {
             field: 'actions',
@@ -463,6 +443,27 @@ function TrainingRequestForm() {
             </Stack>
 
             <Stack direction="row" alignItems="center" spacing={2}>
+                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Hình thức đào tạo(**):</Typography>
+                <TextField
+                    fullWidth
+                    name="training_location_type"
+                    select
+                    value={requestFormData?.training_request?.training_location_type || ''}
+                    onChange={handleChange}
+                    size="medium"
+                    inputProps={{ style: { fontSize: '1.4rem' } }}
+                    error={!!errors?.training_location_type}
+                    helperText={errors?.training_location_type || ''}
+                >
+                    {trainingLocationTypes.map((location) => (
+                        <MenuItem key={location} value={location}>
+                            {location}
+                        </MenuItem>
+                    ))}
+                </TextField>
+            </Stack>
+
+            <Stack direction="row" alignItems="center" spacing={2}>
                 <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Loại giảng viên(*):</Typography>
                 <TextField
                     fullWidth
@@ -570,18 +571,26 @@ function TrainingRequestForm() {
             </Stack>
             <Stack direction="row" alignItems="flex-start" spacing={2} sx={{ p: 1 }}>
                 <Typography sx={{ fontSize: '1.4rem', mt: 1 }}>
-                    <Checkbox sx={{ '& .MuiSvgIcon-root': { fontSize: 22 } }} name='agreement'   defaultChecked></Checkbox>
+                    <Checkbox
+                        sx={{ '& .MuiSvgIcon-root': { fontSize: 22 } }}
+                        name="agreement"
+                        defaultChecked
+                    ></Checkbox>
                     <strong>Tôi và nhân sự tham gia đồng ý với các cam kết sau:</strong>
-                    <br/>1. <strong>Tài liệu đào tạo:</strong> Gửi lại tài liệu đào tạo cho Phòng Tổ chức sau khi hoàn thành khóa học, 
-                    dưới dạng bản mềm (ưu tiên) hoặc bản cứng để phục vụ lưu trữ và chia sẻ nội bộ.
-                    <br/>2. <strong>Video chia sẻ kiến thức:</strong> Áp dụng đối với các khóa học có học phí niêm yết từ 2.000.000 VNĐ/người trở lên.
-                    Học viên gửi video tự quay hoặc ghi hình buổi chia sẻ với đồng nghiệp về nội dung đã học hoặc các hình thức phù hợp khác 
-                    nhằm lan tỏa và ứng dụng kiến thức sau đào tạo về Phòng Tổ chức.
-                    <br/>3. <strong>Kế hoạch áp dụng kiến thức:</strong> Sau khi hoàn thành khóa học, học viên gửi đề xuất 
-                    hoặc kế hoạch áp dụng kiến thức vào thực tế công việc đến Quản lý bộ phận và Phòng Tổ chức để theo dõi, hỗ trợ triển khai.
+                    <br />
+                    1. <strong>Tài liệu đào tạo:</strong> Gửi lại tài liệu đào tạo cho Phòng Tổ chức sau khi hoàn thành
+                    khóa học, dưới dạng bản mềm (ưu tiên) hoặc bản cứng để phục vụ lưu trữ và chia sẻ nội bộ.
+                    <br />
+                    2. <strong>Video chia sẻ kiến thức:</strong> Áp dụng đối với các khóa học có học phí niêm yết từ
+                    2.000.000 VNĐ/người trở lên. Học viên gửi video tự quay hoặc ghi hình buổi chia sẻ với đồng nghiệp
+                    về nội dung đã học hoặc các hình thức phù hợp khác nhằm lan tỏa và ứng dụng kiến thức sau đào tạo về
+                    Phòng Tổ chức.
+                    <br />
+                    3. <strong>Kế hoạch áp dụng kiến thức:</strong> Sau khi hoàn thành khóa học, học viên gửi đề xuất
+                    hoặc kế hoạch áp dụng kiến thức vào thực tế công việc đến Quản lý bộ phận và Phòng Tổ chức để theo
+                    dõi, hỗ trợ triển khai.
                 </Typography>
             </Stack>
-
         </Stack>
     );
 }
