@@ -72,11 +72,10 @@ function ExportFile({ onClose }) {
                         department_head: departmentHead,
                     },
                 };
-            case 4: 
+            case 4:
                 const supplyStationery = requestDetail?.supplyStationery || [];
                 const stationeryData = {};
 
-         
                 for (let idx = 0; idx < 20; idx++) {
                     const item = supplyStationery[idx] || {};
                     stationeryData[`sst${idx + 1}`] = item.product_code || '';
@@ -86,7 +85,6 @@ function ExportFile({ onClose }) {
                     stationeryData[`reason${idx + 1}`] = item.usage_purpose || '';
                     stationeryData[`note${idx + 1}`] = item.note || '';
                 }
-
 
                 return {
                     template: 'supply_stationery/BMNS003.01.docx',
@@ -146,88 +144,136 @@ function ExportFile({ onClose }) {
                 return {
                     template: 'express_delivery/BMGH001.docx',
                     data: {
-                      name: userName,
-                      department: department, 
-                      recipient_name: expressDeliveryRequest.recipient_name || '',
-                      receiving_address: expressDeliveryRequest.receiving_address || '',
-                      recipient_phone: expressDeliveryRequest.recipient_phone || '',
-                      receiving_unit: expressDeliveryRequest.receiving_unit || '',
+                        name: userName,
+                        department: department,
+                        recipient_name: expressDeliveryRequest.recipient_name || '',
+                        receiving_address: expressDeliveryRequest.receiving_address || '',
+                        recipient_phone: expressDeliveryRequest.recipient_phone || '',
+                        receiving_unit: expressDeliveryRequest.receiving_unit || '',
                     },
                 };
-            case 20: 
+            case 20:
                 const advanceClearanceRequest = requestDetail?.advanceClearanceRequest || {};
                 const vouchers = advanceClearanceRequest.vouchers || [];
                 const spendings = advanceClearanceRequest.spendings || [];
 
                 // Tính tổng số tiền đã ứng
-                const totalVoucherAmount = vouchers.reduce(
-                    (sum, v) => sum + (parseFloat(v.amount) || 0),
-                    0
-                );
+                const totalVoucherAmount = vouchers.reduce((sum, v) => sum + (parseFloat(v.amount) || 0), 0);
                 // Tính tổng số tiền đã chi
-                const totalSpendingAmount = spendings.reduce(
-                    (sum, s) => sum + (parseFloat(s.amount) || 0),
-                    0
-                );
+                const totalSpendingAmount = spendings.reduce((sum, s) => sum + (parseFloat(s.amount) || 0), 0);
 
-
-
-                var advance1 = ""
-                var advanamont = ""
+                var advance1 = '';
+                var advanamont = '';
                 const vouchersLength = vouchers.length;
                 for (let i = 0; i < vouchersLength; i++) {
-                    advance1 = advance1 + (i + 1) + ". " + `Số phiếu chi ${vouchers[i].voucher_number || '---'} Ngày: ${formatDate(vouchers[i].voucher_date)}` + "\n"
-                    advanamont = advanamont + formatNumberWithCommas(parseInt(Number(vouchers[i].amount || "---"))) + "đ" + "\n"
+                    advance1 =
+                        advance1 +
+                        (i + 1) +
+                        '. ' +
+                        `Số phiếu chi ${vouchers[i].voucher_number || '---'} Ngày: ${formatDate(vouchers[i].voucher_date)}` +
+                        '\n';
+                    advanamont =
+                        advanamont + formatNumberWithCommas(parseInt(Number(vouchers[i].amount || '---'))) + 'đ' + '\n';
                 }
 
-                console.log("advance1", advance1)
-                var pay = ''
-                var payamont = ''
+                console.log('advance1', advance1);
+                var pay = '';
+                var payamont = '';
 
-               const payLength = spendings.length;
+                const payLength = spendings.length;
                 for (let i = 0; i < payLength; i++) {
-                    pay = pay + (i + 1) + ". " + `Số phiếu chi ${spendings[i].document_number || '---'} Ngày: ${formatDate(spendings[i].spending_date)}` + "\n"
-                    payamont = payamont + formatNumberWithCommas(parseInt(Number(spendings[i].amount || "---"))) + "đ" + "\n"
+                    pay =
+                        pay +
+                        (i + 1) +
+                        '. ' +
+                        `Số phiếu chi ${spendings[i].document_number || '---'} Ngày: ${formatDate(spendings[i].spending_date)}` +
+                        '\n';
+                    payamont =
+                        payamont + formatNumberWithCommas(parseInt(Number(spendings[i].amount || '---'))) + 'đ' + '\n';
                 }
 
                 const difference = {
                     positive_amount: '',
-                    negative_amount: ''
+                    negative_amount: '',
                 };
 
-               const differenceValue = parseInt(Number(advanceClearanceRequest.unspent_amount)) + totalVoucherAmount - totalSpendingAmount;
+                const differenceValue =
+                    parseInt(Number(advanceClearanceRequest.unspent_amount)) + totalVoucherAmount - totalSpendingAmount;
 
-                if(differenceValue > 0) {
+                if (differenceValue > 0) {
                     var positive = differenceValue;
-                    difference.positive_amount = formatNumberWithCommas(positive) + "đ" || '';
-                } else if(differenceValue < 0) {
+                    difference.positive_amount = formatNumberWithCommas(positive) + 'đ' || '';
+                } else if (differenceValue < 0) {
                     var negative = 0 - differenceValue;
-                    difference.negative_amount = formatNumberWithCommas(negative) + "đ" || '';
+                    difference.negative_amount = formatNumberWithCommas(negative) + 'đ' || '';
                 }
                 return {
                     template: 'advance_clearance/Mau04TT.docx',
-                    data: Object.assign(
-                        {
-                            name: userName,
-                            department: department, 
-                            day: day,
-                            month: month,
-                            year: year,
-                            unspent_amount: formatNumberWithCommas(parseInt(Number(advanceClearanceRequest.unspent_amount || 0))) + "đ" || '',
-                            total_voucher_amount: formatNumberWithCommas(totalVoucherAmount) + "đ" || '',
-                            total_spending_amount: formatNumberWithCommas(totalSpendingAmount) + "đ" || '',
-                            negative_amount: difference.negative_amount || '',
-                            positive_amount: difference.positive_amount || '',
-                            department_head: departmentHead,
-                            advance: advance1 || '',
-                            advanamont: advanamont || '',
-                            pay: pay || '',
-                            payamont: payamont || '',
-                        },
-              
-                    ),
+                    data: Object.assign({
+                        name: userName,
+                        department: department,
+                        day: day,
+                        month: month,
+                        year: year,
+                        unspent_amount:
+                            formatNumberWithCommas(parseInt(Number(advanceClearanceRequest.unspent_amount || 0))) +
+                                'đ' || '',
+                        total_voucher_amount: formatNumberWithCommas(totalVoucherAmount) + 'đ' || '',
+                        total_spending_amount: formatNumberWithCommas(totalSpendingAmount) + 'đ' || '',
+                        negative_amount: difference.negative_amount || '',
+                        positive_amount: difference.positive_amount || '',
+                        department_head: departmentHead,
+                        advance: advance1 || '',
+                        advanamont: advanamont || '',
+                        pay: pay || '',
+                        payamont: payamont || '',
+                    }),
                 };
-             
+
+            case 24:
+                const trainingRequest = requestDetail?.trainingRequest || {};
+                const participant = trainingRequest.participants || [];
+                console.log('participant', participant);
+                const particiants = {};
+                for (let i = 0; i < 10; i++) {
+                    const p = participant[i] || {};
+                    console.log('p', p);
+                    particiants[`employee_code_${i + 1}`] = p.employee_code || '';
+                    particiants[`employee_name_${i + 1}`] = p.employee_name || '';
+                    particiants[`employee_position_${i + 1}`] = p.position || '';
+                    particiants[`employee_department_${i + 1}`] = p.department || '';
+                    particiants[`employee_phone_number_${i + 1}`] = p.phone_number || '';
+                    particiants[`employee_email_${i + 1}`] = p.email || '';
+                }
+                console.log('particiants', particiants);
+
+                return {
+                    template: 'training_request/BMNS016.04.docx',
+                    data: {
+                        name: userName,
+                        department: department,
+                        day: day,
+                        month: month,
+                        course_name: trainingRequest.course_name || '',
+                        training_provider: trainingRequest.training_provider || '',
+                        start_time: trainingRequest.start_time
+                            ? dayjs(trainingRequest.start_time).format('DD/MM/YYYY')
+                            : '',
+                        end_time: trainingRequest.end_time ? dayjs(trainingRequest.end_time).format('DD/MM/YYYY') : '',
+                        session_count: trainingRequest.session_count || '',
+                        budget: trainingRequest.budget
+                            ? formatNumberWithCommas(parseInt(Number(trainingRequest.budget)))
+                            : '',
+                        training_mode: trainingRequest.training_mode || '',
+                        training_location_type: trainingRequest.training_location_type || '',
+                        trainer_type: trainingRequest.trainer_type || '',
+                        necessity: trainingRequest.necessity || '',
+                        training_goal: trainingRequest.training_goal || '',
+                        year: year,
+                        department_head: departmentHead,
+                        ...particiants,
+                    },
+                };
             default:
                 return {
                     template: 'default_template',
