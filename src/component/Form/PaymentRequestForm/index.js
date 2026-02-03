@@ -23,7 +23,7 @@ function PaymentRequestForm() {
         { code: 'SGD', symbol: 'S$' },
         { code: 'THB', symbol: '฿' },
         { code: 'MYR', symbol: 'RM' },
-        { code: 'GBP', symbol: '£' }
+        { code: 'GBP', symbol: '£' },
     ];
 
     const handleChange = (e) => {
@@ -50,13 +50,13 @@ function PaymentRequestForm() {
             newPaymentRequest.amount = numericValue;
         }
 
-        // Nếu là bank_account_number thì cần format lại
-        if (name === 'bank_account_number') {
-            const formattedValue = formatBankAccountNumber(value);
-            const cleanValue = parseBankAccountNumber(formattedValue);
-            newPaymentRequest.bank_account_number = formattedValue;
-            newPaymentRequest.bank_account_clean = cleanValue;
-        }
+        // // Nếu là bank_account_number thì cần format lại
+        // if (name === 'bank_account_number') {
+        //     const formattedValue = formatBankAccountNumber(value);
+        //     const cleanValue = parseBankAccountNumber(formattedValue);
+        //     newPaymentRequest.bank_account_number = formattedValue;
+        //     newPaymentRequest.bank_account_clean = cleanValue;
+        // }
 
         // Cập nhật requestName theo cấu trúc mới
         const requestName = `${user?.name || ''}  ${user?.department || ''}  ${newPaymentRequest.payment_content || ''} (${newPaymentRequest.amountText || ``} ${newPaymentRequest.currency || 'VNĐ'} )`;
@@ -150,14 +150,14 @@ function PaymentRequestForm() {
                                     onChange={handleChange}
                                     size="small"
                                     variant="standard"
-                                    sx={{ 
+                                    sx={{
                                         minWidth: 80,
                                         fontSize: '1.4rem',
                                         '&:before': { display: 'none' },
                                         '&:after': { display: 'none' },
                                         '& .MuiSelect-select': {
-                                            paddingRight: '24px !important'
-                                        }
+                                            paddingRight: '24px !important',
+                                        },
                                     }}
                                     disableUnderline
                                 >
@@ -168,7 +168,7 @@ function PaymentRequestForm() {
                                     ))}
                                 </Select>
                             </InputAdornment>
-                        )
+                        ),
                     }}
                 />
             </Stack>
@@ -208,7 +208,9 @@ function PaymentRequestForm() {
                                     return name.includes(normalizedInput) || shortName.includes(normalizedInput);
                                 });
                             }}
-                            value={bankOptions.find((b) => b.label === requestFormData?.payment_request?.bank_name) || null}
+                            value={
+                                bankOptions.find((b) => b.label === requestFormData?.payment_request?.bank_name) || null
+                            }
                             onChange={(_, newValue) => {
                                 dispatch(clearErrors());
                                 dispatch(
@@ -251,6 +253,7 @@ function PaymentRequestForm() {
                             value={requestFormData?.payment_request?.bank_account_number || ''}
                             onChange={handleChange}
                             size="medium"
+                            type="text"
                             inputProps={{
                                 style: { fontSize: '1.4rem' },
                                 maxLength: 20,
