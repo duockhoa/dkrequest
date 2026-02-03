@@ -578,17 +578,16 @@ function TrainingRequestForm() {
                     ></Checkbox>
                     <strong>Tôi và nhân sự tham gia đồng ý với các cam kết sau:</strong>
                     <br />
-                    1. <strong>Tài liệu đào tạo:</strong> Gửi lại tài liệu đào tạo cho Phòng Tổ chức sau khi hoàn thành
-                    khóa học, dưới dạng bản mềm (ưu tiên) hoặc bản cứng để phục vụ lưu trữ và chia sẻ nội bộ.
+                    1. <strong>Tài liệu đào tạo:</strong> Gửi tài liệu đào tạo (giáo trình, slide bài giảng, video bài
+                    giảng, tài liệu tham khảo,…) cho Phòng ĐT&NC sau khi hoàn thành khóa học, dưới dạng bản mềm (ưu
+                    tiên) hoặc bản cứng để phục vụ lưu trữ và chia sẻ nội bộ.
                     <br />
-                    2. <strong>Video chia sẻ kiến thức:</strong> Áp dụng đối với các khóa học có học phí niêm yết từ
-                    2.000.000 VNĐ/người trở lên. Học viên gửi video tự quay hoặc ghi hình buổi chia sẻ với đồng nghiệp
-                    về nội dung đã học hoặc các hình thức phù hợp khác nhằm lan tỏa và ứng dụng kiến thức sau đào tạo về
-                    Phòng Tổ chức.
+                    2. <strong> Chứng chỉ/ Giấy chứng nhận hoàn thành khóa học: </strong> Gửi lại Phòng ĐT&NC bản sao/
+                    bản scan (ưu tiên) sau khi hoàn thành khóa học để lưu trữ.
                     <br />
-                    3. <strong>Kế hoạch áp dụng kiến thức:</strong> Sau khi hoàn thành khóa học, học viên gửi đề xuất
-                    hoặc kế hoạch áp dụng kiến thức vào thực tế công việc đến Quản lý bộ phận và Phòng Tổ chức để theo
-                    dõi, hỗ trợ triển khai.
+                    3. <strong>Báo cáo kết quả đào tạo: </strong> Học viên gửi báo cáo kết quả đào tạo sau khi hoàn
+                    thành khóa học đến Quản lý bộ phận và Phòng ĐT&NC để theo dõi, hỗ trợ triển khai áp dụng kiến thức
+                    sau đào tạo. hỗ trợ triển khai.
                 </Typography>
             </Stack>
         </Stack>
