@@ -28,6 +28,7 @@ import TrainingRequestDetail from '../DetailComponents/TrainingRequestDetail';
 import VehicleRequestDetail from '../DetailComponents/VehicleRequestDetail';
 import AdministrativeDetail from '../DetailComponents/AdministrativeDetail';
 import LunchStopDetail from '../DetailComponents/LunchStopDetail';
+import BusinessPaymentDetail from '../DetailComponents/BusinessPaymentDetail';
 const DetailItem = ({ label, value }) => (
     <Stack direction="row" spacing={2} sx={{ py: 1 }}>
         <Typography
@@ -152,23 +153,23 @@ function RequestDetail() {
                                 requestDetail.status === 'blocked'
                                     ? 'Đã chặn'
                                     : requestDetail.status === 'canceled'
-                                    ? 'Đã huỷ'
-                                    : requestDetail.status === 'approved'
-                                    ? 'Đã duyệt'
-                                    : requestDetail.status === 'rejected'
-                                    ? 'Từ chối'
-                                    : 'Đang chờ duyệt'
+                                      ? 'Đã huỷ'
+                                      : requestDetail.status === 'approved'
+                                        ? 'Đã duyệt'
+                                        : requestDetail.status === 'rejected'
+                                          ? 'Từ chối'
+                                          : 'Đang chờ duyệt'
                             }
                             color={
                                 requestDetail.status === 'blocked'
                                     ? 'default'
                                     : requestDetail.status === 'canceled'
-                                    ? 'default'
-                                    : requestDetail.status === 'approved'
-                                    ? 'success'
-                                    : requestDetail.status === 'rejected'
-                                    ? 'error'
-                                    : 'warning'
+                                      ? 'default'
+                                      : requestDetail.status === 'approved'
+                                        ? 'success'
+                                        : requestDetail.status === 'rejected'
+                                          ? 'error'
+                                          : 'warning'
                             }
                             size="small"
                             sx={{
@@ -177,8 +178,8 @@ function RequestDetail() {
                                     requestDetail.status === 'blocked'
                                         ? '#616161'
                                         : requestDetail.status === 'canceled'
-                                        ? '#9e9e9e'
-                                        : undefined,
+                                          ? '#9e9e9e'
+                                          : undefined,
                                 color:
                                     requestDetail.status === 'blocked' || requestDetail.status === 'canceled'
                                         ? '#fff'
@@ -253,7 +254,7 @@ function RequestDetail() {
                 {requestTypeId === 25 ? <VehicleRequestDetail /> : ''}
                 {requestTypeId === 26 ? <AdministrativeDetail /> : ''}
                 {requestTypeId === 27 ? <LunchStopDetail /> : ''}
-
+                {requestTypeId === 28 ? <BusinessPaymentDetail></BusinessPaymentDetail> : ''}
                 <DetailItem label="Mô tả" value={description} />
                 <AttachmentsDetail />
             </Stack>

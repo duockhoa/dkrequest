@@ -121,7 +121,10 @@ const publicRoutes = [
         path: 'lunch-stop-request',
         component: Request,
     },
-
+    {
+        path: 'business-payment-request',
+        component: Request,
+    },
     {
         path: '*',
         component: Error,

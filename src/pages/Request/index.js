@@ -50,7 +50,8 @@ export default function Request() {
     useEffect(() => {
         if (requestTypes.length > 0) {
             const currentPath = location.pathname;
-            const matchedType = requestTypes.find((type) => currentPath.includes(type.path));
+            const matchedType = requestTypes.find((type) => currentPath === type.path);
+
             if (matchedType) {
                 dispatch(setRequestTypeId(matchedType.id));
                 dispatch(setDepartment(matchedType.despartmentName));
@@ -67,7 +68,7 @@ export default function Request() {
         if (view === 'detail' && idFromParams && requestId !== parseInt(idFromParams, 10)) {
             dispatch(setRequestId(parseInt(idFromParams, 10)));
         } else if (view !== 'detail' && requestId) {
-          dispatch(setRequestId(null));
+            dispatch(setRequestId(null));
         }
     }, [searchParams, dispatch, requestId]);
 
