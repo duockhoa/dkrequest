@@ -32,6 +32,7 @@ import VehicleRequestForm from '../VehicleRequestForm';
 import AdministrativeForm from '../AdministrativeForm';
 import LunchStopForm from '../LunchStopForm';
 import BusinessPaymentRequestForm from '../BusinessPaymentRequestForm';
+import BusinessAdvanceMoneyRequestForm from '../BusinessAdvanceMoneyRequestForm';
 function AddRequestForm({ onClose }) {
     const requestTypeId = useSelector((state) => state.requestId.requestTypeId);
     const requestFormData = useSelector((state) => state.requestFormData.value);
@@ -118,6 +119,8 @@ function AddRequestForm({ onClose }) {
                     return `${user.name} ${user.department} Đề nghị dừng ăn trưa`;
                 case 28:
                     return `${user.name}  ${user.department} đề nghị thanh toán tiền`;
+                case 29:
+                    return `${user.name}  ${user.department} đề nghị ứng tiền`;
                 default:
                     return '';
             }
@@ -317,6 +320,9 @@ function AddRequestForm({ onClose }) {
         if (requestTypeId === 28) {
             requiredFields.push('payment_type', 'payment_content', 'pay_to', 'amount');
         }
+        if (requestTypeId === 29) {
+            requiredFields.push('reason', 'address', 'amount');
+        }
 
         const flattenedData = flattenObject(requestFormData);
         let isValid = true;
@@ -453,6 +459,7 @@ function AddRequestForm({ onClose }) {
             {requestTypeId === 26 ? <AdministrativeForm /> : ''}
             {requestTypeId === 27 ? <LunchStopForm /> : ''}
             {requestTypeId === 28 ? <BusinessPaymentRequestForm></BusinessPaymentRequestForm> : ''}
+            {requestTypeId === 29 ? <BusinessAdvanceMoneyRequestForm></BusinessAdvanceMoneyRequestForm> : ''}
             {/* Giữ lại các lỗi validation khác (editing items) */}
             {errors?.supply_stationery_editing && (
                 <Box

@@ -126,6 +126,11 @@ const publicRoutes = [
         component: Request,
     },
     {
+        path: 'advance-money-business',
+        component: Request,
+    },
+
+    {
         path: '*',
         component: Error,
         layout: ErrorLayout,
