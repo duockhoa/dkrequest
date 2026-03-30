@@ -105,8 +105,8 @@ function LeaveRequestForm() {
         'Nghỉ dưỡng sức',
         'Nghỉ thai sản',
         'Nghỉ khám thai',
+        'Nghỉ thứ Bảy theo chính sách làm việc linh hoạt',
     ];
-
 
     // Generate hour/month options based on selected start and end times
     const hourOptions = useMemo(() => {

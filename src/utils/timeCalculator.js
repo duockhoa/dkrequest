@@ -76,6 +76,11 @@ export const generateHourOptions = (startTime, endTime) => {
         '14.0',
         '14.5',
         '15.0',
+        '20.0',
+        '28.0',
+        '29.0',
+        '30.0',
+        '31.0',
     ];
 
     return dayOptions.filter((days) => parseFloat(days) <= totalDays).map((days) => `${days} ngày`);
