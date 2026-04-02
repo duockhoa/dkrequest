@@ -129,6 +129,10 @@ const publicRoutes = [
         path: 'advance-money-business',
         component: Request,
     },
+    {
+        path: 'business-advance-clearance',
+        component: Request,
+    },
 
     {
         path: '*',

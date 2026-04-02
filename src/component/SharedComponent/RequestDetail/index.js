@@ -30,6 +30,7 @@ import AdministrativeDetail from '../DetailComponents/AdministrativeDetail';
 import LunchStopDetail from '../DetailComponents/LunchStopDetail';
 import BusinessPaymentDetail from '../DetailComponents/BusinessPaymentDetail';
 import BusinessAdvanceMoneyDetail from '../DetailComponents/BusinessAdvanceMoneyDetail';
+import BusinessAdvanceClearanceDetail from '../DetailComponents/BusinessAdvanceClearanceDetail';
 const DetailItem = ({ label, value }) => (
     <Stack direction="row" spacing={2} sx={{ py: 1 }}>
         <Typography
@@ -257,6 +258,7 @@ function RequestDetail() {
                 {requestTypeId === 27 ? <LunchStopDetail /> : ''}
                 {requestTypeId === 28 ? <BusinessPaymentDetail></BusinessPaymentDetail> : ''}
                 {requestTypeId === 29 ? <BusinessAdvanceMoneyDetail></BusinessAdvanceMoneyDetail> : ''}
+                {requestTypeId === 30 ? <BusinessAdvanceClearanceDetail></BusinessAdvanceClearanceDetail> : ''}
                 <DetailItem label="Mô tả" value={description} />
                 <AttachmentsDetail />
             </Stack>
