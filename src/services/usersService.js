@@ -16,7 +16,7 @@ async function getAllUsersService() {
     try {
         const response = await axios.get('/users');
         if (response.status === 200) {
-            return response.data.result;
+            return response.data;
         } else {
             throw new Error('Không thể lấy danh sách người dùng');
         }
@@ -36,7 +36,7 @@ async function changePasswordService(data) {
         const id = Cookies.get('id');
         const response = await axios.put(`/users/${id}/password`, data);
         if (response.status === 200) {
-            return response.data.result;
+            return response.data;
         } else {
             throw new Error('Không thể thay đổi mật khẩu');
         }
@@ -48,6 +48,16 @@ async function changePasswordService(data) {
         } else {
             throw new Error(error.message || 'Đã xảy ra lỗi khi thay đổi mật khẩu');
         }
+    }
+}
+
+async function getMe() {
+    try {
+        const response = await axios.get(`/users/me`);
+        return response;
+    } catch (error) {
+        console.error('Error fetching user data:', error);
+        throw error; // Rethrow the error to handle it in the calling function
     }
 }
 
@@ -87,4 +97,4 @@ async function updateAvatarService(payload) {
     }
 }
 
-export { getAllUsersService, changePasswordService, getUserService, updateAvatarService };
+export { getAllUsersService, changePasswordService, getUserService, updateAvatarService, getMe };
