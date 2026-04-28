@@ -30,6 +30,28 @@ import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import BuildIcon from '@mui/icons-material/Build';
 import FolderSharedIcon from '@mui/icons-material/FolderShared';
+import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
+import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+import organizationRequestTypes from '../../../utils/organizationRequestTypes';
+
+const getRequestTypesForDepartment = (dept) => {
+    if (dept.departmentName !== 'Tổ chức') {
+        return dept.requestTypes;
+    }
+
+    const existingIds = new Set(dept.requestTypes.map((requestType) => requestType.id));
+    const existingPaths = new Set(dept.requestTypes.map((requestType) => requestType.requestTypePath));
+    const missingOrganizationTypes = organizationRequestTypes
+        .filter((requestType) => !existingIds.has(requestType.id) && !existingPaths.has(requestType.path))
+        .map((requestType) => ({
+            id: requestType.id,
+            requestTypeName: requestType.name,
+            requestTypePath: requestType.path,
+        }));
+
+    return [...dept.requestTypes, ...missingOrganizationTypes];
+};
 
 // Hàm ánh xạ tên đề nghị sang icon
 const getRequestIcon = (name, description) => {
@@ -79,6 +101,15 @@ const getRequestIcon = (name, description) => {
             break;
         case 'Công tác văn thư':
             icon = <FolderSharedIcon fontSize="medium" />;
+            break;
+        case 'Đề nghị bổ nhiệm':
+            icon = <AssignmentIndIcon fontSize="medium" />;
+            break;
+        case 'Đề nghị thuyên chuyển':
+            icon = <SwapHorizIcon fontSize="medium" />;
+            break;
+        case 'Đơn xin thôi việc':
+            icon = <ExitToAppIcon fontSize="medium" />;
             break;
         default:
             icon = <AssignmentIcon fontSize="medium" />;
@@ -233,7 +264,7 @@ export default function Sidebar() {
                         </ListItemButton>
                         <Collapse in={activeCollapse?.includes(dept.departmentName)} timeout="auto" unmountOnExit>
                             <List component="div" disablePadding>
-                                {dept.requestTypes.map((requestType) => (
+                                {getRequestTypesForDepartment(dept).map((requestType) => (
                                     <ListItemButton
                                         key={requestType.requestTypeName}
                                         sx={{

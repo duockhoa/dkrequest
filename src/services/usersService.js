@@ -1,7 +1,7 @@
 import axios from './auth-axios';
 import Cookies from 'js-cookie';
 
-async function getUserService(id) {
+async function getUserService() {
     try {
         const id = Cookies.get('id');
         const response = await axios.get(`/users/${id}`);

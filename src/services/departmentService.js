@@ -1,9 +1,10 @@
 import axios from './customize-axios';
+
 async function getDepartmentsServiceInclude() {
     try {
         const response = await axios.get('/department/getallinclude');
         if (response.status === 200) {
-            return extractDepartmentsWithRequestTypes(response.data.result);
+            return extractDepartmentsWithRequestTypes(response.data.result || []);
         } else {
             throw new Error('Không thể lấy danh sách phòng ban');
         }

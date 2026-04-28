@@ -81,7 +81,6 @@ export default function BusinessAdvanceClearanceSpendingsForm() {
             amount,
         }));
         dispatch(
-            console.log('Updating spendings in Redux with:', spendingsForRedux) || // Debug log
                 setRequestFormData({
                     ...requestFormData,
                     business_advance_clearance_request: {

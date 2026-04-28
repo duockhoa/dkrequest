@@ -133,7 +133,18 @@ const publicRoutes = [
         path: 'business-advance-clearance',
         component: Request,
     },
-
+    {
+        path: '/promotion-request',
+        component: Request,
+    },
+    {
+        path: '/transfer-request',
+        component: Request,
+    },
+    {
+        path: '/resignation-request',
+        component: Request,
+    },
     {
         path: '*',
         component: Error,

@@ -1,9 +1,26 @@
 import axios from './customize-axios';
+import organizationRequestTypes from '../utils/organizationRequestTypes';
+
+function mergeOrganizationRequestTypes(requestTypes) {
+    const existingIds = new Set(requestTypes.map((type) => type.id));
+    const existingPaths = new Set(requestTypes.map((type) => type.path));
+    const missingTypes = organizationRequestTypes
+        .filter((type) => !existingIds.has(type.id) && !existingPaths.has(type.path))
+        .map((type) => ({
+            id: type.id,
+            name: type.name,
+            path: type.path,
+            despartmentName: type.departmentName,
+        }));
+
+    return [...requestTypes, ...missingTypes];
+}
+
 async function getAllRequestTypeService() {
     try {
         const response = await axios.get('/requesttype/getall');
         if (response.status === 200) {
-            return response.data.result;
+            return mergeOrganizationRequestTypes(response.data.result || []);
         } else {
             throw new Error('Không thể lấy danh sách yêu cầu');
         }

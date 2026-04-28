@@ -274,6 +274,69 @@ function ExportFile({ onClose }) {
                         ...particiants,
                     },
                 };
+            case 31:
+                const promotion = requestDetail?.promotionRequest || {};
+                return {
+                    template: 'organization/BMTC02.docx',
+                    data: {
+                        department,
+                        day,
+                        month,
+                        year,
+                        userName,
+                        current_position: promotion.current_position || '',
+                        proposed_position: promotion.proposed_position || '',
+                        effective_date: promotion.effective_date
+                            ? dayjs(promotion.effective_date).format('DD/MM/YYYY')
+                            : '',
+                        proposed_salary: promotion.proposed_salary_text || '',
+                        reason: promotion.reason || '',
+                        department_head: departmentHead,
+                        description: requestDetail.description || '',
+                        request_name: requestDetail.requestName || '',
+                    },
+                };
+            case 32:
+                const transfer = requestDetail?.transferRequest || {};
+                return {
+                    template: 'organization/BMTC01.docx',
+                    data: {
+                        department,
+                        day,
+                        month,
+                        year,
+                        userName,
+                        current_department: transfer.current_department || '',
+                        new_department: transfer.new_department || '',
+                        effective_date: transfer.effective_date
+                            ? dayjs(transfer.effective_date).format('DD/MM/YYYY')
+                            : '',
+                        reason: transfer.reason || '',
+                        department_head: departmentHead,
+                        description: requestDetail.description || '',
+                        request_name: requestDetail.requestName || '',
+                    },
+                };
+            case 33:
+                const resignation = requestDetail?.resignationRequest || {};
+                return {
+                    template: 'organization/BMTC07.docx',
+                    data: {
+                        department,
+                        day,
+                        month,
+                        year,
+                        userName,
+                        last_working_date: resignation.last_working_date
+                            ? dayjs(resignation.last_working_date).format('DD/MM/YYYY')
+                            : '',
+                        resignation_reason: resignation.resignation_reason || '',
+                        handover_details: resignation.handover_details || '',
+                        department_head: departmentHead,
+                        description: requestDetail.description || '',
+                        request_name: requestDetail.requestName || '',
+                    },
+                };
             default:
                 return {
                     template: 'default_template',

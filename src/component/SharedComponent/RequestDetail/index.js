@@ -31,6 +31,9 @@ import LunchStopDetail from '../DetailComponents/LunchStopDetail';
 import BusinessPaymentDetail from '../DetailComponents/BusinessPaymentDetail';
 import BusinessAdvanceMoneyDetail from '../DetailComponents/BusinessAdvanceMoneyDetail';
 import BusinessAdvanceClearanceDetail from '../DetailComponents/BusinessAdvanceClearanceDetail';
+import PromotionDetail from '../DetailComponents/PromotionDetail';
+import TransferDetail from '../DetailComponents/TransferDetail';
+import ResignationDetail from '../DetailComponents/ResignationDetail';
 const DetailItem = ({ label, value }) => (
     <Stack direction="row" spacing={2} sx={{ py: 1 }}>
         <Typography
@@ -259,6 +262,9 @@ function RequestDetail() {
                 {requestTypeId === 28 ? <BusinessPaymentDetail></BusinessPaymentDetail> : ''}
                 {requestTypeId === 29 ? <BusinessAdvanceMoneyDetail></BusinessAdvanceMoneyDetail> : ''}
                 {requestTypeId === 30 ? <BusinessAdvanceClearanceDetail></BusinessAdvanceClearanceDetail> : ''}
+                {requestTypeId === 31 ? <PromotionDetail /> : ''}
+                {requestTypeId === 32 ? <TransferDetail /> : ''}
+                {requestTypeId === 33 ? <ResignationDetail /> : ''}
                 <DetailItem label="Mô tả" value={description} />
                 <AttachmentsDetail />
             </Stack>

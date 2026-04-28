@@ -34,6 +34,10 @@ import LunchStopForm from '../LunchStopForm';
 import BusinessPaymentRequestForm from '../BusinessPaymentRequestForm';
 import BusinessAdvanceMoneyRequestForm from '../BusinessAdvanceMoneyRequestForm';
 import BusinessAdvanceClearanceForm from '../BusinessAdvanceClearanceForm';
+import PromotionRequestForm from '../PromotionRequestForm';
+import TransferRequestForm from '../TransferRequestForm';
+import ResignationRequestForm from '../ResignationRequestForm';
+
 function AddRequestForm({ onClose }) {
     const requestTypeId = useSelector((state) => state.requestId.requestTypeId);
     const requestFormData = useSelector((state) => state.requestFormData.value);
@@ -124,6 +128,12 @@ function AddRequestForm({ onClose }) {
                     return `${user.name}  ${user.department} đề nghị ứng tiền`;
                 case 30:
                     return `${user.name}  ${user.department} đề nghị quyết toán tạm ứng`;
+                case 31:
+                    return `${user.name} ${user.department} Đề nghị bổ nhiệm`;
+                case 32:
+                    return `${user.name} ${user.department} Đề nghị thuyên chuyển`;
+                case 33:
+                    return `${user.name} ${user.department} Đơn xin thôi việc`;
                 default:
                     return '';
             }
@@ -326,6 +336,15 @@ function AddRequestForm({ onClose }) {
         if (requestTypeId === 29) {
             requiredFields.push('reason', 'address', 'amount');
         }
+        if (requestTypeId === 31) {
+            requiredFields.push('current_position', 'proposed_position', 'effective_date', 'reason');
+        }
+        if (requestTypeId === 32) {
+            requiredFields.push('current_department', 'new_department', 'effective_date', 'reason');
+        }
+        if (requestTypeId === 33) {
+            requiredFields.push('last_working_date', 'resignation_reason');
+        }
 
         const flattenedData = flattenObject(requestFormData);
         let isValid = true;
@@ -464,6 +483,9 @@ function AddRequestForm({ onClose }) {
             {requestTypeId === 28 ? <BusinessPaymentRequestForm></BusinessPaymentRequestForm> : ''}
             {requestTypeId === 29 ? <BusinessAdvanceMoneyRequestForm></BusinessAdvanceMoneyRequestForm> : ''}
             {requestTypeId === 30 ? <BusinessAdvanceClearanceForm></BusinessAdvanceClearanceForm> : ''}
+            {requestTypeId === 31 ? <PromotionRequestForm /> : ''}
+            {requestTypeId === 32 ? <TransferRequestForm /> : ''}
+            {requestTypeId === 33 ? <ResignationRequestForm /> : ''}
             {/* Giữ lại các lỗi validation khác (editing items) */}
             {errors?.supply_stationery_editing && (
                 <Box
