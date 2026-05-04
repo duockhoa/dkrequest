@@ -2,7 +2,7 @@ import { Stack, Typography, TextField } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
 import { setRequestFormData, clearErrors } from '../../../redux/slice/requestFormDataSlice';
 
-const labelSx = { minWidth: 120, fontSize: '1.4rem' };
+const labelSx = { minWidth: 150, fontSize: '1.4rem' };
 const multilineLabelSx = { ...labelSx, mt: 1 };
 
 function TransferRequestForm() {
@@ -17,73 +17,119 @@ function TransferRequestForm() {
         dispatch(
             setRequestFormData({
                 ...requestFormData,
-                transfer_request: {
-                    ...requestFormData.transfer_request,
+                transferRequest: {
+                    ...requestFormData.transferRequest,
                     [name]: value,
                 },
             }),
         );
     };
 
+    const transferRequest = requestFormData?.transferRequest || {};
+
     return (
         <Stack spacing={2}>
             <Stack direction="row" alignItems="center" spacing={2}>
-                <Typography sx={labelSx}>Phòng/ban hiện tại: (*)</Typography>
+                <Typography sx={labelSx}>Nhân viên: (*)</Typography>
                 <TextField
                     fullWidth
-                    name="current_department"
-                    value={requestFormData?.transfer_request?.current_department || ''}
+                    name="employee_name"
+                    value={transferRequest.employee_name || ''}
                     onChange={handleChange}
                     size="medium"
                     inputProps={{ style: { fontSize: '1.4rem' } }}
-                    error={!!errors?.current_department}
-                    helperText={errors?.current_department || ''}
+                    error={!!errors?.employee_name}
+                    helperText={errors?.employee_name || ''}
                 />
             </Stack>
 
             <Stack direction="row" alignItems="center" spacing={2}>
-                <Typography sx={labelSx}>Phòng/ban chuyển tới: (*)</Typography>
+                <Typography sx={labelSx}>Ngày vào làm:</Typography>
                 <TextField
                     fullWidth
-                    name="new_department"
-                    value={requestFormData?.transfer_request?.new_department || ''}
-                    onChange={handleChange}
-                    size="medium"
-                    inputProps={{ style: { fontSize: '1.4rem' } }}
-                    error={!!errors?.new_department}
-                    helperText={errors?.new_department || ''}
-                />
-            </Stack>
-
-            <Stack direction="row" alignItems="center" spacing={2}>
-                <Typography sx={labelSx}>Ngày hiệu lực: (*)</Typography>
-                <TextField
-                    fullWidth
-                    name="effective_date"
+                    name="joined_date"
                     type="date"
-                    value={requestFormData?.transfer_request?.effective_date || ''}
+                    value={transferRequest.joined_date || ''}
                     onChange={handleChange}
                     size="medium"
                     inputProps={{ style: { fontSize: '1.4rem' } }}
                     InputLabelProps={{ shrink: true }}
-                    error={!!errors?.effective_date}
-                    helperText={errors?.effective_date || ''}
+                    error={!!errors?.joined_date}
+                    helperText={errors?.joined_date || ''}
+                />
+            </Stack>
+
+            <Stack direction="row" alignItems="center" spacing={2}>
+                <Typography sx={labelSx}>Chức danh hiện tại: (*)</Typography>
+                <TextField
+                    fullWidth
+                    name="current_position"
+                    value={transferRequest.current_position || ''}
+                    onChange={handleChange}
+                    size="medium"
+                    inputProps={{ style: { fontSize: '1.4rem' } }}
+                    error={!!errors?.current_position}
+                    helperText={errors?.current_position || ''}
+                />
+            </Stack>
+
+            <Stack direction="row" alignItems="center" spacing={2}>
+                <Typography sx={labelSx}>Phòng/ban hiện tại: (*)</Typography>
+                <TextField
+                    fullWidth
+                    name="from_department"
+                    value={transferRequest.from_department || ''}
+                    onChange={handleChange}
+                    size="medium"
+                    inputProps={{ style: { fontSize: '1.4rem' } }}
+                    error={!!errors?.from_department}
+                    helperText={errors?.from_department || ''}
+                />
+            </Stack>
+
+            <Stack direction="row" alignItems="center" spacing={2}>
+                <Typography sx={labelSx}>Chức danh điều chuyển: (*)</Typography>
+                <TextField
+                    fullWidth
+                    name="transfer_position"
+                    value={transferRequest.transfer_position || ''}
+                    onChange={handleChange}
+                    size="medium"
+                    inputProps={{ style: { fontSize: '1.4rem' } }}
+                    error={!!errors?.transfer_position}
+                    helperText={errors?.transfer_position || ''}
+                />
+            </Stack>
+
+            <Stack direction="row" alignItems="center" spacing={2}>
+                <Typography sx={labelSx}>Thời gian điều chuyển: (*)</Typography>
+                <TextField
+                    fullWidth
+                    name="transfer_time"
+                    type="date"
+                    value={transferRequest.transfer_time || ''}
+                    onChange={handleChange}
+                    size="medium"
+                    inputProps={{ style: { fontSize: '1.4rem' } }}
+                    InputLabelProps={{ shrink: true }}
+                    error={!!errors?.transfer_time}
+                    helperText={errors?.transfer_time || ''}
                 />
             </Stack>
 
             <Stack direction="row" alignItems="flex-start" spacing={2}>
-                <Typography sx={multilineLabelSx}>Lý do chuyển: (*)</Typography>
+                <Typography sx={multilineLabelSx}>Lý do điều chuyển: (*)</Typography>
                 <TextField
                     fullWidth
-                    name="reason"
+                    name="transfer_reason"
                     multiline
                     minRows={3}
-                    value={requestFormData?.transfer_request?.reason || ''}
+                    value={transferRequest.transfer_reason || ''}
                     onChange={handleChange}
                     size="medium"
                     inputProps={{ style: { fontSize: '1.4rem' } }}
-                    error={!!errors?.reason}
-                    helperText={errors?.reason || ''}
+                    error={!!errors?.transfer_reason}
+                    helperText={errors?.transfer_reason || ''}
                 />
             </Stack>
         </Stack>

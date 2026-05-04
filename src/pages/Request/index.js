@@ -54,7 +54,7 @@ export default function Request() {
 
             if (matchedType) {
                 dispatch(setRequestTypeId(matchedType.id));
-                dispatch(setDepartment(matchedType.despartmentName));
+                dispatch(setDepartment(matchedType.departmentName || matchedType.despartmentName));
             } else {
                 dispatch(setRequestTypeId('all'));
             }

@@ -17,9 +17,22 @@ const DetailItem = ({ label, value }) => (
     </Stack>
 );
 
+const getDetails = (requestDetail) => {
+    const details = requestDetail?.promotionRequest?.details;
+    if (!details) return requestDetail?.promotionRequest || {};
+    if (typeof details === 'string') {
+        try {
+            return JSON.parse(details);
+        } catch {
+            return {};
+        }
+    }
+    return details;
+};
+
 export default function PromotionDetail() {
     const requestDetail = useSelector((state) => state.requestDetail.requestDetailvalue);
-    const promotion = requestDetail?.promotionRequest || {};
+    const promotion = getDetails(requestDetail);
 
     const formatDate = (dateString) => {
         return dateString ? format(new Date(dateString), 'dd/MM/yyyy') : '-';
@@ -27,11 +40,15 @@ export default function PromotionDetail() {
 
     return (
         <>
+            <DetailItem label="Người được bổ nhiệm" value={promotion.promoted_employee_name || '-'} />
             <DetailItem label="Chức danh hiện tại" value={promotion.current_position || '-'} />
-            <DetailItem label="Chức danh đề xuất" value={promotion.proposed_position || '-'} />
-            <DetailItem label="Ngày có hiệu lực" value={formatDate(promotion.effective_date)} />
-            <DetailItem label="Lương đề xuất" value={promotion.proposed_salary_text || '-'} />
-            <DetailItem label="Lý do đề nghị" value={promotion.reason || '-'} />
+            <DetailItem label="Số tháng giữ chức" value={promotion.current_position_months || '-'} />
+            <DetailItem label="Số năm giữ chức" value={promotion.current_position_years || '-'} />
+            <DetailItem label="Từ ngày" value={formatDate(promotion.current_position_from_date)} />
+            <DetailItem label="Đến ngày" value={formatDate(promotion.current_position_to_date)} />
+            <DetailItem label="Chức danh bổ nhiệm" value={promotion.promoted_position || '-'} />
+            <DetailItem label="Lý do bổ nhiệm" value={promotion.promotion_reason || '-'} />
+            <DetailItem label="Thời hạn bổ nhiệm" value={promotion.promotion_duration || '-'} />
         </>
     );
 }

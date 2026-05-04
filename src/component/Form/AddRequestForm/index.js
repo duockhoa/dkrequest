@@ -38,6 +38,71 @@ import PromotionRequestForm from '../PromotionRequestForm';
 import TransferRequestForm from '../TransferRequestForm';
 import ResignationRequestForm from '../ResignationRequestForm';
 
+const getOrganizationRequestDefaults = (requestTypeId, requestFormData) => {
+    if (requestTypeId === 31) {
+        return {
+            transferRequest: undefined,
+            resignationRequest: undefined,
+            promotionRequest: {
+                promoted_employee_name: '',
+                current_position: '',
+                current_position_months: '',
+                current_position_years: '',
+                current_position_from_date: '',
+                current_position_to_date: '',
+                promoted_position: '',
+                promotion_reason: '',
+                promotion_duration: '',
+                ...requestFormData.promotionRequest,
+            },
+        };
+    }
+
+    if (requestTypeId === 32) {
+        return {
+            promotionRequest: undefined,
+            resignationRequest: undefined,
+            transferRequest: {
+                employee_name: '',
+                joined_date: '',
+                current_position: '',
+                from_department: '',
+                transfer_position: '',
+                transfer_time: '',
+                transfer_reason: '',
+                ...requestFormData.transferRequest,
+            },
+        };
+    }
+
+    if (requestTypeId === 33) {
+        return {
+            promotionRequest: undefined,
+            transferRequest: undefined,
+            resignationRequest: {
+                employee_name: '',
+                employee_code: '',
+                department: '',
+                position: '',
+                joined_date: '',
+                resignation_date: '',
+                resignation_reason: '',
+                shares_count: '',
+                shares_value: '',
+                shares_return_method: '',
+                other_request: '',
+                ...requestFormData.resignationRequest,
+            },
+        };
+    }
+
+    return {
+        promotionRequest: undefined,
+        transferRequest: undefined,
+        resignationRequest: undefined,
+    };
+};
+
 function AddRequestForm({ onClose }) {
     const requestTypeId = useSelector((state) => state.requestId.requestTypeId);
     const requestFormData = useSelector((state) => state.requestFormData.value);
@@ -149,6 +214,7 @@ function AddRequestForm({ onClose }) {
                 requestor_id: user.id,
                 followers: [],
                 approvers: [],
+                ...getOrganizationRequestDefaults(requestTypeId, requestFormData),
             }),
         );
     }, [requestTypeId, user.id, user.name, dispatch]);
@@ -337,13 +403,20 @@ function AddRequestForm({ onClose }) {
             requiredFields.push('reason', 'address', 'amount');
         }
         if (requestTypeId === 31) {
-            requiredFields.push('current_position', 'proposed_position', 'effective_date', 'reason');
+            requiredFields.push('promoted_employee_name', 'current_position', 'promoted_position', 'promotion_reason');
         }
         if (requestTypeId === 32) {
-            requiredFields.push('current_department', 'new_department', 'effective_date', 'reason');
+            requiredFields.push(
+                'employee_name',
+                'current_position',
+                'from_department',
+                'transfer_position',
+                'transfer_time',
+                'transfer_reason',
+            );
         }
         if (requestTypeId === 33) {
-            requiredFields.push('last_working_date', 'resignation_reason');
+            requiredFields.push('employee_name', 'department', 'position', 'resignation_date', 'resignation_reason');
         }
 
         const flattenedData = flattenObject(requestFormData);

@@ -10,7 +10,7 @@ function mergeOrganizationRequestTypes(requestTypes) {
             id: type.id,
             name: type.name,
             path: type.path,
-            despartmentName: type.departmentName,
+            departmentName: type.departmentName,
         }));
 
     return [...requestTypes, ...missingTypes];

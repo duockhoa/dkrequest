@@ -1,4 +1,5 @@
 import axios from './customize-axios';
+import organizationRequestTypes from '../utils/organizationRequestTypes';
 
 async function getDepartmentsServiceInclude() {
     try {
@@ -20,7 +21,7 @@ async function getDepartmentsServiceInclude() {
 }
 
 function extractDepartmentsWithRequestTypes(departments) {
-    return departments
+    const mappedDepartments = departments
         .filter((dept) => Array.isArray(dept.requestTypes) && dept.requestTypes.length > 0)
         .map((dept) => ({
             departmentName: dept.name,
@@ -32,6 +33,36 @@ function extractDepartmentsWithRequestTypes(departments) {
                 };
             }),
         }));
+
+    const organizationDepartment = mappedDepartments.find((dept) => dept.departmentName === 'Tổ chức');
+    const organizationTypes = organizationRequestTypes.map((requestType) => ({
+        id: requestType.id,
+        requestTypeName: requestType.name,
+        requestTypePath: requestType.path,
+    }));
+
+    if (!organizationDepartment) {
+        return [
+            ...mappedDepartments,
+            {
+                departmentName: 'Tổ chức',
+                requestTypes: organizationTypes,
+            },
+        ];
+    }
+
+    const existingIds = new Set(organizationDepartment.requestTypes.map((requestType) => requestType.id));
+    const existingPaths = new Set(
+        organizationDepartment.requestTypes.map((requestType) => requestType.requestTypePath),
+    );
+    organizationDepartment.requestTypes = [
+        ...organizationDepartment.requestTypes,
+        ...organizationTypes.filter(
+            (requestType) => !existingIds.has(requestType.id) && !existingPaths.has(requestType.requestTypePath),
+        ),
+    ];
+
+    return mappedDepartments;
 }
 
 export { getDepartmentsServiceInclude };

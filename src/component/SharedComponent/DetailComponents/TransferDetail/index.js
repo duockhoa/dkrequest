@@ -17,9 +17,22 @@ const DetailItem = ({ label, value }) => (
     </Stack>
 );
 
+const getDetails = (requestDetail) => {
+    const details = requestDetail?.transferRequest?.details;
+    if (!details) return requestDetail?.transferRequest || {};
+    if (typeof details === 'string') {
+        try {
+            return JSON.parse(details);
+        } catch {
+            return {};
+        }
+    }
+    return details;
+};
+
 export default function TransferDetail() {
     const requestDetail = useSelector((state) => state.requestDetail.requestDetailvalue);
-    const transfer = requestDetail?.transferRequest || {};
+    const transfer = getDetails(requestDetail);
 
     const formatDate = (dateString) => {
         return dateString ? format(new Date(dateString), 'dd/MM/yyyy') : '-';
@@ -27,10 +40,13 @@ export default function TransferDetail() {
 
     return (
         <>
-            <DetailItem label="Phòng hiện tại" value={transfer.current_department || '-'} />
-            <DetailItem label="Phòng chuyển tới" value={transfer.new_department || '-'} />
-            <DetailItem label="Ngày hiệu lực" value={formatDate(transfer.effective_date)} />
-            <DetailItem label="Lý do chuyển" value={transfer.reason || '-'} />
+            <DetailItem label="Nhân viên" value={transfer.employee_name || '-'} />
+            <DetailItem label="Ngày vào làm" value={formatDate(transfer.joined_date)} />
+            <DetailItem label="Chức danh hiện tại" value={transfer.current_position || '-'} />
+            <DetailItem label="Phòng/ban hiện tại" value={transfer.from_department || '-'} />
+            <DetailItem label="Chức danh điều chuyển" value={transfer.transfer_position || '-'} />
+            <DetailItem label="Thời gian điều chuyển" value={formatDate(transfer.transfer_time)} />
+            <DetailItem label="Lý do điều chuyển" value={transfer.transfer_reason || '-'} />
         </>
     );
 }
