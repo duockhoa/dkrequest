@@ -17,6 +17,12 @@ const organizationRequestTypes = [
         path: '/resignation-request',
         departmentName: 'Tổ chức',
     },
+    {
+        id: 34,
+        name: 'Sáng kiến cải tiến',
+        path: '/innovation-proposal',
+        departmentName: 'Tổ chức',
+    },
 ];
 
 export default organizationRequestTypes;

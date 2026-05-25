@@ -37,6 +37,7 @@ import BusinessAdvanceClearanceForm from '../BusinessAdvanceClearanceForm';
 import PromotionRequestForm from '../PromotionRequestForm';
 import TransferRequestForm from '../TransferRequestForm';
 import ResignationRequestForm from '../ResignationRequestForm';
+import InnovationProposalForm from '../InnovationProposalForm';
 
 const getOrganizationRequestDefaults = (requestTypeId, requestFormData) => {
     if (requestTypeId === 31) {
@@ -93,6 +94,21 @@ const getOrganizationRequestDefaults = (requestTypeId, requestFormData) => {
                 other_request: '',
                 ...requestFormData.resignationRequest,
             },
+        };
+    }
+
+    if (requestTypeId === 34) {
+        return {
+            promotionRequest: undefined,
+            transferRequest: undefined,
+            resignationRequest: undefined,
+            innovation_name: '',
+            description: '',
+            implementer: '',
+            expected_benefit: '',
+            expected_cost: '',
+            implementation_time: '',
+            ...requestFormData,
         };
     }
 
@@ -199,6 +215,8 @@ function AddRequestForm({ onClose }) {
                     return `${user.name} ${user.department} Đề nghị thuyên chuyển`;
                 case 33:
                     return `${user.name} ${user.department} Đơn xin thôi việc`;
+                case 34:
+                    return `${user.name} ${user.department} Đăng ký sáng kiến cải tiến`;
                 default:
                     return '';
             }
@@ -418,6 +436,9 @@ function AddRequestForm({ onClose }) {
         if (requestTypeId === 33) {
             requiredFields.push('employee_name', 'department', 'position', 'resignation_date', 'resignation_reason');
         }
+        if (requestTypeId === 34) {
+            requiredFields.push('innovation_name', 'expected_benefit', 'expected_cost', 'implementation_time');
+        }
 
         const flattenedData = flattenObject(requestFormData);
         let isValid = true;
@@ -559,6 +580,11 @@ function AddRequestForm({ onClose }) {
             {requestTypeId === 31 ? <PromotionRequestForm /> : ''}
             {requestTypeId === 32 ? <TransferRequestForm /> : ''}
             {requestTypeId === 33 ? <ResignationRequestForm /> : ''}
+            {requestTypeId === 34 ? (
+                <InnovationProposalForm formData={requestFormData} onChange={handleChange} errors={errors} />
+            ) : (
+                ''
+            )}
             {/* Giữ lại các lỗi validation khác (editing items) */}
             {errors?.supply_stationery_editing && (
                 <Box
