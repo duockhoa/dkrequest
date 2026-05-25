@@ -146,6 +146,10 @@ const publicRoutes = [
         component: Request,
     },
     {
+        path: '/innovation-proposal',
+        component: Request,
+    },
+    {
         path: '*',
         component: Error,
         layout: ErrorLayout,

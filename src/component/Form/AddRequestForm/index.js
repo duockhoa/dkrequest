@@ -102,13 +102,12 @@ const getOrganizationRequestDefaults = (requestTypeId, requestFormData) => {
             promotionRequest: undefined,
             transferRequest: undefined,
             resignationRequest: undefined,
-            innovation_name: '',
-            description: '',
-            implementer: '',
-            expected_benefit: '',
-            expected_cost: '',
-            implementation_time: '',
-            ...requestFormData,
+            innovation_name: requestFormData.innovation_name || '',
+            description: requestFormData.description || '',
+            implementer: requestFormData.implementer || '',
+            expected_benefit: requestFormData.expected_benefit || '',
+            expected_cost: requestFormData.expected_cost || '',
+            implementation_time: requestFormData.implementation_time || '',
         };
     }
 
@@ -129,6 +128,7 @@ function AddRequestForm({ onClose }) {
     const errors = useSelector((state) => state.requestFormData.errors);
     const dispatch = useDispatch();
     const [openErrorAlert, setOpenErrorAlert] = useState(false);
+    const isInnovationRequest = requestTypeId === 34;
 
     // Handle change for input fields
     const handleChange = (e) => {
@@ -634,20 +634,22 @@ function AddRequestForm({ onClose }) {
                     {errors.invoice_request_editing}
                 </Box>
             )}
-            <Stack direction="row" alignItems="flex-start" spacing={2}>
-                <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Mô tả ( nếu có):</Typography>
-                <TextField
-                    fullWidth
-                    name="description"
-                    value={requestFormData.description}
-                    onChange={handleChange}
-                    size="medium"
-                    multiline
-                    inputProps={{ style: { fontSize: '1.3rem', padding: '1px 0px' } }}
-                    error={!!errors.description}
-                    helperText={errors.description || ''}
-                />
-            </Stack>
+            {!isInnovationRequest && (
+                <Stack direction="row" alignItems="flex-start" spacing={2}>
+                    <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Mô tả ( nếu có):</Typography>
+                    <TextField
+                        fullWidth
+                        name="description"
+                        value={requestFormData.description}
+                        onChange={handleChange}
+                        size="medium"
+                        multiline
+                        inputProps={{ style: { fontSize: '1.3rem', padding: '1px 0px' } }}
+                        error={!!errors.description}
+                        helperText={errors.description || ''}
+                    />
+                </Stack>
+            )}
 
             <RequestFollowers />
             <OtherAttachFile />

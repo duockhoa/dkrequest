@@ -1,14 +1,31 @@
 import { Box, TextField, Stack, Typography } from '@mui/material';
 
+const labelSx = { minWidth: 120, fontSize: '1.4rem' };
+const inputProps = { style: { fontSize: '1.4rem' } };
+
 function InnovationProposalForm({ formData, onChange, errors }) {
     return (
-        <Box sx={{ mt: 2 }}>
-            <Typography variant="h6" sx={{ mb: 2, fontSize: '1.4rem', fontWeight: 600 }}>
+        <Box
+            sx={{
+                mt: 2,
+                pt: 1.5,
+                borderTop: '1px solid',
+                borderColor: 'divider',
+            }}
+        >
+            <Typography
+                variant="h6"
+                sx={{
+                    mb: 2,
+                    fontSize: '1.4rem',
+                    fontWeight: 600,
+                }}
+            >
                 Thông tin Sáng kiến Cải tiến
             </Typography>
             <Stack spacing={2}>
                 <Stack direction="row" alignItems="center" spacing={2}>
-                    <Typography sx={{ minWidth: 200, fontSize: '1.4rem' }}>Tên sáng kiến (*)</Typography>
+                    <Typography sx={labelSx}>Tên sáng kiến (*)</Typography>
                     <TextField
                         fullWidth
                         name="innovation_name"
@@ -18,12 +35,12 @@ function InnovationProposalForm({ formData, onChange, errors }) {
                         required
                         error={!!errors.innovation_name}
                         helperText={errors.innovation_name || ''}
-                        inputProps={{ style: { fontSize: '1.4rem', padding: '1px 0px' } }}
+                        inputProps={inputProps}
                     />
                 </Stack>
 
                 <Stack direction="row" alignItems="flex-start" spacing={2}>
-                    <Typography sx={{ minWidth: 200, fontSize: '1.4rem', pt: 1 }}>Mô tả chi tiết</Typography>
+                    <Typography sx={labelSx}>Mô tả chi tiết</Typography>
                     <TextField
                         fullWidth
                         name="description"
@@ -34,12 +51,12 @@ function InnovationProposalForm({ formData, onChange, errors }) {
                         rows={3}
                         error={!!errors.description}
                         helperText={errors.description || ''}
-                        inputProps={{ style: { fontSize: '1.4rem', padding: '1px 0px' } }}
+                        inputProps={inputProps}
                     />
                 </Stack>
 
                 <Stack direction="row" alignItems="center" spacing={2}>
-                    <Typography sx={{ minWidth: 200, fontSize: '1.4rem' }}>Người thực hiện</Typography>
+                    <Typography sx={labelSx}>Người thực hiện</Typography>
                     <TextField
                         fullWidth
                         name="implementer"
@@ -48,12 +65,12 @@ function InnovationProposalForm({ formData, onChange, errors }) {
                         size="medium"
                         error={!!errors.implementer}
                         helperText={errors.implementer || ''}
-                        inputProps={{ style: { fontSize: '1.4rem', padding: '1px 0px' } }}
+                        inputProps={inputProps}
                     />
                 </Stack>
 
                 <Stack direction="row" alignItems="flex-start" spacing={2}>
-                    <Typography sx={{ minWidth: 200, fontSize: '1.4rem', pt: 1 }}>Lợi ích dự kiến (*)</Typography>
+                    <Typography sx={labelSx}>Lợi ích dự kiến (*)</Typography>
                     <TextField
                         fullWidth
                         name="expected_benefit"
@@ -65,12 +82,12 @@ function InnovationProposalForm({ formData, onChange, errors }) {
                         required
                         error={!!errors.expected_benefit}
                         helperText={errors.expected_benefit || ''}
-                        inputProps={{ style: { fontSize: '1.4rem', padding: '1px 0px' } }}
+                        inputProps={inputProps}
                     />
                 </Stack>
 
                 <Stack direction="row" alignItems="center" spacing={2}>
-                    <Typography sx={{ minWidth: 200, fontSize: '1.4rem' }}>Chi phí dự kiến (*)</Typography>
+                    <Typography sx={labelSx}>Chi phí dự kiến (*)</Typography>
                     <TextField
                         fullWidth
                         name="expected_cost"
@@ -80,12 +97,12 @@ function InnovationProposalForm({ formData, onChange, errors }) {
                         required
                         error={!!errors.expected_cost}
                         helperText={errors.expected_cost || ''}
-                        inputProps={{ style: { fontSize: '1.4rem', padding: '1px 0px' } }}
+                        inputProps={inputProps}
                     />
                 </Stack>
 
                 <Stack direction="row" alignItems="center" spacing={2}>
-                    <Typography sx={{ minWidth: 200, fontSize: '1.4rem' }}>Thời gian thực hiện (*)</Typography>
+                    <Typography sx={labelSx}>Thời gian thực hiện (*)</Typography>
                     <TextField
                         fullWidth
                         name="implementation_time"
@@ -96,7 +113,7 @@ function InnovationProposalForm({ formData, onChange, errors }) {
                         error={!!errors.implementation_time}
                         helperText={errors.implementation_time || ''}
                         placeholder="VD: 3 tháng, 6 tháng, 1 năm"
-                        inputProps={{ style: { fontSize: '1.4rem', padding: '1px 0px' } }}
+                        inputProps={inputProps}
                     />
                 </Stack>
             </Stack>

@@ -2,7 +2,7 @@ import { Stack, Typography, TextField } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
 import { setRequestFormData, clearErrors } from '../../../redux/slice/requestFormDataSlice';
 
-const labelSx = { minWidth: 150, fontSize: '1.4rem' };
+const labelSx = { minWidth: 120, fontSize: '1.4rem' };
 const multilineLabelSx = { ...labelSx, mt: 1 };
 
 function PromotionRequestForm() {
