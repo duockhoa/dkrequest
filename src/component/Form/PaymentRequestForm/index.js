@@ -2,8 +2,8 @@ import { Stack, Typography, TextField, Autocomplete, InputAdornment, Select, Men
 import { useSelector, useDispatch } from 'react-redux';
 import { setRequestFormData, clearErrors } from '../../../redux/slice/requestFormDataSlice';
 import FileUpload from '../FileUpload';
-import { formatNumberWithCommas, parseFormattedNumber } from '../../../utils/numberToWords';
-import { removeAccentsAndUppercase, formatBankAccountNumber, parseBankAccountNumber } from '../../../utils/bankAccount';
+import { formatCurrencyAmountInput, parseCurrencyAmountInput } from '../../../utils/numberToWords';
+import { removeAccentsAndUppercase } from '../../../utils/bankAccount';
 import { banklist } from '../../../services/bankService';
 
 function PaymentRequestForm() {
@@ -36,18 +36,29 @@ function PaymentRequestForm() {
             processedValue = removeAccentsAndUppercase(value);
         }
 
+        const previousCurrency = requestFormData?.payment_request?.currency || 'VND';
+
         // Lấy dữ liệu mới nhất sau khi thay đổi
         let newPaymentRequest = {
             ...requestFormData.payment_request,
-            [name]: value,
+            [name]: processedValue,
         };
 
         // Nếu là amountText thì cần format lại
         if (name === 'amountText') {
-            const formattedValue = formatNumberWithCommas(value);
-            const numericValue = parseFormattedNumber(formattedValue);
+            const currency = newPaymentRequest.currency || 'VND';
+            const formattedValue = formatCurrencyAmountInput(value, currency);
+            const numericValue = parseCurrencyAmountInput(formattedValue, currency);
             newPaymentRequest.amountText = formattedValue;
             newPaymentRequest.amount = numericValue;
+        }
+
+        if (name === 'currency' && newPaymentRequest.amountText) {
+            const numericValue =
+                newPaymentRequest.amount ?? parseCurrencyAmountInput(newPaymentRequest.amountText, previousCurrency);
+            const formattedValue = formatCurrencyAmountInput(numericValue, value);
+            newPaymentRequest.amountText = formattedValue;
+            newPaymentRequest.amount = parseCurrencyAmountInput(formattedValue, value);
         }
 
         // // Nếu là bank_account_number thì cần format lại

@@ -83,17 +83,106 @@ const numberToVietnameseWords = (num) => {
     return result.charAt(0).toUpperCase() + result.slice(1) + ' đồng';
 };
 const formatNumberWithCommas = (value) => {
-    if (!value) return '';
-    // Remove all non-digits
-    const numericValue = value.toString().replace(/\D/g, '');
-    // Add commas every 3 digits
-    return numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    if (value === null || value === undefined || value === '') return '';
+
+    const { integerPart, decimalPart, hasDecimalSeparator } = getFormattedNumberParts(value);
+    const normalizedInteger = integerPart.replace(/^0+(?=\d)/, '') || '0';
+    const formattedInteger = formatIntegerWithCommas(normalizedInteger);
+
+    if (!hasDecimalSeparator) {
+        return formattedInteger;
+    }
+
+    if (!decimalPart) {
+        return value.toString().trim().endsWith('.') || value.toString().trim().endsWith(',')
+            ? `${formattedInteger}.`
+            : formattedInteger;
+    }
+
+    const normalizedDecimal = decimalPart.replace(/0+$/, '');
+
+    if (!normalizedDecimal) {
+        return formattedInteger;
+    }
+
+    return `${formattedInteger}.${normalizedDecimal}`;
 };
 
 // Function to parse formatted number back to number
 const parseFormattedNumber = (formattedValue) => {
-    if (!formattedValue) return 0;
-    return parseFloat(formattedValue.replace(/,/g, '')) || 0;
+    if (formattedValue === null || formattedValue === undefined || formattedValue === '') return 0;
+
+    const { integerPart, decimalPart, hasDecimalSeparator } = getFormattedNumberParts(formattedValue);
+    const normalizedValue = `${integerPart || '0'}${hasDecimalSeparator ? `.${decimalPart}` : ''}`;
+
+    return parseFloat(normalizedValue) || 0;
 };
 
-export { numberToVietnameseWords, formatNumberWithCommas, parseFormattedNumber };
+const formatIntegerWithCommas = (value) => {
+    if (!value) return '';
+    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+};
+
+const isGroupedInteger = (value, separator) => {
+    const groups = value.split(separator);
+    return (
+        groups.length > 1 &&
+        groups[0].length > 0 &&
+        groups[0].length <= 3 &&
+        groups.slice(1).every((group) => group.length === 3)
+    );
+};
+
+const getFormattedNumberParts = (value) => {
+    const rawValue = value.toString().replace(/[^\d.,]/g, '');
+    if (!rawValue) {
+        return { integerPart: '', decimalPart: '', hasDecimalSeparator: false };
+    }
+
+    const commaIndex = rawValue.lastIndexOf(',');
+    const dotIndex = rawValue.lastIndexOf('.');
+    const hasComma = commaIndex !== -1;
+    const hasDot = dotIndex !== -1;
+
+    if (!hasComma && !hasDot) {
+        return {
+            integerPart: rawValue.replace(/\D/g, ''),
+            decimalPart: '',
+            hasDecimalSeparator: false,
+        };
+    }
+
+    if (hasComma && !hasDot && isGroupedInteger(rawValue, ',')) {
+        return {
+            integerPart: rawValue.replace(/\D/g, ''),
+            decimalPart: '',
+            hasDecimalSeparator: false,
+        };
+    }
+
+    const decimalSeparatorIndex = hasDot ? dotIndex : commaIndex;
+    const integerPart = rawValue.slice(0, decimalSeparatorIndex).replace(/\D/g, '');
+    const decimalPart = rawValue.slice(decimalSeparatorIndex + 1).replace(/\D/g, '');
+
+    return {
+        integerPart,
+        decimalPart,
+        hasDecimalSeparator: true,
+    };
+};
+
+const formatCurrencyAmountInput = (value) => {
+    return formatNumberWithCommas(value);
+};
+
+const parseCurrencyAmountInput = (formattedValue) => {
+    return parseFormattedNumber(formattedValue);
+};
+
+export {
+    numberToVietnameseWords,
+    formatNumberWithCommas,
+    parseFormattedNumber,
+    formatCurrencyAmountInput,
+    parseCurrencyAmountInput,
+};

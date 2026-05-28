@@ -21,7 +21,7 @@ const organizationRequestTypes = [
         id: 34,
         name: 'Sáng kiến cải tiến',
         path: '/innovation-proposal',
-        departmentName: 'Tổ chức',
+        departmentName: 'Kỹ Thuật',
     },
 ];
 

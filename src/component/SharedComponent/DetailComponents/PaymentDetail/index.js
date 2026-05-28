@@ -1,6 +1,7 @@
-import { Stack, Typography, TextField } from '@mui/material';
+import { Stack, Typography } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { format } from 'date-fns';
+import { formatCurrencyAmountInput } from '../../../../utils/numberToWords';
 
 const DetailItem = ({ label, value }) => (
     <Stack direction="row" spacing={2} sx={{ py: 1 }}>
@@ -38,11 +39,9 @@ export default function PaymentDetail() {
     // Format functions
     const formatCurrency = (amount, currency) => {
         if (!amount) return '-';
-        
-        // Format số với dấu phân cách
-        const formattedAmount = new Intl.NumberFormat('vi-VN').format(amount);
-        
-        // Thêm đơn vị tiền tệ
+
+        const formattedAmount = formatCurrencyAmountInput(amount, currency);
+
         return `${formattedAmount} ${currency || 'VND'}`;
     };
 

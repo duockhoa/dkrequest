@@ -35,11 +35,13 @@ function extractDepartmentsWithRequestTypes(departments) {
         }));
 
     const organizationDepartment = mappedDepartments.find((dept) => dept.departmentName === 'Tổ chức');
-    const organizationTypes = organizationRequestTypes.map((requestType) => ({
-        id: requestType.id,
-        requestTypeName: requestType.name,
-        requestTypePath: requestType.path,
-    }));
+    const organizationTypes = organizationRequestTypes
+        .filter((requestType) => requestType.departmentName === 'Tổ chức')
+        .map((requestType) => ({
+            id: requestType.id,
+            requestTypeName: requestType.name,
+            requestTypePath: requestType.path,
+        }));
 
     if (!organizationDepartment) {
         return [

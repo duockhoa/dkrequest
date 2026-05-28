@@ -43,6 +43,7 @@ const getRequestTypesForDepartment = (dept) => {
     const existingIds = new Set(dept.requestTypes.map((requestType) => requestType.id));
     const existingPaths = new Set(dept.requestTypes.map((requestType) => requestType.requestTypePath));
     const missingOrganizationTypes = organizationRequestTypes
+        .filter((requestType) => requestType.departmentName === 'Tổ chức')
         .filter((requestType) => !existingIds.has(requestType.id) && !existingPaths.has(requestType.path))
         .map((requestType) => ({
             id: requestType.id,
