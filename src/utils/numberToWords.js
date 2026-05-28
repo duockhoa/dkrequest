@@ -123,13 +123,16 @@ const formatIntegerWithCommas = (value) => {
     return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 };
 
-const isGroupedInteger = (value, separator) => {
-    const groups = value.split(separator);
+const isCommaGroupedIntegerCandidate = (value) => {
+    const groups = value.split(',');
+    const lastGroup = groups[groups.length - 1];
+
     return (
         groups.length > 1 &&
         groups[0].length > 0 &&
         groups[0].length <= 3 &&
-        groups.slice(1).every((group) => group.length === 3)
+        lastGroup.length >= 3 &&
+        groups.slice(1, -1).every((group) => group.length === 3)
     );
 };
 
@@ -152,7 +155,7 @@ const getFormattedNumberParts = (value) => {
         };
     }
 
-    if (hasComma && !hasDot && isGroupedInteger(rawValue, ',')) {
+    if (hasComma && !hasDot && isCommaGroupedIntegerCandidate(rawValue)) {
         return {
             integerPart: rawValue.replace(/\D/g, ''),
             decimalPart: '',

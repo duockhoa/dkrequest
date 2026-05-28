@@ -32,4 +32,11 @@ describe('number formatting helpers', () => {
         expect(parseCurrencyAmountInput('1,234.5', 'USD')).toBe(1234.5);
         expect(formatCurrencyAmountInput('1000', 'USD')).toBe('1,000');
     });
+
+    test('keeps allowing more digits after auto comma grouping while typing', () => {
+        expect(formatCurrencyAmountInput('1,0000', 'USD')).toBe('10,000');
+        expect(formatCurrencyAmountInput('10,0000', 'USD')).toBe('100,000');
+        expect(formatCurrencyAmountInput('100,0000', 'USD')).toBe('1,000,000');
+        expect(parseCurrencyAmountInput('1,0000', 'USD')).toBe(10000);
+    });
 });
