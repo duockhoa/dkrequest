@@ -31,6 +31,7 @@ const tabList = [
     'Quá hạn',
     'Đang chờ duyệt',
     'Đã chấp nhận',
+    'Đã hoàn thành',
     'Đã từ chối',
     'Đến lượt tiếp nhận', // Thêm tab mới
 ];
@@ -74,7 +75,14 @@ export default function Requests() {
                     filteredRequests = originalData.filter((request) => request.status === 'pending');
                     break;
                 case 'Đã chấp nhận':
-                    filteredRequests = originalData.filter((request) => request.status === 'approved');
+                    filteredRequests = originalData.filter(
+                        (request) => request.status === 'approved' && request.isReceived && !request.isCompleted,
+                    );
+                    break;
+                case 'Đã hoàn thành':
+                    filteredRequests = originalData.filter(
+                        (request) => request.status === 'approved' && request.isCompleted,
+                    );
                     break;
                 case 'Đã từ chối':
                     filteredRequests = originalData.filter((request) => request.status === 'rejected');
@@ -315,7 +323,9 @@ export default function Requests() {
     const tabCounts = {
         'Tất cả': originalData.length,
         'Đang chờ duyệt': originalData.filter((r) => r.status === 'pending').length,
-        'Đã chấp nhận': originalData.filter((r) => r.status === 'approved').length,
+        'Đã chấp nhận': originalData.filter((r) => r.status === 'approved' && r.isReceived && !r.isCompleted)
+            .length,
+        'Đã hoàn thành': originalData.filter((r) => r.status === 'approved' && r.isCompleted).length,
         'Đã từ chối': originalData.filter((r) => r.status === 'rejected').length,
         'Đến lượt duyệt': originalData.filter((request) => {
             if (request.status !== 'pending') return false;
