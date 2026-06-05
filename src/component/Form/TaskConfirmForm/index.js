@@ -4,10 +4,21 @@ import { setRequestFormData } from '../../../redux/slice/requestFormDataSlice';
 import { clearErrors } from '../../../redux/slice/requestFormDataSlice';
 import { convertTimeTextToHours, generateHourOptions } from '../../../utils/timeCalculator';
 import { useMemo } from 'react';
+
+const getTodayDateTimeMin = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}T00:00`;
+};
+
 function TaskRequestForm() {
     const dispatch = useDispatch();
     const requestFormData = useSelector((state) => state.requestFormData.value);
     const errors = useSelector((state) => state.requestFormData.errors);
+    const todayDateTimeMin = useMemo(() => getTodayDateTimeMin(), []);
 
     const handleChange = (event) => {
         dispatch(clearErrors());
@@ -67,7 +78,7 @@ function TaskRequestForm() {
                     onChange={handleChange}
                     size="medium"
                     type="datetime-local"
-                    inputProps={{ style: { fontSize: '1.4rem' } }}
+                    inputProps={{ min: todayDateTimeMin, style: { fontSize: '1.4rem' } }}
                     error={!!errors?.start_time}
                     helperText={errors?.start_time || ''}
                 />
@@ -81,7 +92,7 @@ function TaskRequestForm() {
                     onChange={handleChange}
                     size="medium"
                     type="datetime-local"
-                    inputProps={{ style: { fontSize: '1.4rem' } }}
+                    inputProps={{ min: todayDateTimeMin, style: { fontSize: '1.4rem' } }}
                     error={!!errors?.end_time}
                     helperText={errors?.end_time || ''}
                 />

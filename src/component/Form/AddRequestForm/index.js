@@ -39,6 +39,24 @@ import TransferRequestForm from '../TransferRequestForm';
 import ResignationRequestForm from '../ResignationRequestForm';
 import InnovationProposalForm from '../InnovationProposalForm';
 
+const getStartOfLocalDay = (value = new Date()) => {
+    const date = value instanceof Date ? new Date(value) : new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+        return null;
+    }
+
+    date.setHours(0, 0, 0, 0);
+    return date;
+};
+
+const isPastLocalDate = (value) => {
+    const date = getStartOfLocalDay(value);
+    const today = getStartOfLocalDay();
+
+    return !!date && !!today && date < today;
+};
+
 const getOrganizationRequestDefaults = (requestTypeId, requestFormData) => {
     if (requestTypeId === 31) {
         return {
@@ -451,6 +469,34 @@ function AddRequestForm({ onClose }) {
                 isValid = false;
             }
         });
+
+        if (requestTypeId === 8) {
+            const startTime = flattenedData.start_time;
+            const endTime = flattenedData.end_time;
+            const startDateTime = startTime ? new Date(startTime) : null;
+            const endDateTime = endTime ? new Date(endTime) : null;
+
+            if (startTime && isPastLocalDate(startTime)) {
+                errors.start_time = 'Không được đăng ký ngày trong quá khứ';
+                isValid = false;
+            }
+
+            if (endTime && isPastLocalDate(endTime)) {
+                errors.end_time = 'Không được đăng ký ngày trong quá khứ';
+                isValid = false;
+            }
+
+            if (
+                startDateTime &&
+                endDateTime &&
+                !Number.isNaN(startDateTime.getTime()) &&
+                !Number.isNaN(endDateTime.getTime()) &&
+                endDateTime <= startDateTime
+            ) {
+                errors.end_time = 'Thời gian kết thúc phải lớn hơn thời gian bắt đầu';
+                isValid = false;
+            }
+        }
 
         // Dispatch all errors at once
         Object.keys(errors).forEach((field) => {
