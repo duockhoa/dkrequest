@@ -5,12 +5,23 @@ import { clearErrors } from '../../../redux/slice/requestFormDataSlice';
 import { useMemo, useEffect, useState } from 'react';
 import { convertTimeTextToHours, generateHourOverTimeOptions } from '../../../utils/timeCalculator';
 import { getOverTimeHours } from '../../../services/overTimeHoursSevice';
+
+const getTodayDateTimeMin = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}T00:00`;
+};
+
 function OvertimeRequestForm() {
     const dispatch = useDispatch();
     const requestFormData = useSelector((state) => state.requestFormData.value);
     const errors = useSelector((state) => state.requestFormData.errors);
     const user = useSelector((state) => state.user.userInfo);
     const [totalOverTimeHours, setTotalOverTimeHours] = useState({});
+    const todayDateTimeMin = useMemo(() => getTodayDateTimeMin(), []);
 
     const handleChange = (event) => {
         dispatch(clearErrors());
@@ -75,7 +86,7 @@ function OvertimeRequestForm() {
                     onChange={handleChange}
                     size="medium"
                     type="datetime-local"
-                    inputProps={{ style: { fontSize: '1.4rem' } }}
+                    inputProps={{ min: todayDateTimeMin, style: { fontSize: '1.4rem' } }}
                     error={!!errors?.start_time}
                     helperText={errors?.start_time || ''}
                 />
@@ -89,7 +100,7 @@ function OvertimeRequestForm() {
                     onChange={handleChange}
                     size="medium"
                     type="datetime-local"
-                    inputProps={{ style: { fontSize: '1.4rem' } }}
+                    inputProps={{ min: todayDateTimeMin, style: { fontSize: '1.4rem' } }}
                     error={!!errors?.end_time}
                     helperText={errors?.end_time || ''}
                 />

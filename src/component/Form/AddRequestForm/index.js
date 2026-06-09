@@ -57,6 +57,8 @@ const isPastLocalDate = (value) => {
     return !!date && !!today && date < today;
 };
 
+const DATE_LIMITED_REQUEST_TYPE_IDS = [7, 8];
+
 const getOrganizationRequestDefaults = (requestTypeId, requestFormData) => {
     if (requestTypeId === 31) {
         return {
@@ -470,7 +472,7 @@ function AddRequestForm({ onClose }) {
             }
         });
 
-        if (requestTypeId === 8) {
+        if (DATE_LIMITED_REQUEST_TYPE_IDS.includes(requestTypeId)) {
             const startTime = flattenedData.start_time;
             const endTime = flattenedData.end_time;
             const startDateTime = startTime ? new Date(startTime) : null;

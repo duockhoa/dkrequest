@@ -12,6 +12,7 @@ import { fetchRequestDetail } from '../../../../redux/slice/requestDetailSlice';
 import { fetchRequests } from '../../../../redux/slice/requestSlice';
 
 const APPROVAL_LIMIT_MS = 24 * 60 * 60 * 1000;
+const APPROVAL_LIMITED_REQUEST_TYPE_IDS = [7, 8];
 
 const isApprovalExpired = (requestDetail) => {
     const createdAt = requestDetail?.createAt;
@@ -39,13 +40,15 @@ function Action() {
     const requestTypeId = useSelector((state) => state.requestId.requestTypeId);
     const page = useSelector((state) => state.request.page);
     const pageSize = useSelector((state) => state.request.pageSize);
-    const isTaskConfirmationRequest = requestDetail?.requestType_id === 8 || requestTypeId === 8;
+    const isApprovalLimitedRequest =
+        APPROVAL_LIMITED_REQUEST_TYPE_IDS.includes(requestDetail?.requestType_id) ||
+        APPROVAL_LIMITED_REQUEST_TYPE_IDS.includes(requestTypeId);
 
     // Logic kiểm tra quyền hiển thị Action
     const canShowAction = (() => {
         if (!requestDetail || !userId) return false;
         if (requestDetail.status !== 'pending') return false;
-        if (isTaskConfirmationRequest && isApprovalExpired(requestDetail)) return false;
+        if (isApprovalLimitedRequest && isApprovalExpired(requestDetail)) return false;
         if (!Array.isArray(requestDetail.approvers)) return false;
         // Tìm các approver đang pending
         const pendingApprovers = requestDetail.approvers.filter((a) => a.status === 'pending');
