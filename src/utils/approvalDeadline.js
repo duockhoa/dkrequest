@@ -1,4 +1,6 @@
 export const APPROVAL_LIMITED_REQUEST_TYPE_IDS = [7, 8];
+const FIRST_LEVEL_APPROVAL_DAYS = 1;
+const NEXT_LEVEL_APPROVAL_DAYS = 2;
 
 export const isApprovalLimitedRequestType = (requestTypeId) =>
     APPROVAL_LIMITED_REQUEST_TYPE_IDS.includes(Number(requestTypeId));
@@ -29,20 +31,48 @@ const getApprovalStep = (approver) => {
     return Math.ceil(step);
 };
 
+const getValidDate = (value) => {
+    if (!value) {
+        return null;
+    }
+
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+        return null;
+    }
+
+    return date;
+};
+
+const getApprovedDateByStep = (request, step) => {
+    if (!Array.isArray(request?.approvers)) {
+        return null;
+    }
+
+    return request.approvers
+        .filter((approver) => getApprovalStep(approver) === step && approver.status === 'approved')
+        .map((approver) => getValidDate(approver.approved_at || approver.approvedAt))
+        .filter(Boolean)
+        .reduce((latestDate, approvedDate) => {
+            if (!latestDate || approvedDate > latestDate) {
+                return approvedDate;
+            }
+
+            return latestDate;
+        }, null);
+};
+
 export const getApprovalDeadline = (request, approver) => {
-    const createdAt = request?.createAt;
+    const approvalStep = getApprovalStep(approver);
+    const baseDate =
+        approvalStep === 1 ? getValidDate(request?.createAt) : getApprovedDateByStep(request, approvalStep - 1);
 
-    if (!createdAt) {
+    if (!baseDate) {
         return null;
     }
 
-    const createdDate = new Date(createdAt);
-
-    if (Number.isNaN(createdDate.getTime())) {
-        return null;
-    }
-
-    return addBusinessDays(createdDate, getApprovalStep(approver));
+    return addBusinessDays(baseDate, approvalStep === 1 ? FIRST_LEVEL_APPROVAL_DAYS : NEXT_LEVEL_APPROVAL_DAYS);
 };
 
 export const isApprovalExpiredForApprover = (request, approver, now = new Date()) => {
