@@ -1,6 +1,5 @@
 import axios from './customize-axios';
 import organizationRequestTypes from '../utils/organizationRequestTypes';
-import { filterHiddenRequestTypes, isHiddenRequestType } from '../utils/requestTypeVisibility';
 
 async function getDepartmentsServiceInclude() {
     try {
@@ -26,18 +25,18 @@ function extractDepartmentsWithRequestTypes(departments) {
         .filter((dept) => Array.isArray(dept.requestTypes) && dept.requestTypes.length > 0)
         .map((dept) => ({
             departmentName: dept.name,
-            requestTypes: filterHiddenRequestTypes(dept.requestTypes).map((rt) => ({
-                id: rt.id,
-                requestTypeName: rt.name,
-                requestTypePath: rt.path,
-            })),
-        }))
-        .filter((dept) => dept.departmentName === 'Tổ chức' || dept.requestTypes.length > 0);
+            requestTypes: dept.requestTypes.map((rt) => {
+                return {
+                    id: rt.id,
+                    requestTypeName: rt.name,
+                    requestTypePath: rt.path,
+                };
+            }),
+        }));
 
     const organizationDepartment = mappedDepartments.find((dept) => dept.departmentName === 'Tổ chức');
     const organizationTypes = organizationRequestTypes
         .filter((requestType) => requestType.departmentName === 'Tổ chức')
-        .filter((requestType) => !isHiddenRequestType(requestType))
         .map((requestType) => ({
             id: requestType.id,
             requestTypeName: requestType.name,
@@ -45,15 +44,13 @@ function extractDepartmentsWithRequestTypes(departments) {
         }));
 
     if (!organizationDepartment) {
-        return organizationTypes.length > 0
-            ? [
-                  ...mappedDepartments,
-                  {
-                      departmentName: 'Tổ chức',
-                      requestTypes: organizationTypes,
-                  },
-              ]
-            : mappedDepartments;
+        return [
+            ...mappedDepartments,
+            {
+                departmentName: 'Tổ chức',
+                requestTypes: organizationTypes,
+            },
+        ];
     }
 
     const existingIds = new Set(organizationDepartment.requestTypes.map((requestType) => requestType.id));
@@ -67,7 +64,7 @@ function extractDepartmentsWithRequestTypes(departments) {
         ),
     ];
 
-    return mappedDepartments.filter((dept) => dept.requestTypes.length > 0);
+    return mappedDepartments;
 }
 
 export { getDepartmentsServiceInclude };

@@ -9,6 +9,7 @@ import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import { Box } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
+import { setActiveCollapse } from '../../../redux/slice/sibarSlice';
 import { fetchDepartments } from '../../../redux/slice/departmentSlice';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -33,19 +34,16 @@ import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import organizationRequestTypes from '../../../utils/organizationRequestTypes';
-import { filterHiddenRequestTypes, isHiddenRequestType } from '../../../utils/requestTypeVisibility';
 
 const getRequestTypesForDepartment = (dept) => {
     if (dept.departmentName !== 'Tổ chức') {
-        return filterHiddenRequestTypes(dept.requestTypes);
+        return dept.requestTypes;
     }
 
-    const visibleRequestTypes = filterHiddenRequestTypes(dept.requestTypes);
-    const existingIds = new Set(visibleRequestTypes.map((requestType) => requestType.id));
-    const existingPaths = new Set(visibleRequestTypes.map((requestType) => requestType.requestTypePath));
+    const existingIds = new Set(dept.requestTypes.map((requestType) => requestType.id));
+    const existingPaths = new Set(dept.requestTypes.map((requestType) => requestType.requestTypePath));
     const missingOrganizationTypes = organizationRequestTypes
         .filter((requestType) => requestType.departmentName === 'Tổ chức')
-        .filter((requestType) => !isHiddenRequestType(requestType))
         .filter((requestType) => !existingIds.has(requestType.id) && !existingPaths.has(requestType.path))
         .map((requestType) => ({
             id: requestType.id,
@@ -53,7 +51,7 @@ const getRequestTypesForDepartment = (dept) => {
             requestTypePath: requestType.path,
         }));
 
-    return [...visibleRequestTypes, ...missingOrganizationTypes];
+    return [...dept.requestTypes, ...missingOrganizationTypes];
 };
 
 // Hàm ánh xạ tên đề nghị sang icon

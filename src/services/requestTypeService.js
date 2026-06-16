@@ -1,13 +1,10 @@
 import axios from './customize-axios';
 import organizationRequestTypes from '../utils/organizationRequestTypes';
-import { filterHiddenRequestTypes, isHiddenRequestType } from '../utils/requestTypeVisibility';
 
 function mergeOrganizationRequestTypes(requestTypes) {
-    const visibleRequestTypes = filterHiddenRequestTypes(requestTypes);
-    const existingIds = new Set(visibleRequestTypes.map((type) => type.id));
-    const existingPaths = new Set(visibleRequestTypes.map((type) => type.path));
+    const existingIds = new Set(requestTypes.map((type) => type.id));
+    const existingPaths = new Set(requestTypes.map((type) => type.path));
     const missingTypes = organizationRequestTypes
-        .filter((type) => !isHiddenRequestType(type))
         .filter((type) => !existingIds.has(type.id) && !existingPaths.has(type.path))
         .map((type) => ({
             id: type.id,
@@ -16,7 +13,7 @@ function mergeOrganizationRequestTypes(requestTypes) {
             departmentName: type.departmentName,
         }));
 
-    return [...visibleRequestTypes, ...missingTypes];
+    return [...requestTypes, ...missingTypes];
 }
 
 async function getAllRequestTypeService() {

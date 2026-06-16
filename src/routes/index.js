@@ -142,6 +142,10 @@ const publicRoutes = [
         component: Request,
     },
     {
+        path: '/resignation-request',
+        component: Request,
+    },
+    {
         path: '/innovation-proposal',
         component: Request,
     },
