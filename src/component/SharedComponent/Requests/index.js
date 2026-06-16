@@ -24,6 +24,7 @@ import { setPage } from '../../../redux/slice/requestSlice';
 import FilterListTwoToneIcon from '@mui/icons-material/FilterListTwoTone';
 import Drawer from '@mui/material/Drawer';
 import Filter from '../Filter';
+import { isApprovalExpiredForApprover, isApprovalLimitedRequestType } from '../../../utils/approvalDeadline';
 
 const tabList = [
     'Tất cả',
@@ -35,6 +36,49 @@ const tabList = [
     'Đã từ chối',
     'Đến lượt tiếp nhận', // Thêm tab mới
 ];
+
+const getPendingApprovers = (request) => {
+    if (!Array.isArray(request?.approvers)) return [];
+
+    return request.approvers.filter((approver) => approver.status === 'pending');
+};
+
+const getNextPendingApprover = (pendingApprovers) => {
+    if (pendingApprovers.length === 0) return null;
+
+    const nextStep = Math.min(...pendingApprovers.map((approver) => Number(approver.step)));
+    return pendingApprovers.find((approver) => Number(approver.step) === nextStep) || null;
+};
+
+const getLastPendingApprover = (pendingApprovers) => {
+    if (pendingApprovers.length === 0) return null;
+
+    const lastStep = Math.max(...pendingApprovers.map((approver) => Number(approver.step)));
+    return pendingApprovers.find((approver) => Number(approver.step) === lastStep) || null;
+};
+
+const isApproverDeadlineExpired = (approver) => {
+    if (!approver?.deadline) return false;
+
+    return new Date(approver.deadline) < new Date();
+};
+
+const isRequestOverdue = (request, userId, activeRequestTypeId) => {
+    if (request.status !== 'pending') return false;
+
+    const pendingApprovers = getPendingApprovers(request);
+    const nextApprover = getNextPendingApprover(pendingApprovers);
+    const approverToCheck =
+        nextApprover && nextApprover.user_id === userId ? nextApprover : getLastPendingApprover(pendingApprovers);
+
+    if (!approverToCheck) return false;
+
+    if (isApprovalLimitedRequestType(request?.requestType_id || activeRequestTypeId)) {
+        return isApprovalExpiredForApprover(request, approverToCheck);
+    }
+
+    return isApproverDeadlineExpired(approverToCheck);
+};
 
 export default function Requests() {
     const isMobile = useMediaQuery((theme) => theme.breakpoints.down('sm'));
@@ -93,46 +137,15 @@ export default function Requests() {
                         if (request.status !== 'pending') return false;
 
                         // Tìm approver có step nhỏ nhất trong các pending approvers
-                        const pendingApprovers = request.approvers.filter((approver) => approver.status === 'pending');
-                        if (pendingApprovers.length === 0) return false;
-
-                        const nextStep = Math.min(...pendingApprovers.map((approver) => approver.step));
-                        const nextApprover = pendingApprovers.find((approver) => approver.step === nextStep);
+                        const nextApprover = getNextPendingApprover(getPendingApprovers(request));
 
                         return nextApprover && nextApprover.user_id === user.id;
                     });
                     break;
                 case 'Quá hạn':
-                    // Có thể thêm logic quá hạn nếu có trường deadline
-                    filteredRequests = originalData.filter((request) => {
-                        if (request.status !== 'pending') return false;
-                        // Lấy tất cả approver còn pending
-                        const pendingApprovers = request.approvers.filter((a) => a.status === 'pending');
-                        if (pendingApprovers.length === 0) return false;
-
-                        // Tìm approver có step nhỏ nhất (người duyệt tiếp theo)
-                        const nextStep = Math.min(...pendingApprovers.map((a) => a.step));
-                        const nextApprover = pendingApprovers.find((a) => a.step === nextStep);
-
-                        const now = new Date();
-
-                        // Nếu user là người duyệt tiếp theo
-                        if (nextApprover && nextApprover.user_id === user.id) {
-                            // Nếu quá deadline mà chưa duyệt thì là quá hạn
-                            if (nextApprover.deadline && new Date(nextApprover.deadline) < now) {
-                                return true;
-                            }
-                            return false;
-                        } else {
-                            // Nếu không phải người duyệt tiếp theo, kiểm tra người cuối cùng còn pending
-                            const lastStep = Math.max(...pendingApprovers.map((a) => a.step));
-                            const lastApprover = pendingApprovers.find((a) => a.step === lastStep);
-                            if (lastApprover && lastApprover.deadline && new Date(lastApprover.deadline) < now) {
-                                return true;
-                            }
-                            return false;
-                        }
-                    });
+                    filteredRequests = originalData.filter((request) =>
+                        isRequestOverdue(request, user.id, requestTypeId),
+                    );
                     break;
                 case 'Đến lượt tiếp nhận':
                     // Những item chưa tiếp nhận nhưng đã được duyệt
@@ -146,7 +159,7 @@ export default function Requests() {
 
             dispatch(setRequestData(filteredRequests));
         }
-    }, [tab, originalData, dispatch, user.id]);
+    }, [tab, originalData, dispatch, user.id, requestTypeId]);
 
     // Hàm để mở/đóng form
     const handleToggleForm = () => {
@@ -329,33 +342,10 @@ export default function Requests() {
         'Đã từ chối': originalData.filter((r) => r.status === 'rejected').length,
         'Đến lượt duyệt': originalData.filter((request) => {
             if (request.status !== 'pending') return false;
-            const pendingApprovers = request.approvers.filter((approver) => approver.status === 'pending');
-            if (pendingApprovers.length === 0) return false;
-            const nextStep = Math.min(...pendingApprovers.map((approver) => approver.step));
-            const nextApprover = pendingApprovers.find((approver) => approver.step === nextStep);
+            const nextApprover = getNextPendingApprover(getPendingApprovers(request));
             return nextApprover && nextApprover.user_id === user.id;
         }).length,
-        'Quá hạn': originalData.filter((request) => {
-            if (request.status !== 'pending') return false;
-            const pendingApprovers = request.approvers.filter((a) => a.status === 'pending');
-            if (pendingApprovers.length === 0) return false;
-            const nextStep = Math.min(...pendingApprovers.map((a) => a.step));
-            const nextApprover = pendingApprovers.find((a) => a.step === nextStep);
-            const now = new Date();
-            if (nextApprover && nextApprover.user_id === user.id) {
-                if (nextApprover.deadline && new Date(nextApprover.deadline) < now) {
-                    return true;
-                }
-                return false;
-            } else {
-                const lastStep = Math.max(...pendingApprovers.map((a) => a.step));
-                const lastApprover = pendingApprovers.find((a) => a.step === lastStep);
-                if (lastApprover && lastApprover.deadline && new Date(lastApprover.deadline) < now) {
-                    return true;
-                }
-                return false;
-            }
-        }).length,
+        'Quá hạn': originalData.filter((request) => isRequestOverdue(request, user.id, requestTypeId)).length,
         'Đến lượt tiếp nhận': originalData.filter((request) => request.status === 'approved' && !request.isReceived)
             .length,
     };

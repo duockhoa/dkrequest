@@ -10,25 +10,7 @@ import { approverUpdateStatus, approverForward } from '../../../../services/appr
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchRequestDetail } from '../../../../redux/slice/requestDetailSlice';
 import { fetchRequests } from '../../../../redux/slice/requestSlice';
-
-const APPROVAL_LIMIT_MS = 24 * 60 * 60 * 1000;
-const APPROVAL_LIMITED_REQUEST_TYPE_IDS = [7, 8];
-
-const isApprovalExpired = (requestDetail) => {
-    const createdAt = requestDetail?.createAt;
-
-    if (!createdAt) {
-        return false;
-    }
-
-    const createdDate = new Date(createdAt);
-
-    if (Number.isNaN(createdDate.getTime())) {
-        return false;
-    }
-
-    return Date.now() > createdDate.getTime() + APPROVAL_LIMIT_MS;
-};
+import { isApprovalExpiredForApprover, isApprovalLimitedRequestType } from '../../../../utils/approvalDeadline';
 
 function Action() {
     const dispatch = useDispatch();
@@ -40,23 +22,25 @@ function Action() {
     const requestTypeId = useSelector((state) => state.requestId.requestTypeId);
     const page = useSelector((state) => state.request.page);
     const pageSize = useSelector((state) => state.request.pageSize);
-    const isApprovalLimitedRequest =
-        APPROVAL_LIMITED_REQUEST_TYPE_IDS.includes(requestDetail?.requestType_id) ||
-        APPROVAL_LIMITED_REQUEST_TYPE_IDS.includes(requestTypeId);
+    const isApprovalLimitedRequest = isApprovalLimitedRequestType(requestDetail?.requestType_id || requestTypeId);
 
     // Logic kiểm tra quyền hiển thị Action
     const canShowAction = (() => {
         if (!requestDetail || !userId) return false;
         if (requestDetail.status !== 'pending') return false;
-        if (isApprovalLimitedRequest && isApprovalExpired(requestDetail)) return false;
         if (!Array.isArray(requestDetail.approvers)) return false;
         // Tìm các approver đang pending
         const pendingApprovers = requestDetail.approvers.filter((a) => a.status === 'pending');
         if (pendingApprovers.length === 0) return false;
         // Tìm step nhỏ nhất
-        const nextStep = Math.min(...pendingApprovers.map((a) => a.step));
+        const nextStep = Math.min(...pendingApprovers.map((a) => Number(a.step)));
         // Kiểm tra user hiện tại có phải là người duyệt ở step tiếp theo không
-        return pendingApprovers.some((a) => a.step === nextStep && a.user_id === userId);
+        const currentApprover = pendingApprovers.find((a) => Number(a.step) === nextStep && a.user_id === userId);
+
+        if (!currentApprover) return false;
+        if (isApprovalLimitedRequest && isApprovalExpiredForApprover(requestDetail, currentApprover)) return false;
+
+        return true;
     })();
 
     if (!canShowAction) return null;
