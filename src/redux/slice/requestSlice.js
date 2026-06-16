@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { getAllRequestService } from '../../services/requestService';
-import { set } from 'date-fns';
+import { filterHiddenRequests } from '../../utils/requestTypeVisibility';
 
 const fetchRequests = createAsyncThunk('request/fetchRequests', async ({ requestTypeId, user_id , page , pageSize}) => {
     const response = await getAllRequestService(requestTypeId, user_id, page , pageSize);
@@ -63,8 +63,9 @@ const requestSlice = createSlice({
                 state.error = null;
             })
             .addCase(fetchRequests.fulfilled, (state, action) => {
-                state.requestData = action.payload.result;
-                state.originalData = action.payload.result;
+                const visibleRequests = filterHiddenRequests(action.payload.result || []);
+                state.requestData = visibleRequests;
+                state.originalData = visibleRequests;
                 state.page = action.payload.pagination.page;
                 state.totalPages = action.payload.pagination.totalPages;
                 state.total = action.payload.pagination.total;
