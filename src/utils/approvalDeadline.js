@@ -21,6 +21,12 @@ export const addBusinessDays = (date, days) => {
     return result;
 };
 
+const getEndOfLocalDay = (date) => {
+    const result = new Date(date);
+    result.setHours(23, 59, 59, 999);
+    return result;
+};
+
 const getApprovalStep = (approver) => {
     const step = Number(approver?.step);
 
@@ -72,7 +78,12 @@ export const getApprovalDeadline = (request, approver) => {
         return null;
     }
 
-    return addBusinessDays(baseDate, approvalStep === 1 ? FIRST_LEVEL_APPROVAL_DAYS : NEXT_LEVEL_APPROVAL_DAYS);
+    const deadlineDate = addBusinessDays(
+        baseDate,
+        approvalStep === 1 ? FIRST_LEVEL_APPROVAL_DAYS : NEXT_LEVEL_APPROVAL_DAYS,
+    );
+
+    return getEndOfLocalDay(deadlineDate);
 };
 
 export const isApprovalExpiredForApprover = (request, approver, now = new Date()) => {
