@@ -193,7 +193,7 @@ function TrainingRequestForm() {
 
     const trainingLocationTypes = ['Bên trong', 'Bên ngoài', 'Tại bộ phận'];
 
-    const trainerTypes = ['Giảng viên nội bộ', 'Giảng viên bên ngoài', 'Chuyên gia', 'Tư vấn viên'];
+    const trainerTypes = ['Giảng viên nội bộ', 'Giảng viên bên ngoài'];
 
     // Handlers cho DataGrid
     const handleRowEditStop = (params, event) => {
