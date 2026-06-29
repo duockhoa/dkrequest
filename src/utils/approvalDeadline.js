@@ -1,4 +1,14 @@
-export const APPROVAL_LIMITED_REQUEST_TYPE_IDS = [7, 8];
+const isApprovalDeadlineHideEnabled = () => {
+    const value = process.env.REACT_APP_ENABLE_APPROVAL_DEADLINE_HIDE;
+
+    if (value === undefined || value === '') {
+        return true;
+    }
+
+    return value.trim().toLowerCase() === 'true';
+};
+
+export const APPROVAL_LIMITED_REQUEST_TYPE_IDS = isApprovalDeadlineHideEnabled() ? [7, 8] : [];
 const FIRST_LEVEL_APPROVAL_DAYS = 1;
 const NEXT_LEVEL_APPROVAL_DAYS = 2;
 
