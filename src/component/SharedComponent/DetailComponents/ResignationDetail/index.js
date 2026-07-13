@@ -40,12 +40,12 @@ export default function ResignationDetail() {
 
     return (
         <>
-            <DetailItem label="Nhân viên" value={resignation.employee_name || '-'} />
+            <DetailItem label="Tên nhân viên" value={resignation.employee_name || '-'} />
             <DetailItem label="Mã nhân viên" value={resignation.employee_code || '-'} />
             <DetailItem label="Phòng/ban" value={resignation.department || '-'} />
             <DetailItem label="Chức danh" value={resignation.position || '-'} />
-            <DetailItem label="Ngày vào làm" value={formatDate(resignation.joined_date)} />
-            <DetailItem label="Ngày nghỉ việc" value={formatDate(resignation.resignation_date)} />
+            <DetailItem label="Ngày bắt đầu xin nghỉ" value={formatDate(resignation.joined_date)} />
+            <DetailItem label="Nghỉ việc kể từ ngày" value={formatDate(resignation.resignation_date)} />
             <DetailItem label="Lý do thôi việc" value={resignation.resignation_reason || '-'} />
             <DetailItem label="Số lượng cổ phần" value={resignation.shares_count || '-'} />
             <DetailItem label="Giá trị cổ phần" value={resignation.shares_value || '-'} />

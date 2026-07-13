@@ -30,7 +30,7 @@ function ResignationRequestForm() {
     return (
         <Stack spacing={2}>
             <Stack direction="row" alignItems="center" spacing={2}>
-                <Typography sx={labelSx}>Nhân viên: (*)</Typography>
+                <Typography sx={labelSx}>Tên nhân viên: (*)</Typography>
                 <TextField
                     fullWidth
                     name="employee_name"
@@ -86,7 +86,7 @@ function ResignationRequestForm() {
             </Stack>
 
             <Stack direction="row" alignItems="center" spacing={2}>
-                <Typography sx={labelSx}>Ngày vào làm:</Typography>
+                <Typography sx={labelSx}>Ngày bắt đầu xin nghỉ:</Typography>
                 <TextField
                     fullWidth
                     name="joined_date"
@@ -102,7 +102,7 @@ function ResignationRequestForm() {
             </Stack>
 
             <Stack direction="row" alignItems="center" spacing={2}>
-                <Typography sx={labelSx}>Ngày nghỉ việc: (*)</Typography>
+                <Typography sx={labelSx}>Nghỉ việc kể từ ngày: (*)</Typography>
                 <TextField
                     fullWidth
                     name="resignation_date"
