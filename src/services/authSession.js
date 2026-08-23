@@ -64,6 +64,16 @@ async function refreshAccessToken(failedAccessToken) {
     return refreshPromise;
 }
 
+function restoreAccessToken() {
+    const accessToken = Cookies.get('accessToken');
+
+    if (accessToken) {
+        return Promise.resolve(accessToken);
+    }
+
+    return refreshAccessToken();
+}
+
 function clearSessionAndRedirect() {
     Cookies.remove('accessToken', cookieOptions);
     Cookies.remove('refreshToken', cookieOptions);
@@ -111,4 +121,4 @@ function addAuthenticationInterceptors(instance) {
     );
 }
 
-export { addAuthenticationInterceptors };
+export { addAuthenticationInterceptors, restoreAccessToken };

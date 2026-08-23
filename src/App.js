@@ -7,6 +7,7 @@ import { fetchUser } from './redux/slice/userSlice';
 import { io } from 'socket.io-client';
 import { setNotifications } from './redux/slice/notificationSlice';
 import Cookies from 'js-cookie';
+import { restoreAccessToken } from './services/authSession';
 
 function App() {
     const dispatch = useDispatch();
@@ -16,13 +17,28 @@ function App() {
 
     useEffect(() => {
         const accessToken = Cookies.get('accessToken');
+        let isActive = true;
 
         // 1. Kiểm tra đăng nhập
         if (user.name === '') {
             if (!accessToken) {
-                // Nên dùng window.location.replace để không lưu lịch sử back lại trang này
-                window.location.replace(process.env.REACT_APP_FRONTEND_ROOT_URL + '/login');
-                return;
+                // Khi access token hết hạn/mất nhưng refresh token vẫn còn, phải thử
+                // refresh trước. Nếu redirect ngay ở đây thì interceptor không có cơ hội chạy.
+                restoreAccessToken()
+                    .then(() => {
+                        if (isActive) {
+                            dispatch(fetchUser());
+                        }
+                    })
+                    .catch(() => {
+                        if (isActive) {
+                            window.location.replace(process.env.REACT_APP_FRONTEND_ROOT_URL + '/login');
+                        }
+                    });
+
+                return () => {
+                    isActive = false;
+                };
             } else {
                 dispatch(fetchUser());
                 return; // Chờ fetchUser xong thì useEffect sẽ chạy lại do user.name thay đổi
