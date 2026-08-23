@@ -45,7 +45,7 @@ instance.interceptors.response.use(
                         timeout: 12000,
                     });
 
-                    const response = await refreshInstance.post('/auth/refreshtoken', { refreshToken });
+                    const response = await refreshInstance.post('/auth/refresh-token', { refreshToken });
                     const newAccessToken = response.data.accessToken;
 
                     // Set cookie với domain
