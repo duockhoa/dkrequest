@@ -95,7 +95,15 @@ function PaymentRequestForm() {
     }));
 
     return (
-        <Stack spacing={3}>
+        <Stack
+            spacing={3}
+            sx={{
+                '& > .MuiStack-root > .MuiTypography-root': {
+                    width: 120,
+                    flexShrink: 0,
+                },
+            }}
+        >
             <Stack direction="row" alignItems="center" spacing={2}>
                 <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Loại thanh toán (*):</Typography>
                 <Select

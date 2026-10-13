@@ -6,6 +6,7 @@ module.exports = {
         '<rootDir>/src/utils/numberToWords.test.js',
         '<rootDir>/src/services/exportsFileService.test.js',
         '<rootDir>/src/component/Form/fuelPayment.test.js',
+        '<rootDir>/src/redux/slice/userSlice.test.js',
     ],
     transform: {
         '^.+\\.js$': ['babel-jest', {

@@ -29,7 +29,7 @@ BE cần:
 
 ## Quyền truy cập
 
-FE giữ quyền hiển thị báo cáo chung theo phòng ban hiện có. Để HC hoặc KTSX-DA có thể xuất báo cáo xăng dầu ngoài điều kiện đó, API `GET /users/me` cần trả quyền do BE tính:
+FE giữ quyền hiển thị báo cáo chung theo phòng ban hiện có. Sau khi tải tài khoản từ dịch vụ đăng nhập, FE gọi `GET /api/v1/users/me` của BE request để lấy quyền báo cáo; không chờ API quyền mới hiển thị tài khoản. Để HC hoặc KTSX-DA có thể xuất báo cáo xăng dầu ngoài điều kiện đó, API này cần trả quyền do BE tính:
 
 ```json
 { "permissions": { "exportFuelPaymentReport": true } }

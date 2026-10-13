@@ -1,10 +1,14 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { createSlice } from '@reduxjs/toolkit';
-import { getMe } from '../../services/usersService';
+import { getMe, getRequestReportPermissions } from '../../services/usersService';
 
 const fetchUser = createAsyncThunk('user/fetchUser', async () => {
     const response = await getMe();
     return response.data;
+});
+
+const fetchReportPermissions = createAsyncThunk('user/fetchReportPermissions', async () => {
+    return getRequestReportPermissions();
 });
 
 export const userSlice = createSlice({
@@ -48,9 +52,23 @@ export const userSlice = createSlice({
             state.loading = false;
             state.error = action.error.message;
         });
+        builder.addCase(fetchReportPermissions.fulfilled, (state, action) => {
+            if (state.userInfo.id !== action.meta.arg) return;
+            state.userInfo.permissions = {
+                ...state.userInfo.permissions,
+                exportFuelPaymentReport: action.payload.exportFuelPaymentReport === true,
+            };
+        });
+        builder.addCase(fetchReportPermissions.rejected, (state, action) => {
+            if (state.userInfo.id !== action.meta.arg) return;
+            state.userInfo.permissions = {
+                ...state.userInfo.permissions,
+                exportFuelPaymentReport: false,
+            };
+        });
     },
 });
 
-export { fetchUser };
+export { fetchUser, fetchReportPermissions };
 export const { setOnEdit, setUserInfo } = userSlice.actions;
 export default userSlice.reducer;

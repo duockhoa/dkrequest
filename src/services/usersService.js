@@ -1,4 +1,5 @@
 import axios from './auth-axios';
+import requestAxios from './customize-axios';
 import Cookies from 'js-cookie';
 
 async function getUserService() {
@@ -97,4 +98,9 @@ async function updateAvatarService(payload) {
     }
 }
 
-export { getAllUsersService, changePasswordService, getUserService, updateAvatarService, getMe };
+async function getRequestReportPermissions() {
+    const response = await requestAxios.get('/users/me');
+    return response.data.permissions || {};
+}
+
+export { getAllUsersService, changePasswordService, getUserService, updateAvatarService, getMe, getRequestReportPermissions };

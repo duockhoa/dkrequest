@@ -3,7 +3,7 @@ import { publicRoutes } from './routes';
 import { DefaultLayout } from './Layouts';
 import { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchUser } from './redux/slice/userSlice';
+import { fetchUser, fetchReportPermissions } from './redux/slice/userSlice';
 import { io } from 'socket.io-client';
 import { setNotifications } from './redux/slice/notificationSlice';
 import Cookies from 'js-cookie';
@@ -14,6 +14,10 @@ function App() {
     const socketRef = useRef(null);
     const user = useSelector((state) => state.user.userInfo);
     const unreadCount = useSelector((state) => state.notification.unreadCount);
+
+    useEffect(() => {
+        if (user.id) dispatch(fetchReportPermissions(user.id));
+    }, [dispatch, user.id]);
 
     useEffect(() => {
         const accessToken = Cookies.get('accessToken');
