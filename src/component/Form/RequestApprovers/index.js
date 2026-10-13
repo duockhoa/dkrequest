@@ -1,15 +1,16 @@
-import { Stack, Typography, TextField, Avatar } from '@mui/material';
+import { Stack, Typography, Avatar, Alert, Button } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
-import { setRequestFormData } from '../../../redux/slice/requestFormDataSlice';
+import { setFormApprovers } from '../../../redux/slice/requestFormDataSlice';
 import { fetchRequestApprovers } from '../../../redux/slice/requestApproverSlice';
 import { useEffect } from 'react';
 
 function RequestApprovers() {
     const dispatch = useDispatch();
-    const requestFormData = useSelector((state) => state.requestFormData.value);
     const requestTypeId = useSelector((state) => state.requestId.requestTypeId);
     const user = useSelector((state) => state.user.userInfo);
     const requestApprovers = useSelector((state) => state.requestApprover.approverData);
+    const loading = useSelector((state) => state.requestApprover.loading);
+    const error = useSelector((state) => state.requestApprover.error);
 
     useEffect(() => {
         if (requestTypeId && user.id) {
@@ -18,28 +19,33 @@ function RequestApprovers() {
     }, [requestTypeId, user.id, dispatch]);
 
     useEffect(() => {
-        if (requestApprovers.length > 0) {
-            const approversData = requestApprovers.map((approver) => ({
-                user_id: approver.id || '',
-                step: approver.level,
-            }));
+        const approversData = requestApprovers.map((approver) => ({
+            user_id: approver.id || '',
+            step: approver.level,
+        }));
 
-            approversData.sort((a, b) => a.step - b.step);
+        approversData.sort((a, b) => a.step - b.step);
 
-            dispatch(
-                setRequestFormData({
-                    ...requestFormData,
-                    approvers: approversData,
-                }),
-            );
-        }
-    }, [requestApprovers]);
+        dispatch(setFormApprovers(approversData));
+    }, [requestApprovers, dispatch]);
 
     return (
         <Stack direction="column" spacing={2}>
+            {loading && <Typography sx={{ fontSize: '1.4rem' }}>Đang tải người phê duyệt...</Typography>}
+            {error && (
+                <Alert severity="error" action={
+                    <Button onClick={() => dispatch(fetchRequestApprovers({ requestTypeId, userId: user.id }))}>
+                        Thử lại
+                    </Button>
+                }>
+                    {error}
+                </Alert>
+            )}
             {requestApprovers.map((approver) => (
-                <Stack key={approver.level} direction="row" alignItems="center" spacing={2}>
-                    <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Phê duyệt cấp {approver.level}:</Typography>
+                <Stack key={`${approver.id}-${approver.level}`} direction="row" alignItems="center" spacing={2}>
+                    <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>
+                        Phê duyệt cấp {approver.level}{approver.approvalRole === 'technical_deputy' ? ' (Phó phòng)' : ''}:
+                    </Typography>
                     <Avatar src={approver.avatar} alt={approver.name} sx={{ width: 32, height: 32 }} />
                     <Stack>
                         <Typography sx={{ fontSize: '1.4rem', fontWeight: 500 }}>{approver.name}</Typography>

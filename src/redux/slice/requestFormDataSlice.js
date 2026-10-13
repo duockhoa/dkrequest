@@ -31,6 +31,9 @@ const requestFormDataSlice = createSlice({
         setRequestFormData: (state, action) => {
             state.value = action.payload;
         },
+        setFormApprovers: (state, action) => {
+            state.value.approvers = action.payload;
+        },
         clearRequestFormData: (state) => {
             state.value = initialState.value;
             state.errors = initialState.errors;
@@ -107,6 +110,7 @@ const requestFormDataSlice = createSlice({
 
 export const {
     setRequestFormData,
+    setFormApprovers,
     clearRequestFormData,
     updateLeaveRegistration,
     setFieldError,

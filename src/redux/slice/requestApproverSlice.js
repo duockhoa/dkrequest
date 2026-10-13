@@ -19,6 +19,8 @@ const requestApproverSlice = createSlice({
         approverData: [],
         loading: false,
         error: null,
+        activeRequestId: null,
+        loadedFor: null,
     },
     reducers: {
         setApproverData: (state, action) => {
@@ -27,15 +29,21 @@ const requestApproverSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            .addCase(fetchRequestApprovers.pending, (state) => {
+            .addCase(fetchRequestApprovers.pending, (state, action) => {
                 state.loading = true;
                 state.error = null;
+                state.approverData = [];
+                state.loadedFor = null;
+                state.activeRequestId = action.meta.requestId;
             })
             .addCase(fetchRequestApprovers.fulfilled, (state, action) => {
+                if (state.activeRequestId !== action.meta.requestId) return;
                 state.approverData = action.payload;
                 state.loading = false;
+                state.loadedFor = action.meta.arg;
             })
             .addCase(fetchRequestApprovers.rejected, (state, action) => {
+                if (state.activeRequestId !== action.meta.requestId) return;
                 state.loading = false;
                 state.error = action.error.message;
             });

@@ -147,6 +147,10 @@ function AddRequestForm({ onClose }) {
     const loading = useSelector((state) => state.requestFormData.loading);
     const error = useSelector((state) => state.requestFormData.error);
     const errors = useSelector((state) => state.requestFormData.errors);
+    const approvalPreview = useSelector((state) => state.requestApprover);
+    const approvalPreviewReady = !approvalPreview.loading && !approvalPreview.error
+        && approvalPreview.loadedFor?.requestTypeId === requestTypeId
+        && approvalPreview.loadedFor?.userId === user.id;
     const dispatch = useDispatch();
     const [openErrorAlert, setOpenErrorAlert] = useState(false);
     const isInnovationRequest = requestTypeId === 34;
@@ -520,6 +524,8 @@ function AddRequestForm({ onClose }) {
     const handleSubmit = async (event) => {
         event.preventDefault();
 
+        if (!approvalPreviewReady) return;
+
         if (!validateForm()) {
             return;
         }
@@ -744,7 +750,7 @@ function AddRequestForm({ onClose }) {
                     type="submit"
                     variant="contained"
                     onClick={handleSubmit}
-                    disabled={loading}
+                    disabled={loading || !approvalPreviewReady}
                     sx={{
                         py: 0.8,
                         maxWidth: 150,

@@ -44,6 +44,7 @@
         "build": "react-scripts build",
         "test": "react-scripts test",
         "test:fuel": "jest --config jest.fuel.config.cjs --runInBand",
+        "test:approval": "jest --config jest.approval.config.cjs --runInBand",
         "eject": "react-scripts eject"
     },
     "eslintConfig": {
