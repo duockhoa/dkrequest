@@ -5,6 +5,7 @@ import ExportReportForm from '../../../Form/ExportReportForm';
 import { useSelector } from 'react-redux';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { canExportFuelPaymentReport } from '../../../../utils/fuelPayment';
+import { hasDevFullAccess } from '../../../../utils/permissions';
 
 function ExportReport() {
     const [isOpenExportForm, setIsOpenExportForm] = useState(false);
@@ -13,7 +14,7 @@ function ExportReport() {
     const requestTypeId = useSelector((state) => state.requestId.requestTypeId);
     const department = useSelector((state) => state.requestId.department);
 
-    const allowGeneralReport = !!department && department === user?.department;
+    const allowGeneralReport = hasDevFullAccess(user) || (!!department && department === user?.department);
     const allowFuelReport = requestTypeId === 1 && canExportFuelPaymentReport(user);
 
     if (!allowGeneralReport && !allowFuelReport) {

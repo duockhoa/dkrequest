@@ -20,7 +20,7 @@ test('loads explicit request backend permission without replacing the login prof
     const store = createStore();
     await store.dispatch(fetchReportPermissions(10));
     expect(store.getState().user.userInfo).toEqual({
-        id: 10, name: 'Người đề nghị', department: 'HC', permissions: { exportFuelPaymentReport: true },
+        id: 10, name: 'Người đề nghị', department: 'HC', permissions: { exportFuelPaymentReport: true, devFullAccess: false },
     });
 });
 
@@ -42,4 +42,14 @@ test('does not attach a late permission response to another logged-in user', asy
     resolvePermissions({ exportFuelPaymentReport: true });
     await pending;
     expect(store.getState().user.userInfo).toEqual({ id: 20, name: 'Người khác' });
+});
+
+test('developer capability is loaded from the request backend and revoked on failed reload', async () => {
+    getRequestReportPermissions.mockResolvedValue({ devFullAccess: true, exportFuelPaymentReport: true });
+    const store = createStore();
+    await store.dispatch(fetchReportPermissions(10));
+    expect(store.getState().user.userInfo.permissions.devFullAccess).toBe(true);
+    getRequestReportPermissions.mockRejectedValue(new Error('Không thể tải quyền'));
+    await store.dispatch(fetchReportPermissions(10));
+    expect(store.getState().user.userInfo.permissions.devFullAccess).toBe(false);
 });

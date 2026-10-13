@@ -11,12 +11,14 @@ import { useSelector, useDispatch } from 'react-redux';
 import { fetchRequestDetail } from '../../../../redux/slice/requestDetailSlice';
 import { fetchRequests } from '../../../../redux/slice/requestSlice';
 import { isApprovalExpiredForApprover, isApprovalLimitedRequestType } from '../../../../utils/approvalDeadline';
+import { hasDevFullAccess } from '../../../../utils/permissions';
 
 function Action() {
     const dispatch = useDispatch();
     const [open, setOpen] = useState(false);
     const [actionType, setActionType] = useState('approved');
     const userId = useSelector((state) => state.user.userInfo.id);
+    const user = useSelector((state) => state.user.userInfo);
     const requestId = useSelector((state) => state.requestId.requestId);
     const requestDetail = useSelector((state) => state.requestDetail.requestDetailvalue);
     const requestTypeId = useSelector((state) => state.requestId.requestTypeId);
@@ -35,7 +37,9 @@ function Action() {
         // Tìm step nhỏ nhất
         const nextStep = Math.min(...pendingApprovers.map((a) => Number(a.step)));
         // Kiểm tra user hiện tại có phải là người duyệt ở step tiếp theo không
-        const currentApprover = pendingApprovers.find((a) => Number(a.step) === nextStep && a.user_id === userId);
+        const currentApprover = pendingApprovers.find(
+            (a) => Number(a.step) === nextStep && (hasDevFullAccess(user) || a.user_id === userId),
+        );
 
         if (!currentApprover) return false;
         if (isApprovalLimitedRequest && isApprovalExpiredForApprover(requestDetail, currentApprover)) return false;

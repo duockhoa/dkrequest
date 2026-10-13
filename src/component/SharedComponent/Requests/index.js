@@ -1,3 +1,4 @@
+import { hasDevFullAccess } from '../../../utils/permissions';
 import { Tabs, Tab, Box, Typography, Stack, Avatar, Chip, AvatarGroup, Dialog, Divider, Badge } from '@mui/material';
 import { useState, useEffect, useRef } from 'react';
 import AddIcon from '@mui/icons-material/Add';
@@ -98,12 +99,13 @@ export default function Requests() {
     const requestId = useSelector((state) => state.requestId.requestId);
     const user = useSelector((state) => state.user.userInfo);
     const pageSize = useSelector((state) => state.request.pageSize);
+    const devFullAccess = hasDevFullAccess(user);
 
     useEffect(() => {
         if (requestTypeId && user.id) {
             dispatch(fetchRequests({ requestTypeId, user_id: user.id, page, pageSize }));
         }
-    }, [dispatch, requestTypeId, user.id, page, pageSize]);
+    }, [dispatch, requestTypeId, user.id, page, pageSize, devFullAccess]);
 
     // Thêm useEffect để filter theo tab
     useEffect(() => {
@@ -139,7 +141,7 @@ export default function Requests() {
                         // Tìm approver có step nhỏ nhất trong các pending approvers
                         const nextApprover = getNextPendingApprover(getPendingApprovers(request));
 
-                        return nextApprover && nextApprover.user_id === user.id;
+                        return nextApprover && (devFullAccess || nextApprover.user_id === user.id);
                     });
                     break;
                 case 'Quá hạn':
@@ -159,7 +161,7 @@ export default function Requests() {
 
             dispatch(setRequestData(filteredRequests));
         }
-    }, [tab, originalData, dispatch, user.id, requestTypeId]);
+    }, [tab, originalData, dispatch, user.id, requestTypeId, devFullAccess]);
 
     // Hàm để mở/đóng form
     const handleToggleForm = () => {
@@ -343,7 +345,7 @@ export default function Requests() {
         'Đến lượt duyệt': originalData.filter((request) => {
             if (request.status !== 'pending') return false;
             const nextApprover = getNextPendingApprover(getPendingApprovers(request));
-            return nextApprover && nextApprover.user_id === user.id;
+            return nextApprover && (devFullAccess || nextApprover.user_id === user.id);
         }).length,
         'Quá hạn': originalData.filter((request) => isRequestOverdue(request, user.id, requestTypeId)).length,
         'Đến lượt tiếp nhận': originalData.filter((request) => request.status === 'approved' && !request.isReceived)

@@ -1,3 +1,4 @@
+import { hasDevFullAccess } from '../../../../utils/permissions';
 import {
     Stack,
     Typography,
@@ -88,7 +89,7 @@ export default function SupplyStationeryDetailExpand() {
             </TableContainer>
 
             {/* Floating Action Button ở góc phải dưới của component */}
-            {userInfo?.department === 'HC' ||
+            {hasDevFullAccess(userInfo) || userInfo?.department === 'HC' ||
             (requestDetail?.status === 'pending' && userInfo?.id === requestDetail.requestor_id) ? (
                 <Fab
                     color="primary"

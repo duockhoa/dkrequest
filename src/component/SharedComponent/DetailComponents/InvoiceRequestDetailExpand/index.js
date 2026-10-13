@@ -1,3 +1,4 @@
+import { hasDevFullAccess } from '../../../../utils/permissions';
 import {
     Stack,
     Typography,
@@ -152,7 +153,7 @@ export default function InvoiceRequestDetailExpand() {
                 </Table>
             </TableContainer>
 
-            {requestDetail?.status === 'pending' && userInfo?.id === requestDetail.requestor_id ? (
+            {requestDetail?.status === 'pending' && (hasDevFullAccess(userInfo) || userInfo?.id === requestDetail.requestor_id) ? (
                 <Fab
                     color="primary"
                     onClick={handleOpenDialog}

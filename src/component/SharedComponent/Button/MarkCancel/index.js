@@ -6,6 +6,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { fetchRequestDetail } from '../../../../redux/slice/requestDetailSlice';
 import { fetchRequests } from '../../../../redux/slice/requestSlice';
 import { markCanceled } from '../../../../services/requestService';
+import { hasDevFullAccess } from '../../../../utils/permissions';
 
 function MarkCancel({ onClose }) {
     const dispatch = useDispatch();
@@ -24,7 +25,7 @@ function MarkCancel({ onClose }) {
 
     const isOwner = user?.id === requestDetail?.requestor?.id;
     // Phân quyền: chỉ được huỷ khi chưa ai duyệt và chưa huỷ
-    const hasPermission = !isCanceled && !isAnyApproved && isOwner;
+    const hasPermission = !isCanceled && (hasDevFullAccess(user) || (!isAnyApproved && isOwner));
 
     const handleComplete = () => {
         setOpen(true);

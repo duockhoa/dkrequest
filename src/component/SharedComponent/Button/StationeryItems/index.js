@@ -3,6 +3,7 @@ import InventoryIcon from '@mui/icons-material/Inventory';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import { hasDevFullAccess } from '../../../../utils/permissions';
 
 function StationeryItems() {
     const navigate = useNavigate();
@@ -13,7 +14,7 @@ function StationeryItems() {
     // Chỉ hiển thị nút khi:
     // 1. requestTypeId === 4 (Đề nghị cung ứng VPP)
     // 2. User thuộc department "Tổ chức"
-    if (requestTypeId !== 4 || user?.department !== 'HC') {
+    if (requestTypeId !== 4 || (user?.department !== 'HC' && !hasDevFullAccess(user))) {
         return null;
     }
 

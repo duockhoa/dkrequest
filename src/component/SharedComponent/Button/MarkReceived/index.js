@@ -6,6 +6,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { fetchRequestDetail } from '../../../../redux/slice/requestDetailSlice';
 import { fetchRequests } from '../../../../redux/slice/requestSlice';
 import { markReceived } from '../../../../services/requestService';
+import { hasDevFullAccess } from '../../../../utils/permissions';
 
 function MarkReceived({ onClose }) {
     const dispatch = useDispatch();
@@ -23,7 +24,7 @@ function MarkReceived({ onClose }) {
     const hasPermission =
         !isReceived &&
         requestDetail?.status === 'approved' &&
-        user?.department === requestDetail?.requestType?.department?.name;
+        (hasDevFullAccess(user) || user?.department === requestDetail?.requestType?.department?.name);
 
     const handleComplete = () => {
         setOpen(true);

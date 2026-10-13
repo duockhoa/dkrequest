@@ -57,6 +57,7 @@ export const userSlice = createSlice({
             state.userInfo.permissions = {
                 ...state.userInfo.permissions,
                 exportFuelPaymentReport: action.payload.exportFuelPaymentReport === true,
+                devFullAccess: action.payload.devFullAccess === true,
             };
         });
         builder.addCase(fetchReportPermissions.rejected, (state, action) => {
@@ -64,6 +65,7 @@ export const userSlice = createSlice({
             state.userInfo.permissions = {
                 ...state.userInfo.permissions,
                 exportFuelPaymentReport: false,
+                devFullAccess: false,
             };
         });
     },
