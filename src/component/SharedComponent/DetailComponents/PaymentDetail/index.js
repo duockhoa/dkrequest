@@ -2,6 +2,7 @@ import { Stack, Typography } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { format } from 'date-fns';
 import { formatCurrencyAmountInput } from '../../../../utils/numberToWords';
+import { FUEL_PAYMENT_TYPE, FUEL_PAYMENT_LABEL, normalizeFuelLiters } from '../../../../utils/fuelPayment';
 
 const DetailItem = ({ label, value }) => (
     <Stack direction="row" spacing={2} sx={{ py: 1 }}>
@@ -56,6 +57,8 @@ export default function PaymentDetail() {
 
     const getPaymentTypeLabel = (type) => {
         switch (type) {
+            case FUEL_PAYMENT_TYPE:
+                return FUEL_PAYMENT_LABEL;
             case 'invoice':
                 return 'Có hóa đơn';
             case 'no_invoice':
@@ -76,6 +79,13 @@ export default function PaymentDetail() {
     return (
         <>
             <DetailItem label="Loại thanh toán" value={getPaymentTypeLabel(paymentData.payment_type)} />
+
+            {paymentData.payment_type === FUEL_PAYMENT_TYPE && (
+                <DetailItem
+                    label="Số lít xăng dầu theo hóa đơn"
+                    value={normalizeFuelLiters(paymentData.fuel_liters) ? `${normalizeFuelLiters(paymentData.fuel_liters)} lít` : '-'}
+                />
+            )}
 
             <DetailItem label="Nội dung thanh toán" value={paymentData.payment_content || '-'} />
 

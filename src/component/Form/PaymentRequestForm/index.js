@@ -5,6 +5,7 @@ import FileUpload from '../FileUpload';
 import { formatCurrencyAmountInput, parseCurrencyAmountInput } from '../../../utils/numberToWords';
 import { removeAccentsAndUppercase } from '../../../utils/bankAccount';
 import { banklist } from '../../../services/bankService';
+import { FUEL_PAYMENT_TYPE, FUEL_PAYMENT_LABEL } from '../../../utils/fuelPayment';
 
 function PaymentRequestForm() {
     const dispatch = useDispatch();
@@ -41,8 +42,13 @@ function PaymentRequestForm() {
         // Lấy dữ liệu mới nhất sau khi thay đổi
         let newPaymentRequest = {
             ...requestFormData.payment_request,
+            currency: previousCurrency,
             [name]: processedValue,
         };
+
+        if (name === 'payment_type' && value !== FUEL_PAYMENT_TYPE) {
+            delete newPaymentRequest.fuel_liters;
+        }
 
         // Nếu là amountText thì cần format lại
         if (name === 'amountText') {
@@ -107,8 +113,29 @@ function PaymentRequestForm() {
                     <MenuItem value="no_invoice" sx={{ fontSize: 14 }}>
                         Không hóa đơn
                     </MenuItem>
+                    <MenuItem value={FUEL_PAYMENT_TYPE} sx={{ fontSize: 14 }}>
+                        {FUEL_PAYMENT_LABEL}
+                    </MenuItem>
                 </Select>
             </Stack>
+
+            {requestFormData?.payment_request?.payment_type === FUEL_PAYMENT_TYPE && (
+                <Stack direction="row" alignItems="center" spacing={2}>
+                    <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>
+                        Số lít xăng dầu theo hóa đơn (*)
+                    </Typography>
+                    <TextField
+                        fullWidth
+                        name="fuel_liters"
+                        value={requestFormData?.payment_request?.fuel_liters ?? ''}
+                        onChange={handleChange}
+                        inputProps={{ inputMode: 'decimal', style: { fontSize: '1.4rem' } }}
+                        InputProps={{ endAdornment: <InputAdornment position="end">lít</InputAdornment> }}
+                        error={!!errors?.fuel_liters}
+                        helperText={errors?.fuel_liters || 'Nhập tổng số lít của các hóa đơn đính kèm, ví dụ: 40,25'}
+                    />
+                </Stack>
+            )}
 
             <Stack direction="row" alignItems="center" spacing={2}>
                 <Typography sx={{ minWidth: 120, fontSize: '1.4rem' }}>Nội dung thanh toán: (*)</Typography>
@@ -150,8 +177,8 @@ function PaymentRequestForm() {
                     inputProps={{
                         style: { fontSize: '1.4rem' },
                     }}
-                    error={!!errors?.amountText}
-                    helperText={errors?.amountText || ''}
+                    error={!!(errors?.amountText || errors?.amount)}
+                    helperText={errors?.amountText || errors?.amount || ''}
                     InputProps={{
                         endAdornment: (
                             <InputAdornment position="end">
@@ -293,8 +320,14 @@ function PaymentRequestForm() {
             )}
 
             {/* File Upload Components */}
-            {requestFormData?.payment_request?.payment_type === 'invoice' && (
-                <FileUpload fieldName="invoices" label="Hóa đơn" multiple={true} maxSize={100} />
+            {['invoice', FUEL_PAYMENT_TYPE].includes(requestFormData?.payment_request?.payment_type) && (
+                <FileUpload
+                    fieldName="invoices"
+                    label={requestFormData?.payment_request?.payment_type === FUEL_PAYMENT_TYPE ? 'Hóa đơn xăng dầu (*)' : 'Hóa đơn'}
+                    multiple={true}
+                    maxSize={100}
+                    validationError={errors?.invoices}
+                />
             )}
             {requestFormData?.payment_request?.payment_type === 'no_invoice' && (
                 <FileUpload fieldName="receipts" label="Bảng kê vật tư" multiple={true} maxSize={100} />

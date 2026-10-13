@@ -12,6 +12,7 @@ import OverTimeRequestForm from '../OverTimeRequestForm';
 import TaskConfirm from '../TaskConfirmForm';
 import PaymentRequestForm from '../PaymentRequestForm';
 import objectToFormData from '../../../utils/makeFromDataFromObject';
+import { validateFuelPayment, preparePaymentSubmission } from '../../../utils/fuelPayment';
 import { fetchCreateRequest } from '../../../redux/slice/requestFormDataSlice';
 import AdvanceMoneyRequestForm from '../AdvanceMoneyRequestForm';
 import SupplyStationeryForm from '../SupplyStationeryForm';
@@ -472,6 +473,12 @@ function AddRequestForm({ onClose }) {
             }
         });
 
+        if (requestTypeId === 1) {
+            const fuelErrors = validateFuelPayment(requestFormData);
+            Object.assign(errors, fuelErrors);
+            if (Object.keys(fuelErrors).length > 0) isValid = false;
+        }
+
         if (DATE_LIMITED_REQUEST_TYPE_IDS.includes(requestTypeId)) {
             const startTime = flattenedData.start_time;
             const endTime = flattenedData.end_time;
@@ -518,7 +525,9 @@ function AddRequestForm({ onClose }) {
         }
 
         // Convert requestFormData to FormData
-        const formData = objectToFormData(requestFormData);
+        const formData = objectToFormData(
+            requestTypeId === 1 ? preparePaymentSubmission(requestFormData) : requestFormData,
+        );
 
         try {
             const response = await dispatch(fetchCreateRequest(formData));

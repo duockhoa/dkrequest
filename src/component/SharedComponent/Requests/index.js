@@ -450,7 +450,7 @@ export default function Requests() {
                     {showExportButton && <StationeryItems />}
 
                     {/* Sử dụng component ExportReport */}
-                    {showExportButton && <ExportReport />}
+                    <ExportReport />
 
                     {typeof requestTypeId === 'number' && requestTypeId > 0 && (
                         <Button

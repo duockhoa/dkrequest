@@ -4,9 +4,9 @@ import AttachFileIcon from '@mui/icons-material/AttachFile';
 import CloseIcon from '@mui/icons-material/Close';
 import TextSnippetIcon from '@mui/icons-material/TextSnippet';
 import { useDispatch, useSelector } from 'react-redux';
-import { setRequestFormData } from '../../../redux/slice/requestFormDataSlice';
+import { setRequestFormData, setFieldError } from '../../../redux/slice/requestFormDataSlice';
 
-function FileUpload({ fieldName, label, accept = '*/*', multiple = true, maxSize = 100 }) {
+function FileUpload({ fieldName, label, accept = '*/*', multiple = true, maxSize = 100, validationError = '' }) {
     const dispatch = useDispatch();
     const requestFormData = useSelector((state) => state.requestFormData.value);
     const fileInputRef = useRef();
@@ -41,6 +41,8 @@ function FileUpload({ fieldName, label, accept = '*/*', multiple = true, maxSize
 
         // Update Redux with new files
         const updatedFiles = multiple ? [...currentFiles, ...processedFiles] : processedFiles;
+
+        dispatch(setFieldError({ field: fieldName, message: '' }));
 
         dispatch(
             setRequestFormData({
@@ -121,9 +123,9 @@ function FileUpload({ fieldName, label, accept = '*/*', multiple = true, maxSize
             </Stack>
 
             {/* Error Message */}
-            {error && (
+            {(error || validationError) && (
                 <Alert severity="error" sx={{ ml: 15 }}>
-                    {error}
+                    {error || validationError}
                 </Alert>
             )}
 

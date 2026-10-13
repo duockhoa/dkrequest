@@ -4,7 +4,7 @@ import AssessmentIcon from '@mui/icons-material/Assessment';
 import ExportReportForm from '../../../Form/ExportReportForm';
 import { useSelector } from 'react-redux';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { de } from 'date-fns/locale';
+import { canExportFuelPaymentReport } from '../../../../utils/fuelPayment';
 
 function ExportReport() {
     const [isOpenExportForm, setIsOpenExportForm] = useState(false);
@@ -13,8 +13,10 @@ function ExportReport() {
     const requestTypeId = useSelector((state) => state.requestId.requestTypeId);
     const department = useSelector((state) => state.requestId.department);
 
-    // Chỉ hiển thị nút khi có requestTypeId hợp lệ
-    if (department !== user?.department) {
+    const allowGeneralReport = !!department && department === user?.department;
+    const allowFuelReport = requestTypeId === 1 && canExportFuelPaymentReport(user);
+
+    if (!allowGeneralReport && !allowFuelReport) {
         return null;
     }
 
@@ -60,7 +62,7 @@ function ExportReport() {
                     },
                 }}
             >
-                <ExportReportForm onClose={handleCloseDialog} />
+                <ExportReportForm onClose={handleCloseDialog} allowGeneralReport={allowGeneralReport} />
             </Dialog>
         </>
     );
