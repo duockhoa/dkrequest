@@ -3,48 +3,49 @@ import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { setRequestTypeId, setRequestId, setDepartment } from '../../redux/slice/requestId';
-import { useEffect, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchRequestDetail } from '../../redux/slice/requestDetailSlice';
-import { getAllRequestTypeService } from '../../services/requestTypeService';
-import RequestDetail from '../../component/SharedComponent/RequestDetail';
-import Comment from '../../component/SharedComponent/Comment';
+import { fetchRequestTypes } from '../../redux/slice/requestTypesSlice';
+import LoadingPage from '../../component/SharedComponent/LoadingPage';
 import Grid2 from '@mui/material/Unstable_Grid2';
-import Approver from '../../component/SharedComponent/Approver';
-import Follower from '../../component/SharedComponent/Follower';
-import Progress from '../../component/SharedComponent/Progress';
 import { useElementWidth } from '../../hooks/useElementWidth';
-import { Divider } from '@mui/material';
+import { Button, Divider, Typography } from '@mui/material';
+
+const RequestDetail = lazy(() => import('../../component/SharedComponent/RequestDetail'));
+const Comment = lazy(() => import('../../component/SharedComponent/Comment'));
+const Approver = lazy(() => import('../../component/SharedComponent/Approver'));
+const Follower = lazy(() => import('../../component/SharedComponent/Follower'));
+const Progress = lazy(() => import('../../component/SharedComponent/Progress'));
 
 export default function Request() {
     const requestId = useSelector((state) => state.requestId.requestId);
     const [searchParams] = useSearchParams();
     const location = useLocation();
     const dispatch = useDispatch();
-    const [requestTypes, setRequestTypes] = useState([]);
+    const requestTypes = useSelector((state) => state.requestTypes.data);
+    const metadataError = useSelector((state) => state.requestTypes.error);
+    const activeRequestId = searchParams.get('view') === 'detail' ? parseInt(searchParams.get('requestid'), 10) || null : null;
+    const matchedType = requestTypes.find(type => type.path === location.pathname);
+    const resolvedTypeId = location.pathname === '/' ? 'all' : (requestTypes.length ? matchedType?.id || 'all' : null);
     const elementRef = useRef(null);
     const width = useElementWidth(elementRef);
 
     useEffect(() => {
-        if (requestId) {
-            dispatch(fetchRequestDetail(requestId));
+        if (!activeRequestId) {
+            dispatch({ type: 'requestDetail/clearRequestDetail' });
+            return;
         }
+        const pending = dispatch(fetchRequestDetail(activeRequestId));
         return () => {
+            pending.abort();
             dispatch({ type: 'requestDetail/clearRequestDetail' });
         };
-    }, [requestId, dispatch]);
+    }, [activeRequestId, dispatch]);
 
     useEffect(() => {
-        const fetchRequestTypes = async () => {
-            try {
-                const types = await getAllRequestTypeService();
-                setRequestTypes(types);
-            } catch (error) {
-                console.error('Error fetching request types:', error);
-            }
-        };
-        fetchRequestTypes();
-    }, []);
+        dispatch(fetchRequestTypes());
+    }, [dispatch]);
 
     // Update requestTypeId based on path
     useEffect(() => {
@@ -74,6 +75,13 @@ export default function Request() {
 
     const view = searchParams.get('view');
 
+    if (!resolvedTypeId) {
+        return metadataError ? <Box sx={{ p: 2 }}>
+            <Typography color="error">{metadataError}</Typography>
+            <Button onClick={() => dispatch(fetchRequestTypes())}>Thử lại</Button>
+        </Box> : <LoadingPage />;
+    }
+
     return (
         <Grid2
             container
@@ -101,7 +109,7 @@ export default function Request() {
                         borderRadius: 2,
                     }}
                 >
-                    <Requests />
+                    <Requests requestTypeId={resolvedTypeId} />
                 </Box>
             </Grid2>
 
@@ -115,65 +123,67 @@ export default function Request() {
                         overflow: 'auto',
                     }}
                 >
-                    <Grid2
-                        xs={width < 1200 ? 12 : 7}
-                        sx={{
-                            height: width > 1200 ? '100%' : 'auto',
-                        }}
-                    >
-                        <Box
+                    <Suspense fallback={<LoadingPage />}>
+                        <Grid2
+                            xs={width < 1200 ? 12 : 7}
                             sx={{
-                                borderRadius: 2,
-                                overflow: 'hidden',
-                                backgroundColor: '#fff',
-                                height: '100%',
+                                height: width > 1200 ? '100%' : 'auto',
                             }}
                         >
-                            <Stack
+                            <Box
                                 sx={{
-                                    p: 1,
-                                    overflow: 'auto',
+                                    borderRadius: 2,
+                                    overflow: 'hidden',
+                                    backgroundColor: '#fff',
                                     height: '100%',
                                 }}
-                                spacing={1}
                             >
-                                <RequestDetail />
-                                <Divider sx={{ borderColor: 'black', mb: 1 }} />
-                                <Comment />
-                            </Stack>
-                        </Box>
-                    </Grid2>
+                                <Stack
+                                    sx={{
+                                        p: 1,
+                                        overflow: 'auto',
+                                        height: '100%',
+                                    }}
+                                    spacing={1}
+                                >
+                                    <RequestDetail />
+                                    <Divider sx={{ borderColor: 'black', mb: 1 }} />
+                                    <Comment />
+                                </Stack>
+                            </Box>
+                        </Grid2>
 
-                    <Grid2
-                        xs={width < 1200 ? 12 : 5}
-                        sx={{
-                            height: width > 1200 ? '100%' : 'auto',
-                        }}
-                    >
-                        <Box
+                        <Grid2
+                            xs={width < 1200 ? 12 : 5}
                             sx={{
-                                borderRadius: 2,
-                                overflow: 'hidden',
-                                backgroundColor: '#fff',
-                                height: '100%',
+                                height: width > 1200 ? '100%' : 'auto',
                             }}
                         >
-                            <Stack
+                            <Box
                                 sx={{
-                                    p: 1,
-                                    overflow: 'auto',
+                                    borderRadius: 2,
+                                    overflow: 'hidden',
+                                    backgroundColor: '#fff',
                                     height: '100%',
                                 }}
-                                spacing={1}
                             >
-                                <Approver />
-                                <Divider sx={{ borderColor: 'black', mb: 1 }} />
-                                <Follower />
-                                <Divider sx={{ borderColor: 'black', mb: 1 }} />
-                                <Progress />
-                            </Stack>
-                        </Box>
-                    </Grid2>
+                                <Stack
+                                    sx={{
+                                        p: 1,
+                                        overflow: 'auto',
+                                        height: '100%',
+                                    }}
+                                    spacing={1}
+                                >
+                                    <Approver />
+                                    <Divider sx={{ borderColor: 'black', mb: 1 }} />
+                                    <Follower />
+                                    <Divider sx={{ borderColor: 'black', mb: 1 }} />
+                                    <Progress />
+                                </Stack>
+                            </Box>
+                        </Grid2>
+                    </Suspense>
                 </Grid2>
             )}
         </Grid2>

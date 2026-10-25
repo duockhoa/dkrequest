@@ -1,4 +1,4 @@
-import { Box, TextField, IconButton, Typography, Stack, Paper } from '@mui/material';
+import { Box, TextField, IconButton, Typography, Stack, Paper, CircularProgress } from '@mui/material';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import SendIcon from '@mui/icons-material/Send';
 import CloseIcon from '@mui/icons-material/Close';
@@ -11,11 +11,13 @@ function CommentForm() {
     const dispatch = useDispatch();
     const requestId = useSelector((state) => state.requestId.requestId);
     const user = useSelector((state) => state.user.userInfo);
+    const submitting = useSelector((state) => state.comment.submitting);
     const [value, setValue] = useState('');
     const [attachments, setAttachments] = useState([]);
     const [atMention, setAtMention] = useState(false);
     const [cursorPosition, setCursorPosition] = useState(0);
     const fileInputRef = useRef(null);
+    const sendingRef = useRef(false);
 
     const handleFileSelect = (event) => {
         const files = Array.from(event.target.files);
@@ -27,7 +29,8 @@ function CommentForm() {
     };
 
     const handleSubmit = async () => {
-        if (!value.trim() && attachments.length === 0) return;
+        if (sendingRef.current || submitting || (!value.trim() && attachments.length === 0)) return;
+        sendingRef.current = true;
 
         const formData = new FormData();
         formData.append('request_id', requestId);
@@ -38,9 +41,15 @@ function CommentForm() {
             formData.append('files', file);
         });
 
-        await dispatch(createComment(formData));
-        setValue('');
-        setAttachments([]);
+        try {
+            await dispatch(createComment(formData)).unwrap();
+            setValue('');
+            setAttachments([]);
+        } catch {
+            // Keep the draft and attachments so the user can retry after an API error.
+        } finally {
+            sendingRef.current = false;
+        }
     };
 
     // sự kiện người dùng gõ @
@@ -96,7 +105,7 @@ function CommentForm() {
                             >
                                 {file.name}
                             </Typography>
-                            <IconButton size="small" color="error" onClick={() => handleRemoveFile(idx)} sx={{ ml: 2 }}>
+                            <IconButton size="small" color="error" disabled={submitting} onClick={() => handleRemoveFile(idx)} sx={{ ml: 2 }}>
                                 <CloseIcon fontSize="small" />
                             </IconButton>
                         </Paper>
@@ -124,6 +133,7 @@ function CommentForm() {
 
                 <IconButton
                     size="small"
+                    disabled={submitting}
                     onClick={() => fileInputRef.current?.click()}
                     sx={{
                         mx: 1,
@@ -137,6 +147,7 @@ function CommentForm() {
                     fullWidth
                     multiline
                     minRows={1}
+                    disabled={submitting}
                     value={value}
                     onChange={handleChange}
                     placeholder="Nhập nội dung..."
@@ -161,7 +172,8 @@ function CommentForm() {
                 <IconButton
                     size="small"
                     onClick={handleSubmit}
-                    disabled={!value.trim() && attachments.length === 0}
+                    aria-label={submitting ? 'Đang gửi bình luận' : 'Gửi bình luận'}
+                    disabled={submitting || (!value.trim() && attachments.length === 0)}
                     sx={{
                         mx: 1,
                         bgcolor: 'primary.main',
@@ -175,7 +187,7 @@ function CommentForm() {
                         },
                     }}
                 >
-                    <SendIcon fontSize="small" />
+                    {submitting ? <CircularProgress size={18} color="inherit" /> : <SendIcon fontSize="small" />}
                 </IconButton>
             </Box>
         </Box>

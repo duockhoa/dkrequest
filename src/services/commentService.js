@@ -1,8 +1,8 @@
 import axios from './customize-axios';
 
-async function getCommentsByRequestIdService(requestId) {
+async function getCommentsByRequestIdService(requestId, signal) {
     try {
-        const response = await axios.get(`/comment/getbyrequestid/${requestId}`);
+        const response = await axios.get(`/comment/getbyrequestid/${requestId}`, { signal });
         if (response.status === 200) {
             return response.data.result;
         } else {

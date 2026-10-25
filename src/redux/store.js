@@ -1,4 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
+import requestTypesReducer from './slice/requestTypesSlice';
 import userReducer from './slice/userSlice';
 import sidebarSlice from './slice/sibarSlice';
 import searchReducer from './slice/searchSlice';
@@ -15,6 +16,7 @@ import itemsReducer from './slice/itemsSlice';
 import requestFollowerReducer from './slice/requestFollowerSlice'; // Ensure this is imported correctly
 export default configureStore({
     reducer: {
+        requestTypes: requestTypesReducer,
         user: userReducer,
         sidebar: sidebarSlice,
         search: searchReducer,

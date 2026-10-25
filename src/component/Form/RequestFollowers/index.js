@@ -26,10 +26,11 @@ function RequestFollowers() {
         if (requestTypeId && user.id) {
             dispatch(fetchRequestFollowers({ requestTypeId, userId: user.id }));
         }
-        if (users.length === 0) {
-            dispatch(fetchUsers());
-        }
-    }, [dispatch, users.length]);
+    }, [dispatch, requestTypeId, user.id]);
+
+    useEffect(() => {
+        dispatch(fetchUsers());
+    }, [dispatch]);
 
     // Khởi tạo followers khi có dữ liệu
     useEffect(() => {

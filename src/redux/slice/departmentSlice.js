@@ -9,12 +9,18 @@ const fetchDepartments = createAsyncThunk('department/fetchDepartments', async (
     } else {
         throw new Error('Không thể lấy danh sách phòng ban');
     }
+}, {
+    condition: (_, { getState }) => {
+        const state = getState().department;
+        return !state.loading && (!state.loadedAt || Date.now() - state.loadedAt >= 5 * 60 * 1000);
+    },
 });
 
 const departmentSlice = createSlice({
     name: 'department',
     initialState: {
         departments: [],
+        loadedAt: null,
         loading: false,
         error: null,
     },
@@ -26,6 +32,7 @@ const departmentSlice = createSlice({
             })
             .addCase(fetchDepartments.fulfilled, (state, action) => {
                 state.departments = action.payload;
+                state.loadedAt = Date.now();
                 state.loading = false;
             })
             .addCase(fetchDepartments.rejected, (state, action) => {

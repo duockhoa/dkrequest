@@ -1,10 +1,12 @@
+import { lazy } from 'react';
 import ErrorLayout from '../Layouts/ErrorLayout';
-import Profile from '../pages/Profile';
 import HeaderOnlyLayout from '../Layouts/HeaderOnlyLayout';
-import Error from '../pages/Error';
 import Request from '../pages/Request';
 
-import items from '../pages/Items';
+const Profile = lazy(() => import('../pages/Profile'));
+const Error = lazy(() => import('../pages/Error'));
+const items = lazy(() => import('../pages/Items'));
+
 const publicRoutes = [
     {
         path: '/',

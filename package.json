@@ -45,7 +45,8 @@
         "test": "react-scripts test",
         "test:fuel": "jest --config jest.fuel.config.cjs --runInBand",
         "test:approval": "jest --config jest.approval.config.cjs --runInBand",
-        "eject": "react-scripts eject"
+        "eject": "react-scripts eject",
+        "test:performance": "jest --config jest.performance.config.cjs --runInBand"
     },
     "eslintConfig": {
         "extends": [

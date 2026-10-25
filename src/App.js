@@ -1,7 +1,8 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { publicRoutes } from './routes';
 import { DefaultLayout } from './Layouts';
-import { useEffect, useRef } from 'react';
+import { Suspense, useEffect, useRef } from 'react';
+import LoadingPage from './component/SharedComponent/LoadingPage';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchUser, fetchReportPermissions } from './redux/slice/userSlice';
 import { io } from 'socket.io-client';
@@ -107,7 +108,7 @@ function App() {
                                 path={route.path}
                                 element={
                                     <Layout>
-                                        <Page />
+                                        <Suspense fallback={<LoadingPage />}><Page /></Suspense>
                                     </Layout>
                                 }
                             />

@@ -1,6 +1,6 @@
 import { hasDevFullAccess } from '../../../utils/permissions';
 import { Tabs, Tab, Box, Typography, Stack, Avatar, Chip, AvatarGroup, Dialog, Divider, Badge } from '@mui/material';
-import { useState, useEffect, useRef } from 'react';
+import { lazy, Suspense, useState, useEffect, useRef, useMemo } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -8,7 +8,6 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import MarkAsUnreadIcon from '@mui/icons-material/MarkAsUnread';
 import Button from '@mui/material/Button';
 import { format, isSameDay } from 'date-fns';
-import AddRequestForm from '../../Form/AddRequestForm';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchRequests } from '../../../redux/slice/requestSlice';
 import { useNavigate } from 'react-router-dom';
@@ -26,6 +25,8 @@ import FilterListTwoToneIcon from '@mui/icons-material/FilterListTwoTone';
 import Drawer from '@mui/material/Drawer';
 import Filter from '../Filter';
 import { isApprovalExpiredForApprover, isApprovalLimitedRequestType } from '../../../utils/approvalDeadline';
+
+const AddRequestForm = lazy(() => import('../../Form/AddRequestForm'));
 
 const tabList = [
     'Tất cả',
@@ -81,7 +82,7 @@ const isRequestOverdue = (request, userId, activeRequestTypeId) => {
     return isApproverDeadlineExpired(approverToCheck);
 };
 
-export default function Requests() {
+export default function Requests({ requestTypeId }) {
     const isMobile = useMediaQuery((theme) => theme.breakpoints.down('sm'));
 
     const navigate = useNavigate();
@@ -93,9 +94,10 @@ export default function Requests() {
     const originalData = useSelector((state) => state.request.originalData);
     const totalPages = useSelector((state) => state.request.totalPages);
     const total = useSelector((state) => state.request.total);
-    const page = useSelector((state) => state.request.page);
+    const storedPage = useSelector((state) => state.request.page);
+    const listRequestTypeId = useSelector((state) => state.request.listRequestTypeId);
+    const page = listRequestTypeId === requestTypeId ? storedPage : 1;
     const loading = useSelector((state) => state.request.loading);
-    const requestTypeId = useSelector((state) => state.requestId.requestTypeId);
     const requestId = useSelector((state) => state.requestId.requestId);
     const user = useSelector((state) => state.user.userInfo);
     const pageSize = useSelector((state) => state.request.pageSize);
@@ -103,7 +105,8 @@ export default function Requests() {
 
     useEffect(() => {
         if (requestTypeId && user.id) {
-            dispatch(fetchRequests({ requestTypeId, user_id: user.id, page, pageSize }));
+            const pending = dispatch(fetchRequests({ requestTypeId, user_id: user.id, page, pageSize }));
+            return () => pending.abort();
         }
     }, [dispatch, requestTypeId, user.id, page, pageSize, devFullAccess]);
 
@@ -335,7 +338,7 @@ export default function Requests() {
     const showExportButton = containerWidth > 600; // Ngưỡng cho nút xuất báo cáo
 
     // Đếm số lượng cho từng tab
-    const tabCounts = {
+    const tabCounts = useMemo(() => ({
         'Tất cả': originalData.length,
         'Đang chờ duyệt': originalData.filter((r) => r.status === 'pending').length,
         'Đã chấp nhận': originalData.filter((r) => r.status === 'approved' && r.isReceived && !r.isCompleted)
@@ -350,7 +353,9 @@ export default function Requests() {
         'Quá hạn': originalData.filter((request) => isRequestOverdue(request, user.id, requestTypeId)).length,
         'Đến lượt tiếp nhận': originalData.filter((request) => request.status === 'approved' && !request.isReceived)
             .length,
-    };
+    }), [originalData, devFullAccess, user.id, requestTypeId]);
+
+    const groupedRequests = useMemo(() => groupRequestsByDate(requests), [requests]);
 
     return (
         <Stack
@@ -506,7 +511,7 @@ export default function Requests() {
                     },
                 }}
             >
-                <AddRequestForm onClose={handleToggleForm} />
+                {openForm && <Suspense fallback={<LoadingPage />}><AddRequestForm onClose={handleToggleForm} /></Suspense>}
             </Dialog>
 
             <Drawer anchor="right" open={openFilter} onClose={handleToggleFilter}>
@@ -520,7 +525,7 @@ export default function Requests() {
             ) : (
                 <Box overflow="auto">
                     {/* Render requests grouped by date */}
-                    {groupRequestsByDate(requests).map((group, groupIndex) => (
+                    {groupedRequests.map((group, groupIndex) => (
                         <Box key={group.date.toISOString()}>
                             {/* Date Separator */}
                             <DateSeparator date={group.date} />

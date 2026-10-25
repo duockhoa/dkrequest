@@ -1,24 +1,16 @@
 import { Box, Typography, Button, Stack, TextField, Autocomplete } from '@mui/material';
 import { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
-import { getAllUsersService } from '../../../services/usersService';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchUsers } from '../../../redux/slice/usersSlice';
 
 function ForwardForm({ onCancel, onSubmit }) {
-    const [users, setUsers] = useState([]);
+    const users = useSelector(state => state.users.users);
     const [selectedUser, setSelectedUser] = useState(null);
     const dispatch = useDispatch();
 
     useEffect(() => {
-        const fetchUsers = async () => {
-            try {
-                const response = await getAllUsersService();
-                setUsers(response);
-            } catch (error) {
-                console.error('Error fetching users:', error);
-            }
-        };
-        fetchUsers();
-    }, []);
+        dispatch(fetchUsers());
+    }, [dispatch]);
 
     const handleSubmit = () => {
         if (!selectedUser) return;

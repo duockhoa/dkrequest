@@ -1,11 +1,13 @@
-import { useState } from 'react';
+import { lazy, Suspense, useState } from 'react';
+import LoadingPage from '../../LoadingPage';
 import { Button, Dialog } from '@mui/material';
 import AssessmentIcon from '@mui/icons-material/Assessment';
-import ExportReportForm from '../../../Form/ExportReportForm';
 import { useSelector } from 'react-redux';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { canExportFuelPaymentReport } from '../../../../utils/fuelPayment';
 import { hasDevFullAccess } from '../../../../utils/permissions';
+
+const ExportReportForm = lazy(() => import('../../../Form/ExportReportForm'));
 
 function ExportReport() {
     const [isOpenExportForm, setIsOpenExportForm] = useState(false);
@@ -63,7 +65,7 @@ function ExportReport() {
                     },
                 }}
             >
-                <ExportReportForm onClose={handleCloseDialog} allowGeneralReport={allowGeneralReport} />
+                {isOpenExportForm && <Suspense fallback={<LoadingPage />}><ExportReportForm onClose={handleCloseDialog} allowGeneralReport={allowGeneralReport} /></Suspense>}
             </Dialog>
         </>
     );

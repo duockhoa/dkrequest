@@ -1,7 +1,7 @@
 import axios from './customize-axios';
-async function getAllRequestService(requestTypeId, user_id, page, pageSize) {
+async function getAllRequestService(requestTypeId, user_id, page, pageSize, signal) {
     try {
-        const response = await axios.get('/request/getall?requesttypeid=' + requestTypeId + '&userid=' + user_id + '&page=' + page + '&pageSize=' + pageSize);
+        const response = await axios.get('/request/getall?requesttypeid=' + requestTypeId + '&userid=' + user_id + '&page=' + page + '&pageSize=' + pageSize, { signal });
         if (response.status === 200) {
             return response.data;
         } else {
@@ -18,9 +18,9 @@ async function getAllRequestService(requestTypeId, user_id, page, pageSize) {
     }
 } 
 
-async function getRequestByIdService(id) {
+async function getRequestByIdService(id, signal) {
     try {
-        const response = await axios.get(`/request/getbyid/${id}`);
+        const response = await axios.get(`/request/getbyid/${id}`, { signal });
         if (response.status === 200) {
             return response.data.result;
         } else {

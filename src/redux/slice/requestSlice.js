@@ -1,10 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { getAllRequestService } from '../../services/requestService';
-import { set } from 'date-fns';
 
-const fetchRequests = createAsyncThunk('request/fetchRequests', async ({ requestTypeId, user_id , page , pageSize}) => {
-    const response = await getAllRequestService(requestTypeId, user_id, page , pageSize);
+const fetchRequests = createAsyncThunk('request/fetchRequests', async ({ requestTypeId, user_id, page, pageSize }, { signal }) => {
+    const response = await getAllRequestService(requestTypeId, user_id, page, pageSize, signal);
     if (response) {
         return response;
     } else {
@@ -29,6 +28,8 @@ const requestSlice = createSlice({
         totalPages: 1,
         total: 0,
         pageSize: 100,
+        listRequestTypeId: null,
+        currentRequestId: null,
         loading: false,
         error: null,
     },
@@ -58,11 +59,16 @@ const requestSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            .addCase(fetchRequests.pending, (state) => {
+            .addCase(fetchRequests.pending, (state, action) => {
+                state.currentRequestId = action.meta.requestId;
+                state.listRequestTypeId = action.meta.arg.requestTypeId;
+                state.page = action.meta.arg.page || 1;
                 state.loading = true;
                 state.error = null;
             })
             .addCase(fetchRequests.fulfilled, (state, action) => {
+                if (state.currentRequestId !== action.meta.requestId) return;
+                state.currentRequestId = null;
                 state.requestData = action.payload.result;
                 state.originalData = action.payload.result;
                 state.page = action.payload.pagination.page;
@@ -72,8 +78,10 @@ const requestSlice = createSlice({
                 state.loading = false;
             })
             .addCase(fetchRequests.rejected, (state, action) => {
+                if (state.currentRequestId !== action.meta.requestId) return;
+                state.currentRequestId = null;
                 state.loading = false;
-                state.error = action.error.message;
+                state.error = action.meta.aborted ? null : action.error.message;
             });
     },
 });

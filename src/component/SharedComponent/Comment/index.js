@@ -3,7 +3,7 @@ import TextSnippetIcon from '@mui/icons-material/TextSnippet';
 import CommentForm from '../../Form/CommentForm';
 import PreviewFile from '../PreviewFile';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchComments } from '../../../redux/slice/commentSlice';
+import { fetchComments, clearComments } from '../../../redux/slice/commentSlice';
 import { useEffect, useState } from 'react';
 import LoadingPage from '../../SharedComponent/LoadingPage';
 
@@ -14,6 +14,7 @@ function CommentItem({ comment, onFileClick }) {
                 <img
                     src={comment.commenter.avatar}
                     alt={comment.commenter.name}
+                    loading="lazy"
                     style={{ width: 40, height: 40, borderRadius: '50%' }}
                 />
                 <Box>
@@ -84,11 +85,14 @@ function Comment() {
     const [openPreview, setOpenPreview] = useState(false);
 
     useEffect(() => {
-        console.log('Fetching comments for requestId:', requestId);
         if (requestId) {
-            dispatch(fetchComments(requestId));
+            const pending = dispatch(fetchComments(requestId));
+            return () => {
+                pending.abort();
+                dispatch(clearComments());
+            };
         }
-    }, [requestId]);
+    }, [requestId, dispatch]);
 
     // Xử lý click vào file
     const handleFileClick = (file) => {
@@ -119,7 +123,7 @@ function Comment() {
             >
                 BÌNH LUẬN
             </Typography>
-            <CommentForm />
+            <CommentForm key={requestId} />
             <Stack spacing={2}>
                 {error && <Typography color="error">{error}</Typography>}
                 {comments &&

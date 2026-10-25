@@ -9,12 +9,18 @@ const fetchUsers = createAsyncThunk('users/fetchUsers', async () => {
     } else {
         throw new Error('Không thể lấy danh sách người dùng');
     }
+}, {
+    condition: (_, { getState }) => {
+        const state = getState().users;
+        return !state.loading && (!state.loadedAt || Date.now() - state.loadedAt >= 5 * 60 * 1000);
+    },
 });
 
 const usersSlice = createSlice({
     name: 'users',
     initialState: {
         users: [],
+        loadedAt: null,
         loading: false,
         error: null,
     },
@@ -26,6 +32,7 @@ const usersSlice = createSlice({
             })
             .addCase(fetchUsers.fulfilled, (state, action) => {
                 state.users = action.payload;
+                state.loadedAt = Date.now();
                 state.loading = false;
             })
             .addCase(fetchUsers.rejected, (state, action) => {
